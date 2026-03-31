@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Castillo | Asistente Inteligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            background-color: #07091A;
+            background-image:
+                radial-gradient(at 0% 100%, hsla(240,30%,20%,0.5) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(280,30%,20%,0.4) 0, transparent 50%);
+        }
+        .glass {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .msg-bubble { animation: fadeUp 0.3s ease-out; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .mode-btn.active { border-color: currentColor; background: rgba(255,255,255,0.07); }
+        .typing-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #94a3b8;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex items-center justify-center text-white">
+
+<div class="w-full max-w-3xl h-full md:h-[95vh] flex flex-col glass rounded-none md:rounded-3xl overflow-hidden shadow-2xl">
+
+    <!-- ===== HEADER ===== -->
+    <header class="p-5 border-b border-white/10 flex items-center justify-between bg-black/20 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-lg shadow-lg shadow-indigo-500/30">
+                ⚡
+            </div>
+            <div>
+                <h1 class="font-bold text-base text-white leading-none">IA Castillo</h1>
+                <p id="modo-label" class="text-xs text-indigo-400 mt-0.5 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                    <span>Tutor de Matemáticas</span>
+                </p>
+            </div>
+        </div>
+        <button id="reset-btn" title="Nueva conversación" class="text-white/30 hover:text-white transition-colors text-sm">
+            <i class="fa-solid fa-rotate-right"></i>
+        </button>
+    </header>
+
+    <!-- ===== SELECTOR DE MODOS ===== -->
+    <div class="flex gap-2 px-4 py-3 border-b border-white/10 overflow-x-auto shrink-0">
+        <button data-modo="matematicas" data-color="indigo" data-nombre="Tutor de Matemáticas"
+            class="mode-btn active whitespace-nowrap text-indigo-400 border border-indigo-400/30 text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/5">
+            📐 Matemáticas
+        </button>
+        <button data-modo="legal" data-color="amber" data-nombre="Asistente Legal Venezuela"
+            class="mode-btn whitespace-nowrap text-amber-400 border border-amber-400/30 text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/5">
+            ⚖️ Legal Venezuela
+        </button>
+        <button data-modo="chef" data-color="emerald" data-nombre="Chef Recetas"
+            class="mode-btn whitespace-nowrap text-emerald-400 border border-emerald-400/30 text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/5">
+            👨‍🍳 Chef Recetas
+        </button>
+        <button data-modo="psicologo" data-color="pink" data-nombre="Apoyo Emocional"
+            class="mode-btn whitespace-nowrap text-pink-400 border border-pink-400/30 text-xs font-semibold px-4 py-2 rounded-full transition-all hover:bg-white/5">
+            🧠 Apoyo Emocional
+        </button>
+    </div>
+
+    <!-- ===== VENTANA DE CHAT ===== -->
+    <div id="chat-window" class="flex-1 overflow-y-auto p-5 flex flex-col gap-5 chat-scroll">
+        <div id="welcome-msg" class="msg-bubble self-start max-w-[85%] bg-white/5 border border-white/10 text-slate-200 px-5 py-3 rounded-2xl rounded-bl-none text-sm leading-relaxed">
+            📐 ¡Hola! Soy tu Tutor de Matemáticas. Puedo explicarte desde lo más básico hasta cálculo avanzado, paso a paso. ¿Qué tema quieres dominar hoy?
+        </div>
+    </div>
+
+    <!-- ===== INPUT ===== -->
+    <div class="p-5 border-t border-white/10 bg-black/20 shrink-0">
+        <div id="input-wrapper" class="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-4 py-2 focus-within:border-indigo-500/50 focus-within:ring-4 focus-within:ring-indigo-500/10 transition-all">
+            <input
+                type="text"
+                id="user-input"
+                placeholder="Escribe tu pregunta aquí..."
+                class="flex-1 bg-transparent border-none outline-none text-white text-sm placeholder:text-gray-600 py-2"
+                autocomplete="off"
+            >
+            <button id="send-btn"
+                class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-indigo-600/30 shrink-0">
+                <i class="fa-solid fa-paper-plane text-sm" id="send-icon"></i>
+                <div id="loader" class="hidden w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+            </button>
+        </div>
+        <p class="text-center text-white/15 text-[10px] uppercase tracking-widest font-semibold mt-3">IA Castillo ⚡ Asistente con Memoria</p>
+    </div>
+</div>
+
+<script>
+    // =====================
+    // ESTADO DE LA APP
+    // =====================
+    let modoActual = 'matematicas';
+    
+    const mensajesBienvenida = {
+        matematicas: '📐 ¡Hola! Soy tu Tutor de Matemáticas. Puedo explicarte desde lo más básico hasta cálculo avanzado, paso a paso. ¿Qué tema quieres dominar hoy?',
+        legal: '⚖️ ¡Hola! Soy tu Asistente Legal especializado en Venezuela. Puedo explicarte tus derechos, leyes laborales, trámites del SAIME, SENIAT y más. ¿Cuál es tu consulta?',
+        chef: '👨‍🍳 ¡Hola, Chef! Dime qué ingredientes tienes en casa y te preparo una receta deliciosa paso a paso. ¿Qué hay en tu nevera hoy?',
+        psicologo: '🧠 Hola, aquí estoy para escucharte. Este es un espacio seguro donde puedes hablar de lo que sientes sin ningún juicio. ¿Cómo te encuentras hoy?'
+    };
+
+    const coloresInput = {
+        matematicas: 'focus-within:border-indigo-500/50 focus-within:ring-indigo-500/10',
+        legal: 'focus-within:border-amber-500/50 focus-within:ring-amber-500/10',
+        chef: 'focus-within:border-emerald-500/50 focus-within:ring-emerald-500/10',
+        psicologo: 'focus-within:border-pink-500/50 focus-within:ring-pink-500/10'
+    };
+
+    // =====================
+    // REFERENCIAS DOM
+    // =====================
+    const chatWindow   = document.getElementById('chat-window');
+    const userInput    = document.getElementById('user-input');
+    const sendBtn      = document.getElementById('send-btn');
+    const sendIcon     = document.getElementById('send-icon');
+    const loader       = document.getElementById('loader');
+    const modoLabel    = document.getElementById('modo-label').querySelector('span:last-child');
+    const resetBtn     = document.getElementById('reset-btn');
+    const welcomeMsg   = document.getElementById('welcome-msg');
+    const inputWrapper = document.getElementById('input-wrapper');
+
+    // =====================
+    // CAMBIO DE MODO
+    // =====================
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const nuevoModo = btn.dataset.modo;
+            const nombre    = btn.dataset.nombre;
+
+            // Actualizar botones activos
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Actualizar estado
+            modoActual = nuevoModo;
+            modoLabel.textContent = nombre;
+
+            // Limpiar chat visualmente
+            chatWindow.innerHTML = '';
+            addMessage(mensajesBienvenida[nuevoModo], 'ai');
+
+            // Resetear historial en servidor
+            fetch('/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ modo: nuevoModo })
+            });
+
+            userInput.focus();
+        });
+    });
+
+    // =====================
+    // BOTÓN RESET
+    // =====================
+    resetBtn.addEventListener('click', () => {
+        chatWindow.innerHTML = '';
+        addMessage(mensajesBienvenida[modoActual], 'ai');
+        fetch('/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ modo: modoActual })
+        });
+    });
+
+    // =====================
+    // ENVIAR MENSAJE
+    // =====================
+    async function postMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, 'user');
+        userInput.value = '';
+
+        sendIcon.classList.add('hidden');
+        loader.classList.remove('hidden');
+        sendBtn.disabled = true;
+
+        // Indicador de escritura
+        const typingEl = addTypingIndicator();
+
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensaje: message, modo: modoActual })
+            });
+            const data = await response.json();
+            typingEl.remove();
+            addMessage(data.respuesta, 'ai');
+        } catch (err) {
+            typingEl.remove();
+            addMessage('No pude conectar con el servidor.', 'ai');
+        } finally {
+            sendIcon.classList.remove('hidden');
+            loader.classList.add('hidden');
+            sendBtn.disabled = false;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+    }
+
+    // =====================
+    // AGREGAR BURBUJA
+    // =====================
+    function addMessage(text, role) {
+        const div = document.createElement('div');
+        if (role === 'user') {
+            div.className = 'msg-bubble self-end max-w-[85%] bg-indigo-600 text-white px-5 py-3 rounded-2xl rounded-br-none text-sm leading-relaxed shadow-lg shadow-indigo-600/20';
+        } else {
+            div.className = 'msg-bubble self-start max-w-[85%] bg-white/5 border border-white/10 text-slate-200 px-5 py-3 rounded-2xl rounded-bl-none text-sm leading-relaxed';
+        }
+        div.innerHTML = text.replace(/\n/g, '<br>');
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return div;
+    }
+
+    // =====================
+    // INDICADOR ESCRIBIENDO
+    // =====================
+    function addTypingIndicator() {
+        const div = document.createElement('div');
+        div.className = 'msg-bubble self-start bg-white/5 border border-white/10 px-5 py-3 rounded-2xl rounded-bl-none flex gap-1.5 items-center';
+        div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        chatWindow.appendChild(div);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        return div;
+    }
+
+    // =====================
+    // EVENTOS
+    // =====================
+    sendBtn.addEventListener('click', postMessage);
+    userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') postMessage(); });
+    userInput.focus();
+</script>
+</body>
+</html>

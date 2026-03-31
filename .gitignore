@@ -1,0 +1,9 @@
+# Archivo de seguridad: NUNCA subas esto a GitHub
+.env
+
+# Archivos innecesarios
+__pycache__/
+*.pyc
+*.pyo
+prueba.py
+.env.example
