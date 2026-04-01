@@ -65,60 +65,47 @@
         .auth-tab.active { border-color: #3b82f6; color: white; }
     </style>
 
-    <!-- MODAL DE LOGIN PROFESIONAL -->
-    <div id="login-modal" class="fixed inset-0 bg-[#0c0c0d] z-[100] flex flex-col items-center justify-center p-4 transition-all duration-500 overflow-y-auto">
+    <!-- MODAL DE LOGIN PROFESIONAL (Simplificado para Máxima Fiabilidad) -->
+    <div id="login-modal" class="fixed inset-0 bg-[#0c0c0d] z-[100] flex flex-col items-center justify-center p-4 transition-all duration-500">
         
-        <div class="w-full max-w-[420px] bg-[#1e1f20] p-8 md:p-10 rounded-[32px] border border-gray-800 shadow-2xl flex flex-col relative">
+        <div class="w-full max-w-[400px] bg-[#1e1f20] p-8 md:p-10 rounded-[32px] border border-gray-800 shadow-2xl flex flex-col relative animate-in fade-in zoom-in duration-300">
             
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-bold gradient-text mb-2 tracking-tight">IA Castillo</h1>
-                <p class="text-gray-400 text-sm">Bienvenido al futuro de la inteligencia.</p>
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-bolt-lightning text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold gradient-text mb-2 tracking-tight uppercase">IA Castillo</h1>
+                <p class="text-gray-400 text-sm">Acceso instantáneo a la Inteligencia.</p>
             </div>
 
-            <!-- Tabs Login / Register -->
-            <div class="flex gap-8 mb-8 justify-center border-b border-gray-800">
-                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</div>
-                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
+            <!-- Google Login (Principal) -->
+            <div id="google-button-container" class="flex justify-center w-full min-h-[44px] mb-8"></div>
+
+            <!-- Separator -->
+            <div class="flex items-center mb-8">
+                <div class="flex-1 h-[1px] bg-gray-800"></div>
+                <span class="px-4 text-[10px] text-gray-500 uppercase font-black tracking-[0.2em]">O usa tu correo</span>
+                <div class="flex-1 h-[1px] bg-gray-800"></div>
             </div>
             
             <!-- Email Input -->
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-1">Correo Electrónico</label>
+            <div class="mb-6">
                 <div class="relative">
                     <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                    <input type="email" id="auth-email" placeholder="ejemplo@correo.com" class="w-full bg-[#131314] text-white py-3.5 pl-11 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all">
-                </div>
-            </div>
-
-            <!-- Password Input -->
-            <div class="mb-8">
-                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-1">Contraseña</label>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
-                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-[#131314] text-white py-3.5 pl-11 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all">
+                    <input type="email" id="auth-email-simple" placeholder="nombre@correo.com" class="w-full bg-[#131314] text-white py-4 pl-11 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all text-sm">
                 </div>
             </div>
 
             <!-- Action Button -->
-            <button id="auth-main-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2">
-                <span id="auth-btn-text">Entrar ahora</span>
-                <i class="fa-solid fa-arrow-right text-xs"></i>
+            <button id="auth-enter-btn" class="w-full bg-white hover:bg-gray-100 text-black font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-xl">
+                <span>Entrar a IA Castillo</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
             </button>
 
-            <!-- Separator -->
-            <div class="flex items-center my-8">
-                <div class="flex-1 h-[1px] bg-gray-800"></div>
-                <span class="px-4 text-[11px] text-gray-500 uppercase font-bold tracking-widest">O continúa con</span>
-                <div class="flex-1 h-[1px] bg-gray-800"></div>
-            </div>
-
-            <!-- Google Login -->
-            <div id="google-button-container" class="flex justify-center w-full min-h-[44px]"></div>
-            
-            <p id="auth-status-msg" class="text-center text-[12px] mt-6 text-red-400 hidden font-medium"></p>
+            <p id="auth-error-msg" class="text-center text-[11px] mt-4 text-red-400 hidden font-medium"></p>
         </div>
 
-        <p class="mt-8 text-gray-600 text-[11px] font-medium tracking-wide uppercase">Desarrollado con ❤️ por Bernal</p>
+        <p class="mt-8 text-gray-600 text-[10px] font-bold tracking-[0.3em] uppercase">Powered by Bernal</p>
     </div>
 
     <!-- Overlay para Menú Móvil -->
@@ -422,111 +409,15 @@
         }
 
 
-        /* === SUPABASE AUTH CONFIG === */
+        /* === AUTH LOGIC (REINTENTO FIABLE) === */
         const _supabase = supabase.createClient("https://wvwqqtfxfycvmkrvzdzf.supabase.co", "sb_publishable_V8sjG9-KSoEiELAIOiYwQg_HtdGMRHJ");
-        let currentAuthMode = 'login';
         const loginModal = document.getElementById('login-modal');
 
-        function switchAuthTab(mode) {
-            currentAuthMode = mode;
-            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
-            document.getElementById('auth-btn-text').textContent = mode === 'login' ? 'Entrar ahora' : 'Crear mi cuenta';
-            document.getElementById('auth-status-msg').classList.add('hidden');
-        }
-
-        async function handleEmailAuth() {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value;
-            const statusMsg = document.getElementById('auth-status-msg');
-            const btn = document.getElementById('auth-main-btn');
-
-            if (!email || !password) {
-                statusMsg.textContent = "¡Ey! Completa ambos campos antes de seguir.";
-                statusMsg.classList.remove('hidden');
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Trabajando...';
-
-            try {
-                if (currentAuthMode === 'register') {
-                    const { data, error } = await _supabase.auth.signUp({ 
-                        email, 
-                        password,
-                        options: { emailRedirectTo: window.location.origin }
-                    });
-                    if (error) throw error;
-                    statusMsg.textContent = "✨ ¡Listo Bernal! Revisa tu CORREO para confirmar y poder entrar.";
-                    statusMsg.classList.remove('hidden', 'text-red-400');
-                    statusMsg.classList.add('text-green-400');
-                } else {
-                    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    if (data.user) {
-                        userEmail = data.user.email;
-                        localStorage.setItem('userEmail', userEmail);
-                        iniciarSesionUI(userEmail);
-                    }
-                }
-            } catch (err) {
-                statusMsg.textContent = err.message || "Error en el servidor";
-                statusMsg.classList.remove('hidden', 'text-green-400');
-                statusMsg.classList.add('text-red-400');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<span>${currentAuthMode === 'login' ? 'Entrar ahora' : 'Crear mi cuenta'}</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
-            }
-        }
-
-        document.getElementById('auth-main-btn').addEventListener('click', handleEmailAuth);
-
-        /* === GOOGLE AUTH (GSI NATIVO - EL QUE FUNCIONABA) === */
-        window.handleGoogleLogin = (response) => {
-            try {
-                const payload = jwt_decode(response.credential);
-                const email = payload.email;
-                if (email) {
-                    localStorage.setItem('userEmail', email); 
-                    userEmail = email; 
-                    iniciarSesionUI(email);
-                }
-            } catch (e) {
-                console.error("GSI Error:", e);
-            }
-        };
-
-        window.onload = () => {
-            // Chequeo de persistencia suave
-            if (localStorage.getItem('userEmail')) {
-                userEmail = localStorage.getItem('userEmail');
-                iniciarSesionUI(userEmail);
-            }
-
-            // Inicializar GSI Botón Original
-            if (typeof google !== 'undefined') {
-                google.accounts.id.initialize({
-                    client_id: "507594110108-1rf1ktp1cgsv99oicdnkqtjres1elgau.apps.googleusercontent.com",
-                    callback: handleGoogleLogin
-                });
-                google.accounts.id.renderButton(
-                    document.getElementById("google-button-container"),
-                    { theme: "outline", size: "large", type: "standard", text: "continue_with", shape: "pill", width: 300 }
-                );
-                google.accounts.id.prompt(); 
-            }
-        };
-
-        document.getElementById('logout-btn').addEventListener('click', async () => { 
-            await _supabase.auth.signOut();
-            localStorage.removeItem('userEmail'); 
-            location.reload(); 
-        });
-
         function iniciarSesionUI(email) {
+            userEmail = email;
+            localStorage.setItem('userEmail', email);
             loginModal.classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => loginModal.classList.add('hidden'), 300);
+            setTimeout(() => loginModal.classList.add('hidden'), 500);
             
             document.getElementById('user-display-email').textContent = email;
             document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
@@ -536,6 +427,51 @@
             
             cargarHistorialBaseDeDatos();
         }
+
+        async function handleSimpleEnter() {
+            const emailInput = document.getElementById('auth-email-simple');
+            const errorMsg = document.getElementById('auth-error-msg');
+            const email = emailInput.value.trim().toLowerCase();
+
+            if (!email || !email.includes('@')) {
+                errorMsg.textContent = "Introduce un correo válido para continuar.";
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+            iniciarSesionUI(email);
+        }
+
+        document.getElementById('auth-enter-btn').addEventListener('click', handleSimpleEnter);
+
+        /* === GOOGLE AUTH (GSI NATIVO) === */
+        window.handleGoogleLogin = (response) => {
+            const payload = jwt_decode(response.credential);
+            if (payload && payload.email) {
+                iniciarSesionUI(payload.email);
+            }
+        };
+
+        window.onload = () => {
+            if (localStorage.getItem('userEmail')) {
+                iniciarSesionUI(localStorage.getItem('userEmail'));
+            }
+
+            if (typeof google !== 'undefined') {
+                google.accounts.id.initialize({
+                    client_id: "507594110108-1rf1ktp1cgsv99oicdnkqtjres1elgau.apps.googleusercontent.com",
+                    callback: handleGoogleLogin
+                });
+                google.accounts.id.renderButton(
+                    document.getElementById("google-button-container"),
+                    { theme: "filled_black", size: "large", type: "standard", shape: "pill", width: 300 }
+                );
+            }
+        };
+
+        document.getElementById('logout-btn').addEventListener('click', () => { 
+            localStorage.removeItem('userEmail'); 
+            location.reload(); 
+        });
 
         async function cargarHistorialBaseDeDatos() {
             try {
