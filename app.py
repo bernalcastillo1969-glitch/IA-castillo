@@ -80,7 +80,7 @@ def obtener_chat(session_id, modo):
     if clave not in historial_chats:
         config_modo = MODOS.get(modo, MODOS["matematicas"])
         modelo = genai.GenerativeModel(
-            model_name='gemini-2.5-flash-lite',
+            model_name='gemini-1.5-flash',
             system_instruction=config_modo["prompt"]
         )
         historial_chats[clave] = modelo.start_chat(history=[])
