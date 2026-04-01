@@ -21,26 +21,18 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ===========================
-# PERSONALIDADES DE LA IA
+# PERSONALIDAD UNIFICADA
 # ===========================
-MODOS = {
-    "matematicas": {
-        "nombre": "Tutor de Matemáticas",
-        "prompt": "Eres un tutor de matemáticas experto y paciente. Explica paso a paso con ejemplos."
-    },
-    "legal": {
-        "nombre": "Asistente Legal",
-        "prompt": "Eres un asistente legal especializado en las leyes venezolanas. Explica de forma clara y accesible."
-    },
-    "chef": {
-        "nombre": "Chef Recetas",
-        "prompt": "Eres un chef profesional. Sugiere recetas creativas con los ingredientes que te den."
-    },
-    "psicologo": {
-        "nombre": "Apoyo Emocional",
-        "prompt": "Eres un psicólogo virtual. Escucha activamente y ayuda con empatía y sin juicios."
-    }
-}
+PROMPT_IA_CASTILLO = (
+    "Eres IA Castillo, un asistente de inteligencia artificial avanzado y súper inteligente, "
+    "desarrollado por Bernal en colaboración con el modelo de Gemini. Eres omnisapiente, amigable, "
+    "altamente profesional pero conversacional y extremadamente útil. Tienes conocimiento experto "
+    "como si fueras un Tutor de Matemáticas (detallista paso a paso), un Asistente en Leyes de "
+    "Venezuela, un Chef de Cocina, y un Psicólogo que da apoyo emocional. Tu trabajo es interpretar "
+    "inmediatamente qué necesita el usuario y darle la mejor y más completa respuesta sin preguntar en "
+    "qué modo debe ponerse. Siempre háblale al usuario directamente. Usa formatos de Markdown (negritas, "
+    "listas) para que tu texto sea muy atractivo."
+)
 
 @app.route('/')
 def index():
@@ -67,7 +59,6 @@ def get_history():
 def chat():
     data = request.get_json()
     user_message = data.get('mensaje')
-    modo = data.get('modo', 'matematicas')
     user_email = data.get('email', 'invitado@iacastillo.com')
     
     # Si el frontend no manda chat_id, creamos uno nuevo
@@ -76,53 +67,51 @@ def chat():
         chat_id = str(uuid.uuid4())
 
     if not user_message:
-        return jsonify({"respuesta": "¿En qué puedo ayudarte?", "chat_id": chat_id}), 400
-
-    config_modo = MODOS.get(modo, MODOS["matematicas"])
+        return jsonify({"respuesta": "¿En qué puedo ayudarte hoy?", "chat_id": chat_id}), 400
 
     try:
-        # 1. Recuperar memoria REAL de este chat desde Supabase
+        # Recuperar memoria REAL de este chat desde Supabase
         history_data = supabase.table('chats').select('role', 'content').eq('chat_id', chat_id).order('created_at', desc=False).execute()
         
-        # 2. Formatear la historia para que Gemini la entienda
+        # Formatear la historia para que Gemini la entienda
         formatted_history = []
         for msg in history_data.data:
             role = 'model' if msg['role'] == 'ai' else 'user'
             formatted_history.append({"role": role, "parts": [msg['content']]})
 
-        # 3. Iniciar el cerebro de Gemini con toda la memoria pasada
+        # Iniciar el cerebro unificado
         modelo = genai.GenerativeModel(
             model_name='gemini-3.1-flash-lite-preview',
-            system_instruction=config_modo["prompt"]
+            system_instruction=PROMPT_IA_CASTILLO
         )
         chat_session = modelo.start_chat(history=formatted_history)
 
-        # 4. Guardar mensaje del usuario en Base de Datos
+        # Guardar mensaje del usuario en BD
         supabase.table('chats').insert({
             'user_email': user_email,
             'chat_id': chat_id,
             'role': 'user',
             'content': user_message,
-            'modo': modo
+            'modo': 'general' # Modo general único para la BD
         }).execute()
 
-        # 5. Generar respuesta de Gemini
+        # Generar respuesta de Gemini
         response = chat_session.send_message(user_message)
         respuesta_ia = response.text
 
-        # 6. Guardar respuesta de la IA en Base de Datos
+        # Guardar respuesta IA en BD
         supabase.table('chats').insert({
             'user_email': user_email,
             'chat_id': chat_id,
             'role': 'ai',
             'content': respuesta_ia,
-            'modo': modo
+            'modo': 'general'
         }).execute()
 
         return jsonify({"respuesta": respuesta_ia, "chat_id": chat_id})
     
     except Exception as e:
-        return jsonify({"respuesta": f"Lo siento, mis servidores están saturados: {str(e)}", "chat_id": chat_id}), 500
+        return jsonify({"respuesta": f"Lo siento, mis servidores están en mantenimiento temporal: {str(e)}", "chat_id": chat_id}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

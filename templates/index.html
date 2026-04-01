@@ -25,7 +25,6 @@
         .dot2 { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* Estilo para los items del historial */
         .history-item { transition: all 0.2s; cursor: pointer; }
         .history-item:hover { background-color: rgba(255, 255, 255, 0.05); }
     </style>
@@ -36,9 +35,9 @@
     <div id="login-modal" class="fixed inset-0 bg-[#131314] z-[100] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
         <div class="bg-[#1e1f20] p-8 md:p-10 rounded-[32px] w-full max-w-sm border border-gray-800 shadow-2xl flex flex-col items-center">
             <h1 class="text-3xl font-bold mb-2 gradient-text">IA Castillo</h1>
-            <p class="text-gray-400 text-sm mb-8 text-center">Inicia sesión con tu correo para guardar tu progreso.</p>
+            <p class="text-gray-400 text-sm mb-8 text-center text-balance leading-tight">Inicia sesión con tu correo para guardar tu progreso en la Base de Datos.</p>
             
-            <input type="email" id="user-email-input" placeholder="Tu correo electrónico" class="w-full bg-[#131314] text-white p-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 transition-colors mb-4">
+            <input type="email" id="user-email-input" placeholder="Tu correo electrónico" class="w-full bg-[#131314] text-white p-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 transition-colors mb-4 text-[15px]">
             
             <button id="login-btn-action" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium p-4 rounded-2xl transition-colors">
                 Entrar a mi cuenta
@@ -49,34 +48,35 @@
     <!-- Sidebar (Barra Izquierda para Historial) -->
     <aside class="w-[280px] hidden md:flex flex-col py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 transition-all duration-300" id="sidebar">
         <div class="px-4 flex items-center justify-between mb-8 cursor-pointer">
-            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-xs bg-blue-900/30 text-blue-400 px-2 py-0.5 rounded-md ml-1">V2</span></h2>
-            <button class="text-gray-400 hover:text-white" onclick="document.getElementById('sidebar').classList.add('hidden')"><i class="fa-solid fa-list"></i></button>
+            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-[10px] bg-[#131314] border border-gray-800 text-gray-400 px-2 py-0.5 rounded-md ml-1 tracking-wider uppercase">Pro</span></h2>
+            <button class="text-gray-400 hover:text-white" onclick="document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar-collapsed').classList.remove('hidden');"><i class="fa-solid fa-list"></i></button>
         </div>
         
         <button id="new-chat-btn" class="mx-4 bg-[#131314] text-gray-300 hover:text-white p-3 rounded-full mb-6 transition-colors flex items-center justify-center gap-2 border border-gray-700 hover:bg-gray-800">
-            <i class="fa-solid fa-plus text-xs"></i> <span>Nuevo Chat</span>
+            <i class="fa-solid fa-plus text-xs"></i> <span class="text-sm font-medium">Nuevo Chat</span>
         </button>
 
-        <div class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 uppercase tracking-wider">Tus Chats Recientes</div>
+        <div class="px-4 text-[11px] font-semibold text-gray-500 mb-2 mt-4 uppercase tracking-wider">Tus Chats Pasados</div>
         <div id="history-container" class="flex-1 overflow-y-auto chat-scroll flex flex-col gap-1 px-2 pb-4">
             <!-- El historial se genera con JS -->
-            <p class="text-gray-500 text-xs px-2 mt-2">No tienes chats aún.</p>
         </div>
 
         <!-- Perfil Usuario -->
         <div class="mt-auto px-4 pt-4 border-t border-gray-800 flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-sm font-bold shadow-md shadow-orange-500/20" id="user-avatar">?</div>
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-sm font-bold shadow-md" id="user-avatar">?</div>
             <div class="flex-1 overflow-hidden">
                 <p class="text-sm font-medium text-white truncate" id="user-display-email">cargando...</p>
-                <p class="text-[10px] text-gray-500 cursor-pointer hover:text-red-400" id="logout-btn">Cerrar sesión</p>
+                <p class="text-[11px] text-gray-500 cursor-pointer hover:text-red-400" id="logout-btn">Cerrar sesión</p>
             </div>
         </div>
     </aside>
 
     <!-- Barra compacta cuando se oculta el Sidebar -->
     <aside class="w-[68px] hidden md:hidden flex-col items-center py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0" id="sidebar-collapsed">
-        <button class="text-gray-400 hover:text-white mb-8 text-xl" onclick="document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar-collapsed').classList.add('hidden');"><i class="fa-solid fa-bars"></i></button>
-        <button id="new-chat-btn-mini" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors" title="Nuevo chat">
+        <button class="text-gray-400 hover:text-white mb-8 text-xl" onclick="document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar-collapsed').classList.add('hidden');">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <button id="new-chat-btn-mini" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors shadow-sm border border-gray-800" title="Nuevo chat">
             <i class="fa-solid fa-plus"></i>
         </button>
     </aside>
@@ -86,9 +86,9 @@
         
         <!-- Navbar Superior (Móvil) -->
         <header class="md:hidden flex items-center justify-between p-4 px-5 text-gray-200 bg-[#131314] z-10 border-b border-gray-800">
-            <button class="text-xl" onclick="alert('En el celular pronto tendrás barra lateral!')"><i class="fa-solid fa-bars"></i></button>
+            <button class="text-xl" onclick="alert('Historial en dispositivo móvil próximamente!')"><i class="fa-solid fa-bars"></i></button>
             <span class="font-medium text-lg">IA Castillo</span>
-            <button id="new-chat-mobile" class="text-xl"><i class="fa-solid fa-square-plus"></i></button>
+            <button id="new-chat-mobile" class="text-xl"><i class="fa-solid fa-square-plus text-blue-400 hover:text-blue-300"></i></button>
         </header>
 
         <!-- Contenedor del Chat (Scrollable) -->
@@ -102,59 +102,56 @@
                     <h2 class="text-[44px] md:text-[56px] font-medium leading-[1.1] text-[#444746]">¿Por dónde empezamos?</h2>
                 </div>
 
-                <div class="flex flex-wrap justify-center gap-3 mt-4 max-w-[800px] px-2 w-full">
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="matematicas">
-                        📐 Matemáticas
+                <!-- Botones de sugerencias como ChatGPT o Gemini -->
+                <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4 max-w-[800px] px-2 w-full md:pl-8">
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Explícame cómo resolver una ecuación cuadrática paso a paso.">
+                        <i class="fa-solid fa-square-root-variable text-blue-400"></i> Ayúdame con Matemáticas
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="legal">
-                        ⚖️ Legal Venz.
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Dame una receta rápida que pueda hacer solo con pasta, huevo, ajo y aceite.">
+                        <i class="fa-solid fa-utensils text-orange-400"></i> Sugiere una receta rápida
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="chef">
-                        👨‍🍳 Chef Recetas
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Dime un consejo de psicología para mejorar mi nivel de estrés esta semana.">
+                        <i class="fa-solid fa-brain text-purple-400"></i> Consejos para liberar estrés
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="psicologo">
-                        🧠 Psicólogo
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Resume los beneficios principales del registro de patentes en Venezuela.">
+                        <i class="fa-solid fa-scale-balanced text-green-400"></i> Asesoría Legal Rápida
                     </button>
                 </div>
             </div>
 
-            <!-- Área donde aparecerán los mensajes -->
+            <!-- Área donde aparecerán los mensajes (Historial Vivo) -->
             <div id="messages-area" class="w-full max-w-[800px] mx-auto flex-col gap-8 pt-8 hidden">
-                <!-- Mensajes -->
+                <!-- Los mensajes se inyectan acá -->
             </div>
 
         </div>
 
-        <!-- Caja de Entrada -->
+        <!-- Caja de Entrada Fija -->
         <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-10 pb-6 px-4 md:px-0 flex flex-col items-center pointer-events-none">
             
-            <div class="w-full max-w-[800px] relative pointer-events-auto shadow-2xl">
-                <div class="bg-[#1e1f20] rounded-[32px] flex items-center px-4 py-3 focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-all border border-gray-700">
+            <div class="w-full max-w-[800px] relative pointer-events-auto">
+                <div class="bg-[#1e1f20] rounded-[32px] flex items-center px-4 py-3 focus-within:bg-[#333537] focus-within:ring-1 focus-within:ring-gray-700 transition-all shadow-xl">
                     
-                    <button class="text-gray-400 hover:text-white p-2 rounded-full flex-shrink-0">
-                        <i class="fa-solid fa-plus text-[18px]"></i>
+                    <button class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex-shrink-0">
+                        <i class="fa-solid fa-image text-[16px]"></i>
                     </button>
                     
                     <textarea 
                         id="user-input" 
                         rows="1"
-                        placeholder="Pregunta a IA Castillo..." 
-                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px] placeholder-gray-500"
+                        placeholder="Pregunta o escribe lo que necesites..." 
+                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px]"
                     ></textarea>
-                    
-                    <span id="current-mode-badge" class="hidden md:flex text-[11px] text-gray-400 mr-2 whitespace-nowrap bg-[#131314] px-2 py-1 rounded-md uppercase tracking-wide">
-                        Matemáticas
-                    </span>
 
-                    <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black">
+                    <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black shadow-lg">
                         <i class="fa-solid fa-arrow-up text-[14px]" id="send-icon"></i>
                         <div id="loader" class="hidden flex gap-1 items-center justify-center">
                             <div class="loader-dot dot1"></div><div class="loader-dot dot2"></div><div class="loader-dot"></div>
                         </div>
                     </button>
                 </div>
-                <p class="text-center text-[#a8c7fa]/50 text-[10px] sm:text-[11px] mt-3 tracking-wide">
-                    IA Castillo puede cometer errores. El historial ahora se guarda de forma segura en la Base de Datos.
+                <p class="text-center text-gray-500 text-[11px] mt-3 font-medium">
+                    IA Castillo puede cometer errores en tareas complejas, verifica las respuestas importantes.
                 </p>
             </div>
         </div>
@@ -162,33 +159,36 @@
     </main>
 
     <script>
-        /* === SISTEMA DE LOGIN Y BASE DE DATOS === */
+        /* === SESIÓN / LOGIN === */
         let userEmail = localStorage.getItem('userEmail');
         let currentChatId = null; 
-        let currentModo = 'matematicas';
         let isFirstMessage = true;
 
         const loginModal = document.getElementById('login-modal');
-        const loginBtn = document.getElementById('login-btn-action');
         const emailInput = document.getElementById('user-email-input');
 
-        // Revisar si ya está logueado al abrir la página
         if (userEmail) {
             iniciarSesionUI(userEmail);
         }
 
-        loginBtn.addEventListener('click', () => {
+        document.getElementById('login-btn-action').addEventListener('click', () => {
             const email = emailInput.value.trim().toLowerCase();
             if (email && email.includes('@')) {
                 localStorage.setItem('userEmail', email);
                 userEmail = email;
                 iniciarSesionUI(email);
+            } else {
+                alert("Por favor un correo válido :)");
             }
+        });
+
+        document.getElementById('user-email-input').addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') document.getElementById('login-btn-action').click();
         });
 
         document.getElementById('logout-btn').addEventListener('click', () => {
             localStorage.removeItem('userEmail');
-            location.reload(); // Recarga la app para limpiar todo
+            location.reload(); 
         });
 
         function iniciarSesionUI(email) {
@@ -204,7 +204,7 @@
             cargarHistorialBaseDeDatos();
         }
 
-        /* === CARGÁ DE HISTORIAL DESDE EL SERVIDOR === */
+        /* === HISTORIAL (Supabase) === */
         async function cargarHistorialBaseDeDatos() {
             try {
                 const res = await fetch('/history', {
@@ -214,41 +214,34 @@
                 });
                 const mensajes = await res.json();
                 
-                // Agrupar mensajes por chat_id
                 const chats = {};
                 mensajes.forEach(msg => {
-                    if(!chats[msg.chat_id]) {
-                        chats[msg.chat_id] = { id: msg.chat_id, modo: msg.modo, fecha: msg.created_at, content: msg.content };
-                    }
+                    if(!chats[msg.chat_id]) chats[msg.chat_id] = { id: msg.chat_id, fecha: msg.created_at, content: msg.content };
                 });
 
                 const historyContainer = document.getElementById('history-container');
                 historyContainer.innerHTML = '';
                 
                 if (Object.keys(chats).length === 0) {
-                    historyContainer.innerHTML = '<p class="text-gray-600 text-[11px] px-2 italic">No tienes chats guardados aún.</p>';
+                    historyContainer.innerHTML = '<p class="text-gray-600 text-[11px] px-2 italic mt-4">Sin registro histórico aún.</p>';
                     return;
                 }
 
-                // Fabricar botones para historial en el Sidebar
                 Object.values(chats).reverse().forEach(chat => {
-                    const truncContent = chat.content.substring(0, 25) + '...';
-                    const icon = chat.modo === 'legal' ? '⚖️' : chat.modo === 'chef' ? '👨‍🍳' : chat.modo === 'psicologo' ? '🧠' : '📐';
+                    const truncContent = chat.content.substring(0, 28) + '...';
                     
                     const div = document.createElement('div');
-                    div.className = "history-item text-gray-300 text-[13px] px-3 py-2 rounded-lg flex items-center gap-3";
-                    div.innerHTML = `<span>${icon}</span> <span class="truncate pr-4">${truncContent}</span>`;
+                    div.className = "history-item text-gray-300 text-[13px] px-3 py-2.5 rounded-lg flex items-center gap-3 w-full overflow-hidden font-medium";
+                    div.innerHTML = `<i class="fa-regular fa-message text-gray-500"></i> <span class="truncate block flex-1 text-left">${truncContent}</span>`;
                     
                     div.onclick = () => cargarChatEspecifico(chat.id, mensajes);
                     historyContainer.appendChild(div);
                 });
 
-            } catch (e) {
-                console.log("No pude traer el historial: ", e);
-            }
+            } catch (e) { console.error("History fail:", e); }
         }
 
-        /* === RESTO DE LA LÓGICA DE CHAT === */
+        /* === CHAT LOGIC === */
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const sendIcon = document.getElementById('send-icon');
@@ -256,6 +249,17 @@
         const emptyState = document.getElementById('empty-state');
         const messagesArea = document.getElementById('messages-area');
         const chatContainer = document.getElementById('chat-container');
+
+        // Sugerencias Dinámicas
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                userInput.value = btn.dataset.text;
+                userInput.focus();
+                // Opcional: Autoclic para enviarlo al instante
+                // postMessage(); 
+                sendBtn.classList.add('bg-white', 'text-black'); sendBtn.classList.remove('bg-gray-100/10', 'text-white');
+            });
+        });
 
         userInput.addEventListener('input', function() {
             this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
@@ -266,25 +270,6 @@
             }
         });
 
-        // Botones de Modos en el Empty State
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentModo = btn.dataset.modo;
-                
-                document.querySelectorAll('.mode-btn').forEach(b => {
-                    b.classList.remove('bg-blue-900/20', 'border-[#4285f4]/50', 'text-blue-100');
-                    b.classList.add('bg-[#1e1f20]', 'border-gray-700');
-                });
-                btn.classList.remove('bg-[#1e1f20]', 'border-gray-700');
-                btn.classList.add('bg-blue-900/20', 'border-[#4285f4]/50', 'text-blue-100');
-                
-                document.getElementById('current-mode-badge').textContent = btn.innerText.replace(/[^\w\sñáéíóúÁÉÍÓÚVenz]/g, '').trim();
-                userInput.focus();
-            });
-        });
-
-        document.querySelector('.mode-btn').click();
-
         function prepararVentanaParaChat() {
             emptyState.classList.add('hidden');
             emptyState.classList.remove('flex');
@@ -293,10 +278,9 @@
             isFirstMessage = false;
         }
 
-        // Nuevo Chat
         const crearNuevoChat = () => {
-            currentChatId = null; // Borra el ID actual
-            messagesArea.innerHTML = ''; // Borra la pantalla actual
+            currentChatId = null;
+            messagesArea.innerHTML = '';
             messagesArea.classList.add('hidden');
             messagesArea.classList.remove('flex');
             emptyState.classList.remove('hidden');
@@ -316,17 +300,13 @@
 
             const filtrados = todosLosMensajes.filter(m => m.chat_id === chatId);
             filtrados.forEach(msg => {
-                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false); // No scrollear agresivamente a todo
+                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false);
             });
             setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
             
-            // Si estmos en móvil, escondemos el sidebar
-            if(window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.add('hidden');
-            }
+            if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('hidden'); }
         }
 
-        // Markdown minimal parser
         function formatText(text) {
             let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b class="text-white">$1</b>'); 
             formatted = formatted.replace(/\n\*\s(.*?)/g, '<br>• $1');
@@ -351,32 +331,25 @@
             sendBtn.disabled = true;
 
             try {
-                // Generamos un ID nuevo si no tenemos uno guardado de antes.
-                if (!currentChatId) {
-                    currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9);
-                }
+                if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
 
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         mensaje: message, 
-                        modo: currentModo,
                         email: userEmail,
                         chat_id: currentChatId 
                     })
                 });
 
                 const data = await response.json();
-                currentChatId = data.chat_id; // Rescatamos el ID del servidor por si acaso
+                currentChatId = data.chat_id;
                 
                 addMessageBubble(data.respuesta, 'ai');
-
-                // Recargar el sidebar silenciosamente para que aparezca
-                cargarHistorialBaseDeDatos();
-
+                cargarHistorialBaseDeDatos(); // Refrescamos el historial en pantalla
             } catch (err) {
-                addMessageBubble('Error de conexión o Base de Datos no configurada.', 'ai');
+                addMessageBubble('Error. Revisa tu conexión a Vercel/Supabase.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden');
                 loader.classList.add('hidden');
@@ -388,32 +361,30 @@
 
         function addMessageBubble(text, role, scroll = true) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4';
+            wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans';
 
             if (role === 'user') {
                 wrapper.innerHTML = `
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-1">
-                        <i class="fa-solid fa-user text-white text-xs"></i>
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#333537] flex items-center justify-center flex-shrink-0 mt-1 uppercase text-xs font-bold shadow-md shadow-black/20">
+                        ${userEmail.charAt(0)}
                     </div>
-                    <div class="flex-1 text-[#e3e3e3] text-[15px] leading-relaxed pt-1.5 font-medium">
+                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">
                         ${formatText(text)}
                     </div>
                 `;
             } else {
                 wrapper.innerHTML = `
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 mt-1">
+                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 mt-1 shadow-lg shadow-blue-500/20">
                         <i class="fa-solid fa-sparkles text-white text-[14px]"></i>
                     </div>
-                    <div class="flex-1 text-[#e3e3e3] text-[15px] leading-relaxed pt-1 flex flex-col gap-2">
+                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1 flex flex-col gap-2 font-normal">
                         ${formatText(text)}
                     </div>
                 `;
             }
 
             messagesArea.appendChild(wrapper);
-            if(scroll) {
-                setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 50);
-            }
+            if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 50); }
         }
 
         sendBtn.addEventListener('click', postMessage);
