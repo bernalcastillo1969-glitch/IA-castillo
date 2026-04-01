@@ -63,11 +63,15 @@ def chat():
     image_data = data.get('image_data') # String base64
     image_mime = data.get('image_mime') # mime_type ej. image/jpeg
     
+    # Manejo de Audio (Nota de Voz)
+    audio_data = data.get('audio_data')
+    audio_mime = data.get('audio_mime')
+    
     chat_id = data.get('chat_id')
     if not chat_id:
         chat_id = str(uuid.uuid4())
 
-    if not user_message and not image_data:
+    if not user_message and not image_data and not audio_data:
         return jsonify({"respuesta": "¿En qué puedo ayudarte hoy?", "chat_id": chat_id}), 400
 
     try:
@@ -98,8 +102,6 @@ def chat():
             db_message = (db_message + "\n\n*(📷 Imagen / Documento adjunto analizado)*").strip()
             
         # Manejo de Audio (Nota de Voz)
-        audio_data = data.get('audio_data')
-        audio_mime = data.get('audio_mime')
         if audio_data and audio_mime:
             audio_bytes = base64.b64decode(audio_data)
             message_parts.append({"mime_type": audio_mime, "data": audio_bytes})
