@@ -11,9 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Google Identity Services -->
-    <script src="https://accounts.google.com/gsi/client" async></script>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
@@ -57,31 +56,66 @@
         .drawer-closed { transform: translateX(-100%); }
         .overlay-open { opacity: 1; pointer-events: auto; }
         .overlay-closed { opacity: 0; pointer-events: none; }
-    </style>
-</head>
-<body class="flex h-screen overflow-hidden relative">
 
-    <!-- MODAL DE LOGIN (Registro Simulado tipo Google) -->
-    <div id="login-modal" class="fixed inset-0 bg-[#000000B3] backdrop-blur-sm z-[100] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
+        /* Auth Tabs */
+        .auth-tab { cursor: pointer; padding-bottom: 8px; border-bottom: 2px solid transparent; transition: all 0.3s; color: #9ca3af; font-weight: 500; }
+        .auth-tab.active { border-color: #3b82f6; color: white; }
+    </style>
+
+    <!-- MODAL DE LOGIN PROFESIONAL -->
+    <div id="login-modal" class="fixed inset-0 bg-[#0c0c0d] z-[100] flex flex-col items-center justify-center p-4 transition-all duration-500 overflow-y-auto">
         
-        <!-- Contenedor Estilo Google Sign In -->
-        <div class="bg-white p-8 md:p-[48px] rounded-lg w-full max-w-[448px] border border-gray-300 shadow-xl flex flex-col items-center text-center">
+        <div class="w-full max-w-[420px] bg-[#1e1f20] p-8 md:p-10 rounded-[32px] border border-gray-800 shadow-2xl flex flex-col relative">
             
-            <!-- Logo de Google Oficial (SVG) -->
-            <svg class="w-12 h-12 mb-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold gradient-text mb-2 tracking-tight">IA Castillo</h1>
+                <p class="text-gray-400 text-sm">Bienvenido al futuro de la inteligencia.</p>
+            </div>
+
+            <!-- Tabs Login / Register -->
+            <div class="flex gap-8 mb-8 justify-center border-b border-gray-800">
+                <div id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</div>
+                <div id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Registrarse</div>
+            </div>
             
-            <h1 class="text-[24px] font-[400] text-[#202124] mb-2 leading-tight tracking-[0px]">Iniciar sesión con Google</h1>
-            <p class="text-[#202124] text-[16px] mb-8 leading-normal font-normal">Para ir a <strong>IA Castillo Web</strong></p>
+            <!-- Email Input -->
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-1">Correo Electrónico</label>
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="email" id="auth-email" placeholder="ejemplo@correo.com" class="w-full bg-[#131314] text-white py-3.5 pl-11 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all">
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="mb-8">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-1">Contraseña</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-[#131314] text-white py-3.5 pl-11 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all">
+                </div>
+            </div>
+
+            <!-- Action Button -->
+            <button id="auth-main-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-4 rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95 flex items-center justify-center gap-2">
+                <span id="auth-btn-text">Entrar ahora</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+
+            <!-- Separator -->
+            <div class="flex items-center my-8">
+                <div class="flex-1 h-[1px] bg-gray-800"></div>
+                <span class="px-4 text-[11px] text-gray-500 uppercase font-bold tracking-widest">O continúa con</span>
+                <div class="flex-1 h-[1px] bg-gray-800"></div>
+            </div>
+
+            <!-- Google Login -->
+            <div id="google-button-container" class="flex justify-center w-full min-h-[44px]"></div>
             
-            <div id="google-button-container" class="mt-4 mb-4 flex justify-center w-full min-h-[40px]"></div>
-            
-            <p class="w-full text-center text-[#5f6368] text-[13px] mt-6 font-medium cursor-pointer mb-2 hover:underline">Autenticación Segura Oauth2</p>
+            <p id="auth-status-msg" class="text-center text-[12px] mt-6 text-red-400 hidden font-medium"></p>
         </div>
+
+        <p class="mt-8 text-gray-600 text-[11px] font-medium tracking-wide uppercase">Desarrollado con ❤️ por Bernal</p>
     </div>
 
     <!-- Overlay para Menú Móvil -->
@@ -385,38 +419,99 @@
         }
 
 
-        /* === LOGIN Y UI BÁSICA CON AUTH OFICIAL GOOGLE === */
-        const loginModal = document.getElementById('login-modal');
-        
-        // Verifica si ya hay cuenta
-        if (userEmail) { 
-            iniciarSesionUI(userEmail); 
-        } else {
-            // Manejador del Login con Google
-            window.handleGoogleLogin = (response) => {
-                const payload = jwt_decode(response.credential);
-                const email = payload.email;
-                if (email) {
-                    localStorage.setItem('userEmail', email); 
-                    userEmail = email; 
-                    iniciarSesionUI(email);
-                }
-            };
+        /* === SUPABASE AUTH CONFIG === */
+        const _supabase = supabase.createClient("https://wvwqqtfxfycvmkrvzdzf.supabase.co", "sb_publishable_V8sjG9-KSoEiELAIOiYwQg_HtdGMRHJ");
+        let currentAuthMode = 'login';
 
-            window.onload = () => {
-                google.accounts.id.initialize({
-                    client_id: "507594110108-1rf1ktp1cgsv99oicdnkqtjres1elgau.apps.googleusercontent.com",
-                    callback: handleGoogleLogin
-                });
-                google.accounts.id.renderButton(
-                    document.getElementById("google-button-container"),
-                    { theme: "outline", size: "large", type: "standard", text: "continue_with" }
-                );
-                google.accounts.id.prompt(); // Mostrar pop-up de un toque si está disponible
-            };
+        function switchAuthTab(mode) {
+            currentAuthMode = mode;
+            document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+            document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+            document.getElementById('auth-btn-text').textContent = mode === 'login' ? 'Entrar ahora' : 'Crear mi cuenta';
+            document.getElementById('auth-status-msg').classList.add('hidden');
         }
 
-        document.getElementById('logout-btn').addEventListener('click', () => { localStorage.removeItem('userEmail'); location.reload(); });
+        async function handleEmailAuth() {
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            const statusMsg = document.getElementById('auth-status-msg');
+            const btn = document.getElementById('auth-main-btn');
+
+            if (!email || !password) {
+                statusMsg.textContent = "Por favor, completa todos los campos.";
+                statusMsg.classList.remove('hidden');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Procesando...';
+
+            try {
+                if (currentAuthMode === 'register') {
+                    const { data, error } = await _supabase.auth.signUp({ email, password });
+                    if (error) throw error;
+                    statusMsg.textContent = "¡Registro exitoso! Por favor verifica tu correo electrónico.";
+                    statusMsg.classList.remove('hidden', 'text-red-400');
+                    statusMsg.classList.add('text-green-400');
+                } else {
+                    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    userEmail = data.user.email;
+                    localStorage.setItem('userEmail', userEmail);
+                    iniciarSesionUI(userEmail);
+                }
+            } catch (err) {
+                statusMsg.textContent = err.message;
+                statusMsg.classList.remove('hidden', 'text-green-400');
+                statusMsg.classList.add('text-red-400');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>${currentAuthMode === 'login' ? 'Entrar ahora' : 'Crear mi cuenta'}</span><i class="fa-solid fa-arrow-right text-xs"></i>`;
+            }
+        }
+
+        document.getElementById('auth-main-btn').addEventListener('click', handleEmailAuth);
+
+        /* === GOOGLE AUTH CON SUPABASE === */
+        async function loginConGoogle() {
+            const { error } = await _supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin }
+            });
+            if (error) console.error("Google Auth Fail:", error.message);
+        }
+
+        // Si ya hay una sesión de Supabase activa al cargar la página
+        async function checkSession() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (session) {
+                userEmail = session.user.email;
+                localStorage.setItem('userEmail', userEmail);
+                iniciarSesionUI(userEmail);
+            } else if (localStorage.getItem('userEmail')) {
+                // Fallback para persistencia manual si falla la sesión
+                userEmail = localStorage.getItem('userEmail');
+                iniciarSesionUI(userEmail);
+            }
+        }
+
+        window.onload = () => {
+            checkSession();
+            // Google Button (via Supabase)
+            const googleBtn = document.getElementById('google-button-container');
+            googleBtn.innerHTML = `
+                <button onclick="loginConGoogle()" class="flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 font-medium py-3 px-6 rounded-2xl w-full border border-gray-300 transition-all shadow-sm">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <span>Continuar con Google</span>
+                </button>
+            `;
+        };
+
+        document.getElementById('logout-btn').addEventListener('click', async () => { 
+            await _supabase.auth.signOut();
+            localStorage.removeItem('userEmail'); 
+            location.reload(); 
+        });
 
         function iniciarSesionUI(email) {
             loginModal.classList.add('opacity-0', 'pointer-events-none');
