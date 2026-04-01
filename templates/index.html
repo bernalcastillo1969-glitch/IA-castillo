@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IA Castillo | Asistente Inteligente</title>
     
+    <!-- PWA Manifest & Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+    <meta name="theme-color" content="#131314">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -28,7 +33,9 @@
         .gradient-text {
             background: linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #d96570 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #9b72cb 50%, #d96570 56%, #131314 75%, #131314 100%);
             background-size: 400% 100%;
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .loader-dot { width: 6px; height: 6px; border-radius: 50%; background: #a8c7fa; animation: bounce 1.4s infinite ease-in-out both; }
@@ -484,6 +491,11 @@
                     document.getElementById("google-button-container"),
                     { theme: "filled_black", size: "large", type: "standard", shape: "pill", width: 300 }
                 );
+            }
+
+            // Registrar Service Worker para PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error:', err));
             }
         };
 
