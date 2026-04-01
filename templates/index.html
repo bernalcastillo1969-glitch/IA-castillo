@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IA Castillo | Asistente Inteligente</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
         
@@ -27,6 +32,28 @@
 
         .history-item { transition: all 0.2s; cursor: pointer; }
         .history-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+        /* Estilos Markdown arreglados */
+        .markdown-body { white-space: pre-wrap; word-break: break-word; font-size: 15.5px; line-height: 1.6; color: #e3e3e3; }
+        .markdown-body p { margin-bottom: 0.8rem; }
+        .markdown-body strong { color: #ffffff; font-weight: 600; }
+        .markdown-body ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body ol { list-style-type: decimal; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .markdown-body li { margin-bottom: 0.4rem; padding-left: 0.2rem; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 { color: white; margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
+        .markdown-body code { background: #1e1f20; padding: 2px 6px; border-radius: 4px; font-family: monospace; color: #a8c7fa; font-size: 0.9em; border: 1px solid #333; }
+        .markdown-body pre { background: #1e1f20; padding: 1rem; border-radius: 8px; overflow-x: auto; border: 1px solid #333; margin-bottom: 1rem; }
+        .markdown-body pre code { background: transparent; padding: 0; border: none; color: #e3e3e3; }
+        
+        /* Animación del Micrófono */
+        @keyframes pulse-mic { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .mic-recording { color: #ef4444 !important; animation: pulse-mic 1.5s infinite; border-radius: 50%; }
+        
+        /* Drawer Móvil */
+        .drawer-open { transform: translateX(0); }
+        .drawer-closed { transform: translateX(-100%); }
+        .overlay-open { opacity: 1; pointer-events: auto; }
+        .overlay-closed { opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden relative">
@@ -45,11 +72,19 @@
         </div>
     </div>
 
-    <!-- Sidebar (Barra Izquierda para Historial) -->
-    <aside class="w-[280px] hidden md:flex flex-col py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 transition-all duration-300" id="sidebar">
-        <div class="px-4 flex items-center justify-between mb-8 cursor-pointer">
-            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-[10px] bg-[#131314] border border-gray-800 text-gray-400 px-2 py-0.5 rounded-md ml-1 tracking-wider uppercase">Pro Vision</span></h2>
-            <button class="text-gray-400 hover:text-white" onclick="document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar-collapsed').classList.remove('hidden');"><i class="fa-solid fa-list"></i></button>
+    <!-- Overlay para Menú Móvil -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-40 overlay-closed transition-opacity duration-300 md:hidden"></div>
+
+    <!-- Sidebar (Barra Izquierda para Historial - Responsive) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-[280px] md:relative md:flex flex-col py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 transition-transform duration-300 drawer-closed md:transform-none">
+        <div class="px-4 flex items-center justify-between mb-8">
+            <h2 class="text-xl font-bold gradient-text cursor-pointer" id="toggle-sidebar">IA Castillo <span class="text-[10px] bg-[#131314] border border-gray-800 text-gray-400 px-2 py-0.5 rounded-md ml-1 tracking-wider uppercase">Pro Vision</span></h2>
+            
+            <!-- Botón cerrar (Solo en móvil) -->
+            <button id="close-mobile-sidebar-btn" class="text-gray-400 hover:text-white md:hidden p-2"><i class="fa-solid fa-times text-lg"></i></button>
+            
+            <!-- Botón colapsar (Solo en Desktop) -->
+            <button id="collapse-desktop-sidebar-btn" class="text-gray-400 hover:text-white hidden md:block" onclick="document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar-collapsed').classList.remove('hidden');"><i class="fa-solid fa-list"></i></button>
         </div>
         
         <button id="new-chat-btn" class="mx-4 bg-[#131314] text-gray-300 hover:text-white p-3 rounded-full mb-6 transition-colors flex items-center justify-center gap-2 border border-gray-700 hover:bg-gray-800">
@@ -71,8 +106,8 @@
         </div>
     </aside>
 
-    <!-- Barra compacta cuando se oculta el Sidebar -->
-    <aside class="w-[68px] hidden md:hidden flex-col items-center py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0" id="sidebar-collapsed">
+    <!-- Barra compacta cuando se oculta el Sidebar (Desktop) -->
+    <aside class="w-[68px] hidden flex-col items-center py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 md:hidden" id="sidebar-collapsed">
         <button class="text-gray-400 hover:text-white mb-8 text-xl" onclick="document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar-collapsed').classList.add('hidden');">
             <i class="fa-solid fa-bars"></i>
         </button>
@@ -84,9 +119,9 @@
         
         <!-- Navbar Superior (Móvil) -->
         <header class="md:hidden flex items-center justify-between p-4 px-5 text-gray-200 bg-[#131314] z-10 border-b border-gray-800">
-            <button class="text-xl" onclick="alert('Historial en celular próximamente!')"><i class="fa-solid fa-bars"></i></button>
-            <span class="font-medium text-lg">IA Castillo <i class="fa-regular fa-eye text-blue-500 text-sm ml-1"></i></span>
-            <button id="new-chat-mobile" class="text-xl"><i class="fa-solid fa-square-plus text-blue-400 hover:text-blue-300"></i></button>
+            <button id="open-mobile-sidebar-btn" class="text-xl text-gray-300 hover:text-white"><i class="fa-solid fa-bars"></i></button>
+            <span class="font-medium text-lg gradient-text">IA Castillo <i class="fa-regular fa-eye text-blue-500 text-sm ml-1"></i></span>
+            <button id="new-chat-mobile" class="text-[22px]"><i class="fa-solid fa-square-plus text-gray-400 hover:text-white"></i></button>
         </header>
 
         <!-- Contenedor del Chat (Scrollable) -->
@@ -102,13 +137,13 @@
 
                 <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4 max-w-[800px] px-2 w-full md:pl-8">
                     <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Extrae el texto de la imagen adjunta.">
-                        <i class="fa-solid fa-file-image text-blue-400"></i> Leer documento o foto
+                        <i class="fa-solid fa-file-image text-blue-400"></i> Leer documento
+                    </button>
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Hola Castillo! ¿Cómo estás hoy?">
+                        <i class="fa-solid fa-hand-wave text-yellow-400"></i> Saludar a la IA
                     </button>
                     <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="¿Puedes darme la receta para hacer pabellón criollo Venezolano?">
-                        <i class="fa-solid fa-utensils text-orange-400"></i> Sugiere una receta
-                    </button>
-                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Explica cómo se resuelve el teorema de Pitágoras.">
-                        <i class="fa-solid fa-square-root-variable text-purple-400"></i> Ayuda Matemática
+                        <i class="fa-solid fa-utensils text-orange-400"></i> Receta Venezolana
                     </button>
                 </div>
             </div>
@@ -121,7 +156,7 @@
         </div>
 
         <!-- Caja de Entrada Fija -->
-        <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-10 pb-6 px-4 md:px-0 flex flex-col items-center pointer-events-none">
+        <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-10 pb-6 px-4 md:px-0 flex flex-col items-center pointer-events-none z-20">
             
             <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20] rounded-[32px] flex flex-col border border-gray-700 shadow-xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-colors">
                 
@@ -135,23 +170,28 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center px-4 py-3">
-                    <!-- Botón de Adjuntar Archivo Oculto -->
-                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                <div class="flex items-center px-2 py-3">
                     
-                    <button id="attach-btn" class="text-gray-400 hover:text-blue-400 p-2 rounded-full transition-colors flex-shrink-0" title="Subir imagen">
-                        <i class="fa-solid fa-image text-[18px]"></i>
+                    <!-- Botón Micrófono para Dictado -->
+                    <button id="mic-btn" class="text-gray-400 hover:text-white p-2.5 mx-0.5 rounded-full transition-colors flex-shrink-0" title="Dictar por voz">
+                        <i class="fa-solid fa-microphone text-[17px]"></i>
+                    </button>
+
+                    <!-- Botón Adjuntar Archivo Oculto -->
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                    <button id="attach-btn" class="text-gray-400 hover:text-blue-400 p-2.5 mx-0.5 rounded-full transition-colors flex-shrink-0" title="Subir imagen">
+                        <i class="fa-solid fa-image text-[17px]"></i>
                     </button>
                     
                     <textarea 
                         id="user-input" 
                         rows="1"
-                        placeholder="Pregunta o adjunta una foto..." 
-                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px] placeholder-gray-500 mt-0.5"
+                        placeholder="Pregunta, adjunta una foto o presiona el micrófono..." 
+                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-2 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15.5px] placeholder-gray-500 mt-0.5"
                     ></textarea>
 
-                    <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black hover:shadow-lg disabled:opacity-50">
-                        <i class="fa-solid fa-arrow-up text-[14px]" id="send-icon"></i>
+                    <button id="send-btn" class="bg-gray-100/10 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all ml-1 mr-1 flex-shrink-0 hover:bg-white hover:text-black hover:shadow-lg disabled:opacity-50">
+                        <i class="fa-solid fa-arrow-up text-[15px]" id="send-icon"></i>
                         <div id="loader" class="hidden flex gap-1 items-center justify-center">
                             <div class="loader-dot dot1"></div><div class="loader-dot dot2"></div><div class="loader-dot"></div>
                         </div>
@@ -160,19 +200,106 @@
             </div>
             
             <p class="text-center text-gray-500 text-[11px] mt-3 font-medium pointer-events-auto">
-                IA Castillo Visión ahora lee documentos e imágenes al instante.
+                Asistente Desarrollado por Bernal · Reconocimiento de Voz Activo
             </p>
         </div>
 
     </main>
 
     <script>
+        /* === CONFIGURACIÓN GLOBAL === */
+        // Configurar Marked.js para interpretar saltos de línea (\n) directamente como <br>
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+
         /* === SESIÓN Y BASE DE DATOS === */
         let userEmail = localStorage.getItem('userEmail');
         let currentChatId = null; 
         let isFirstMessage = true;
 
-        /* MANEJO DE IMÁGENES */
+        /* === MENÚ MÓVIL (DRAWER) === */
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const sidebar = document.getElementById('sidebar');
+        
+        document.getElementById('open-mobile-sidebar-btn').addEventListener('click', () => {
+            sidebar.classList.remove('drawer-closed');
+            sidebar.classList.add('drawer-open');
+            mobileOverlay.classList.remove('overlay-closed');
+            mobileOverlay.classList.add('overlay-open');
+        });
+
+        const closeMobileNav = () => {
+            if(window.innerWidth < 768) {
+                sidebar.classList.add('drawer-closed');
+                sidebar.classList.remove('drawer-open');
+                mobileOverlay.classList.add('overlay-closed');
+                mobileOverlay.classList.remove('overlay-open');
+            }
+        };
+
+        document.getElementById('close-mobile-sidebar-btn').addEventListener('click', closeMobileNav);
+        mobileOverlay.addEventListener('click', closeMobileNav);
+
+        /* === MICRÓFONO (WEBSPEECH API) === */
+        const micBtn = document.getElementById('mic-btn');
+        const micIcon = micBtn.querySelector('i');
+        let isRecording = false;
+        let recognition = null;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'es-ES';
+
+            recognition.onstart = function() {
+                isRecording = true;
+                micIcon.classList.remove('text-[17px]');
+                micIcon.classList.add('mic-recording');
+                userInput.placeholder = "Escuchando...";
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                userInput.value += (userInput.value ? ' ' : '') + transcript;
+                checkInputState();
+            };
+
+            recognition.onerror = function(event) {
+                console.error("Error micrófono:", event.error);
+                userInput.placeholder = "Error al escuchar. Escribe tu texto.";
+                stopRecording();
+            };
+
+            recognition.onend = function() {
+                stopRecording();
+            };
+        }
+
+        const stopRecording = () => {
+            isRecording = false;
+            micIcon.classList.remove('mic-recording');
+            micIcon.classList.add('text-[17px]');
+            userInput.placeholder = "Pregunta, adjunta una foto o presiona el micrófono...";
+        };
+
+        micBtn.addEventListener('click', () => {
+            if (!recognition) {
+                alert("Uy, tu navegador no soporta entrada de voz nativa (Intenta en Chrome o Safari modernos).");
+                return;
+            }
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+
+
+        /* === MANEJO DE IMÁGENES === */
         let currentImageBase64 = null;
         let currentImageMimeType = null;
 
@@ -182,10 +309,8 @@
         const imageThumbnail = document.getElementById('image-thumbnail');
         const removeImageBtn = document.getElementById('remove-image-btn');
 
-        // Disparar input file
         attachBtn.addEventListener('click', () => fileInput.click());
 
-        // Procesar imagen convertida a Base64 sin subirla al servidor estático
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -193,27 +318,18 @@
             const reader = new FileReader();
             reader.onload = (event) => {
                 const dataUrl = event.target.result;
-                
-                // Mostrar preview en HD
                 imageThumbnail.src = dataUrl;
                 imagePreviewContainer.classList.remove('hidden');
                 
-                // Extraer el base64 limpio (sin prefijo "data:image/jpeg;base64,") para la API
                 const parts = dataUrl.split(',');
                 currentImageMimeType = parts[0].match(/:(.*?);/)[1];
                 currentImageBase64 = parts[1];
-                
-                // Activar boton azul porque hay enviar
-                sendBtn.classList.add('bg-blue-600', 'text-white'); 
-                sendBtn.classList.remove('bg-gray-100/10', 'hover:bg-white', 'hover:text-black');
+                checkInputState();
             };
             reader.readAsDataURL(file);
         });
 
-        // Eliminar foto antes de enviar
-        removeImageBtn.addEventListener('click', () => {
-            limpiarFoto();
-        });
+        removeImageBtn.addEventListener('click', limpiarFoto);
 
         function limpiarFoto() {
             fileInput.value = '';
@@ -223,7 +339,7 @@
             checkInputState();
         }
 
-        /* MANEJO UI BÁSICA */
+        /* === LOGIN Y UI BÁSICA === */
         const loginModal = document.getElementById('login-modal');
         const emailInputUI = document.getElementById('user-email-input');
 
@@ -273,7 +389,7 @@
                     const div = document.createElement('div');
                     div.className = "history-item text-gray-300 text-[13px] px-3 py-2.5 rounded-lg flex items-center gap-3 w-full overflow-hidden font-medium";
                     div.innerHTML = `<i class="fa-regular fa-message text-gray-500"></i> <span class="truncate block flex-1 text-left">${truncContent}</span>`;
-                    div.onclick = () => cargarChatEspecifico(chat.id, mensajes);
+                    div.onclick = () => { cargarChatEspecifico(chat.id, mensajes); closeMobileNav(); };
                     historyContainer.appendChild(div);
                 });
             } catch (e) { console.error("History fail:", e); }
@@ -288,11 +404,11 @@
         const messagesArea = document.getElementById('messages-area');
         const chatContainer = document.getElementById('chat-container');
 
-        // Sugerencias Dinámicas
         document.querySelectorAll('.suggestion-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 userInput.value = btn.dataset.text;
                 checkInputState();
+                postMessage(); // Auto enviar para agilidad
             });
         });
 
@@ -318,6 +434,7 @@
             messagesArea.classList.add('hidden'); messagesArea.classList.remove('flex');
             emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
             isFirstMessage = true; limpiarFoto(); cargarHistorialBaseDeDatos();
+            closeMobileNav();
         };
 
         document.getElementById('new-chat-btn').addEventListener('click', crearNuevoChat);
@@ -330,17 +447,17 @@
 
             const filtrados = todosLosMensajes.filter(m => m.chat_id === chatId);
             filtrados.forEach(msg => {
-                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false, null); // Sin imagen local cargada en DB por eficiencia
+                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false, null); 
             });
             setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
-            if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('hidden'); }
         }
 
+        // Nueva función de Formateo que usa Marked.js para interpretar el Markdown de Gemini de forma PERFECTA
         function formatText(text) {
-            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b class="text-white">$1</b>'); 
-            formatted = formatted.replace(/\n\*\s(.*?)/g, '<br>• $1');
-            formatted = formatted.replace(/\n/g, '<br>');
-            return formatted;
+            // Eliminar identificadores internos feos de bases de datos antiguas si existen
+            const txt = text.replace(/\*\(\S+ Imagen \/ Documento adjunto analizado\)\*/g, '');
+            // Convertir texto plano de MD a HTML correcto usando marked.js
+            return marked.parse(txt); 
         }
 
         async function postMessage() {
@@ -349,11 +466,10 @@
 
             if (isFirstMessage) prepararVentanaParaChat();
 
-            // Pintar la burbuja del usuario visualmente, cruzando texto y si hay foto, el DataURL 
             const imgDataURL = currentImageBase64 ? imageThumbnail.src : null;
             addMessageBubble(message, 'user', true, imgDataURL);
             
-            userInput.value = ''; userInput.style.height = 'auto';
+            userInput.value = ''; userInput.style.height = '24px';
             sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
             
             sendIcon.classList.add('hidden'); loader.classList.remove('hidden');
@@ -361,7 +477,7 @@
 
             const payload_image_data = currentImageBase64;
             const payload_mime_type = currentImageMimeType;
-            limpiarFoto(); // Se borra de la UI de subida al enviar
+            limpiarFoto(); 
 
             try {
                 if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
@@ -384,7 +500,7 @@
                 addMessageBubble(data.respuesta, 'ai');
                 cargarHistorialBaseDeDatos(); 
             } catch (err) {
-                addMessageBubble('Error en los servidores visuales. Puede que tu foto pesara demasiado, ¡pero intenta otra vez!.', 'ai');
+                addMessageBubble('Error al conectar con los servidores de IA Castillo. Reintente.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden'); loader.classList.add('hidden');
                 sendBtn.disabled = false;
@@ -399,6 +515,7 @@
 
             const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-700"/>` : '';
 
+            // Se integra la clase "markdown-body" para la respuesta de la IA
             if (role === 'user') {
                 wrapper.innerHTML = `
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#333537] flex items-center justify-center flex-shrink-0 mt-1 uppercase text-xs font-bold shadow-md shadow-black/20">
@@ -406,7 +523,7 @@
                     </div>
                     <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">
                         ${photoHtml}
-                        ${formatText(text)}
+                        ${text}
                     </div>
                 `;
             } else {
@@ -414,14 +531,14 @@
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 mt-1 shadow-lg shadow-blue-500/20">
                         <i class="fa-solid fa-sparkles text-white text-[14px]"></i>
                     </div>
-                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1 flex flex-col gap-2 font-normal">
+                    <div class="flex-1 pt-1.5 font-normal markdown-body">
                         ${formatText(text)}
                     </div>
                 `;
             }
 
             messagesArea.appendChild(wrapper);
-            if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 50); }
+            if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100); }
         }
 
         sendBtn.addEventListener('click', postMessage);
