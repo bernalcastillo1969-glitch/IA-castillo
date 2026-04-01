@@ -10,135 +10,151 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
         
-        body {
-            font-family: 'Google Sans', sans-serif;
-            background-color: #131314;
-            color: #e3e3e3;
-        }
-        
+        body { font-family: 'Google Sans', sans-serif; background-color: #131314; color: #e3e3e3; overflow: hidden; }
         .chat-scroll::-webkit-scrollbar { width: 6px; }
         .chat-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
-        /* Gradient especial de Gemini para el saludo */
         .gradient-text {
             background: linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #d96570 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #9b72cb 50%, #d96570 56%, #131314 75%, #131314 100%);
             background-size: 400% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         
-        /* Animación de carga tipo Google */
-        .loader-dot {
-            width: 6px; height: 6px; border-radius: 50%; background: #a8c7fa;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
+        .loader-dot { width: 6px; height: 6px; border-radius: 50%; background: #a8c7fa; animation: bounce 1.4s infinite ease-in-out both; }
         .dot1 { animation-delay: -0.32s; }
         .dot2 { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        /* Estilo para los items del historial */
+        .history-item { transition: all 0.2s; cursor: pointer; }
+        .history-item:hover { background-color: rgba(255, 255, 255, 0.05); }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden relative">
 
-    <!-- Sidebar (Barra Izquierda) -->
-    <aside class="w-[68px] hidden md:flex flex-col items-center py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0">
-        <button class="text-gray-400 hover:text-white mb-8 text-xl"><i class="fa-solid fa-bars"></i></button>
-        <button id="new-chat-btn" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors" title="Nuevo chat">
+    <!-- MODAL DE LOGIN (Registro) -->
+    <div id="login-modal" class="fixed inset-0 bg-[#131314] z-[100] flex flex-col items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-[#1e1f20] p-8 md:p-10 rounded-[32px] w-full max-w-sm border border-gray-800 shadow-2xl flex flex-col items-center">
+            <h1 class="text-3xl font-bold mb-2 gradient-text">IA Castillo</h1>
+            <p class="text-gray-400 text-sm mb-8 text-center">Inicia sesión con tu correo para guardar tu progreso.</p>
+            
+            <input type="email" id="user-email-input" placeholder="Tu correo electrónico" class="w-full bg-[#131314] text-white p-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 transition-colors mb-4">
+            
+            <button id="login-btn-action" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium p-4 rounded-2xl transition-colors">
+                Entrar a mi cuenta
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar (Barra Izquierda para Historial) -->
+    <aside class="w-[280px] hidden md:flex flex-col py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 transition-all duration-300" id="sidebar">
+        <div class="px-4 flex items-center justify-between mb-8 cursor-pointer">
+            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-xs bg-blue-900/30 text-blue-400 px-2 py-0.5 rounded-md ml-1">V2</span></h2>
+            <button class="text-gray-400 hover:text-white" onclick="document.getElementById('sidebar').classList.add('hidden')"><i class="fa-solid fa-list"></i></button>
+        </div>
+        
+        <button id="new-chat-btn" class="mx-4 bg-[#131314] text-gray-300 hover:text-white p-3 rounded-full mb-6 transition-colors flex items-center justify-center gap-2 border border-gray-700 hover:bg-gray-800">
+            <i class="fa-solid fa-plus text-xs"></i> <span>Nuevo Chat</span>
+        </button>
+
+        <div class="px-4 text-xs font-semibold text-gray-500 mb-2 mt-4 uppercase tracking-wider">Tus Chats Recientes</div>
+        <div id="history-container" class="flex-1 overflow-y-auto chat-scroll flex flex-col gap-1 px-2 pb-4">
+            <!-- El historial se genera con JS -->
+            <p class="text-gray-500 text-xs px-2 mt-2">No tienes chats aún.</p>
+        </div>
+
+        <!-- Perfil Usuario -->
+        <div class="mt-auto px-4 pt-4 border-t border-gray-800 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-sm font-bold shadow-md shadow-orange-500/20" id="user-avatar">?</div>
+            <div class="flex-1 overflow-hidden">
+                <p class="text-sm font-medium text-white truncate" id="user-display-email">cargando...</p>
+                <p class="text-[10px] text-gray-500 cursor-pointer hover:text-red-400" id="logout-btn">Cerrar sesión</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Barra compacta cuando se oculta el Sidebar -->
+    <aside class="w-[68px] hidden md:hidden flex-col items-center py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0" id="sidebar-collapsed">
+        <button class="text-gray-400 hover:text-white mb-8 text-xl" onclick="document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar-collapsed').classList.add('hidden');"><i class="fa-solid fa-bars"></i></button>
+        <button id="new-chat-btn-mini" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors" title="Nuevo chat">
             <i class="fa-solid fa-plus"></i>
         </button>
-        <button class="text-gray-400 hover:text-white mt-auto text-xl"><i class="fa-solid fa-gear"></i></button>
     </aside>
 
     <!-- Contenido Principal -->
     <main class="flex-1 flex flex-col relative h-full w-full">
         
         <!-- Navbar Superior (Móvil) -->
-        <header class="md:hidden flex items-center justify-between p-4 px-5 text-gray-200 bg-[#131314] z-10">
-            <button class="text-xl"><i class="fa-solid fa-bars"></i></button>
+        <header class="md:hidden flex items-center justify-between p-4 px-5 text-gray-200 bg-[#131314] z-10 border-b border-gray-800">
+            <button class="text-xl" onclick="alert('En el celular pronto tendrás barra lateral!')"><i class="fa-solid fa-bars"></i></button>
             <span class="font-medium text-lg">IA Castillo</span>
             <button id="new-chat-mobile" class="text-xl"><i class="fa-solid fa-square-plus"></i></button>
-        </header>
-
-        <!-- Navbar Superior (Escritorio) -->
-        <header class="hidden md:flex items-center p-4 pl-6 text-xl font-medium text-gray-200 relative z-10">
-            IA Castillo <span class="text-[10px] ml-2 font-bold bg-[#1e1f20] border border-gray-700 text-blue-400 px-2 py-1 rounded-md"><i class="fa-solid fa-bolt"></i> Plus</span>
         </header>
 
         <!-- Contenedor del Chat (Scrollable) -->
         <div id="chat-container" class="flex-1 overflow-y-auto chat-scroll flex flex-col px-4 md:px-0 scroll-smooth pb-40">
             
             <!-- Estado Vacío Inicial (Saludo grande) -->
-            <div id="empty-state" class="w-full flex-1 flex flex-col items-center justify-center mt-6 md:-mt-10 transition-opacity duration-300">
+            <div id="empty-state" class="w-full h-full flex flex-col items-center justify-center mt-6 md:-mt-10 transition-opacity duration-300">
                 
-                <!-- Textos principales tipo Gemini -->
                 <div class="w-full max-w-[800px] text-left md:pl-8 mb-8">
-                    <h1 class="text-[44px] md:text-[56px] font-medium leading-[1.1] mb-2 gradient-text inline-block">✨ Hola, Bernal</h1>
+                    <h1 class="text-[44px] md:text-[56px] font-medium leading-[1.1] mb-2 gradient-text inline-block">✨ Hola, <span id="greeting-name">Amigo</span></h1>
                     <h2 class="text-[44px] md:text-[56px] font-medium leading-[1.1] text-[#444746]">¿Por dónde empezamos?</h2>
                 </div>
 
-                <!-- Botones de sugerencia (Tus 4 Modos IA) -->
                 <div class="flex flex-wrap justify-center gap-3 mt-4 max-w-[800px] px-2 w-full">
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full transition-colors flex items-center gap-2 border border-transparent" data-modo="matematicas">
-                        📐 Tutor de Matemáticas
+                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="matematicas">
+                        📐 Matemáticas
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full transition-colors flex items-center gap-2 border border-transparent" data-modo="legal">
-                        ⚖️ Legal Venezuela
+                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="legal">
+                        ⚖️ Legal Venz.
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full transition-colors flex items-center gap-2 border border-transparent" data-modo="chef">
-                        👨‍🍳 Chef de Recetas
+                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="chef">
+                        👨‍🍳 Chef Recetas
                     </button>
-                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full transition-colors flex items-center gap-2 border border-transparent" data-modo="psicologo">
-                        🧠 Apoyo Emocional
+                    <button class="mode-btn bg-[#1e1f20] hover:bg-[#333537] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-modo="psicologo">
+                        🧠 Psicólogo
                     </button>
                 </div>
             </div>
 
             <!-- Área donde aparecerán los mensajes -->
             <div id="messages-area" class="w-full max-w-[800px] mx-auto flex-col gap-8 pt-8 hidden">
-                <!-- Los mensajes se insertan aquí -->
+                <!-- Mensajes -->
             </div>
 
         </div>
 
-        <!-- Caja de Entrada de Texto (Input) Fija abajo -->
+        <!-- Caja de Entrada -->
         <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-10 pb-6 px-4 md:px-0 flex flex-col items-center pointer-events-none">
             
-            <div class="w-full max-w-[800px] relative pointer-events-auto">
-                <div class="bg-[#1e1f20] rounded-[32px] flex items-center px-4 py-3 focus-within:bg-[#333537] transition-all relative">
+            <div class="w-full max-w-[800px] relative pointer-events-auto shadow-2xl">
+                <div class="bg-[#1e1f20] rounded-[32px] flex items-center px-4 py-3 focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-all border border-gray-700">
                     
-                    <!-- Botón Más -->
-                    <button class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex-shrink-0">
+                    <button class="text-gray-400 hover:text-white p-2 rounded-full flex-shrink-0">
                         <i class="fa-solid fa-plus text-[18px]"></i>
                     </button>
                     
-                    <!-- Textarea -->
                     <textarea 
                         id="user-input" 
                         rows="1"
-                        placeholder="Pregunta a IA Castillo" 
-                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px]"
+                        placeholder="Pregunta a IA Castillo..." 
+                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px] placeholder-gray-500"
                     ></textarea>
                     
-                    <!-- Indicador del modo activo (Ej. Tutor Matemáticas) -->
-                    <span id="current-mode-badge" class="hidden md:flex text-[11px] text-gray-400 font-medium mr-2 whitespace-nowrap bg-[#131314] px-2 py-1 rounded-md uppercase tracking-wider">
+                    <span id="current-mode-badge" class="hidden md:flex text-[11px] text-gray-400 mr-2 whitespace-nowrap bg-[#131314] px-2 py-1 rounded-md uppercase tracking-wide">
                         Matemáticas
                     </span>
 
-                    <!-- Botón Enviar -->
                     <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black">
                         <i class="fa-solid fa-arrow-up text-[14px]" id="send-icon"></i>
                         <div id="loader" class="hidden flex gap-1 items-center justify-center">
-                            <div class="loader-dot dot1"></div>
-                            <div class="loader-dot dot2"></div>
-                            <div class="loader-dot"></div>
+                            <div class="loader-dot dot1"></div><div class="loader-dot dot2"></div><div class="loader-dot"></div>
                         </div>
                     </button>
                 </div>
-                <!-- Mini disclaimer al estilo Google -->
-                <p class="text-center text-[#a8c7fa]/60 text-[11px] mt-3 tracking-wide">
-                    IA Castillo es un desarrollo personalizado y puede mostrar información imprecisa. Revisa las respuestas importantes.
+                <p class="text-center text-[#a8c7fa]/50 text-[10px] sm:text-[11px] mt-3 tracking-wide">
+                    IA Castillo puede cometer errores. El historial ahora se guarda de forma segura en la Base de Datos.
                 </p>
             </div>
         </div>
@@ -146,9 +162,93 @@
     </main>
 
     <script>
-        let modoActual = 'matematicas';
+        /* === SISTEMA DE LOGIN Y BASE DE DATOS === */
+        let userEmail = localStorage.getItem('userEmail');
+        let currentChatId = null; 
+        let currentModo = 'matematicas';
         let isFirstMessage = true;
 
+        const loginModal = document.getElementById('login-modal');
+        const loginBtn = document.getElementById('login-btn-action');
+        const emailInput = document.getElementById('user-email-input');
+
+        // Revisar si ya está logueado al abrir la página
+        if (userEmail) {
+            iniciarSesionUI(userEmail);
+        }
+
+        loginBtn.addEventListener('click', () => {
+            const email = emailInput.value.trim().toLowerCase();
+            if (email && email.includes('@')) {
+                localStorage.setItem('userEmail', email);
+                userEmail = email;
+                iniciarSesionUI(email);
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('userEmail');
+            location.reload(); // Recarga la app para limpiar todo
+        });
+
+        function iniciarSesionUI(email) {
+            loginModal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => loginModal.classList.add('hidden'), 300);
+            
+            document.getElementById('user-display-email').textContent = email;
+            document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+            
+            const nombreCorreo = email.split('@')[0];
+            document.getElementById('greeting-name').textContent = nombreCorreo.charAt(0).toUpperCase() + nombreCorreo.slice(1);
+            
+            cargarHistorialBaseDeDatos();
+        }
+
+        /* === CARGÁ DE HISTORIAL DESDE EL SERVIDOR === */
+        async function cargarHistorialBaseDeDatos() {
+            try {
+                const res = await fetch('/history', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                });
+                const mensajes = await res.json();
+                
+                // Agrupar mensajes por chat_id
+                const chats = {};
+                mensajes.forEach(msg => {
+                    if(!chats[msg.chat_id]) {
+                        chats[msg.chat_id] = { id: msg.chat_id, modo: msg.modo, fecha: msg.created_at, content: msg.content };
+                    }
+                });
+
+                const historyContainer = document.getElementById('history-container');
+                historyContainer.innerHTML = '';
+                
+                if (Object.keys(chats).length === 0) {
+                    historyContainer.innerHTML = '<p class="text-gray-600 text-[11px] px-2 italic">No tienes chats guardados aún.</p>';
+                    return;
+                }
+
+                // Fabricar botones para historial en el Sidebar
+                Object.values(chats).reverse().forEach(chat => {
+                    const truncContent = chat.content.substring(0, 25) + '...';
+                    const icon = chat.modo === 'legal' ? '⚖️' : chat.modo === 'chef' ? '👨‍🍳' : chat.modo === 'psicologo' ? '🧠' : '📐';
+                    
+                    const div = document.createElement('div');
+                    div.className = "history-item text-gray-300 text-[13px] px-3 py-2 rounded-lg flex items-center gap-3";
+                    div.innerHTML = `<span>${icon}</span> <span class="truncate pr-4">${truncContent}</span>`;
+                    
+                    div.onclick = () => cargarChatEspecifico(chat.id, mensajes);
+                    historyContainer.appendChild(div);
+                });
+
+            } catch (e) {
+                console.log("No pude traer el historial: ", e);
+            }
+        }
+
+        /* === RESTO DE LA LÓGICA DE CHAT === */
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const sendIcon = document.getElementById('send-icon');
@@ -156,72 +256,80 @@
         const emptyState = document.getElementById('empty-state');
         const messagesArea = document.getElementById('messages-area');
         const chatContainer = document.getElementById('chat-container');
-        const modeBadge = document.getElementById('current-mode-badge');
-        
-        // Función para que la caja crezca según escribas
+
         userInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            
-            // Ilumina el botón de enviar si hay texto
+            this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
             if(this.value.trim().length > 0) {
-                sendBtn.classList.add('bg-white', 'text-black');
-                sendBtn.classList.remove('bg-gray-100/10', 'text-white');
+                sendBtn.classList.add('bg-white', 'text-black'); sendBtn.classList.remove('bg-gray-100/10', 'text-white');
             } else {
-                sendBtn.classList.remove('bg-white', 'text-black');
-                sendBtn.classList.add('bg-gray-100/10', 'text-white');
+                sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
             }
         });
 
-        // Configuración de los modos (Botones de sugerencia)
+        // Botones de Modos en el Empty State
         document.querySelectorAll('.mode-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                modoActual = btn.dataset.modo;
+                currentModo = btn.dataset.modo;
                 
-                // Efecto visual: Resalta el botón seleccionado 
                 document.querySelectorAll('.mode-btn').forEach(b => {
                     b.classList.remove('bg-blue-900/20', 'border-[#4285f4]/50', 'text-blue-100');
-                    b.classList.add('bg-[#1e1f20]', 'border-transparent');
+                    b.classList.add('bg-[#1e1f20]', 'border-gray-700');
                 });
-                btn.classList.remove('bg-[#1e1f20]', 'border-transparent');
+                btn.classList.remove('bg-[#1e1f20]', 'border-gray-700');
                 btn.classList.add('bg-blue-900/20', 'border-[#4285f4]/50', 'text-blue-100');
                 
-                // Actualiza el texto chiquito en la barra de entrada
-                modeBadge.textContent = btn.innerText.replace(/[^\w\sñáéíóúÁÉÍÓÚ]/g, '').trim();
-                
-                // Reinicia la memoria en el servidor al cambiar de modo
-                fetch('/reset', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ modo: modoActual })
-                });
-
+                document.getElementById('current-mode-badge').textContent = btn.innerText.replace(/[^\w\sñáéíóúÁÉÍÓÚVenz]/g, '').trim();
                 userInput.focus();
             });
         });
 
-        // Simula click en "Matemáticas" por defecto
         document.querySelector('.mode-btn').click();
 
-        // Botón de (+) Nuevo Chat
-        const resetChat = () => {
-            messagesArea.innerHTML = '';
+        function prepararVentanaParaChat() {
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+            messagesArea.classList.remove('hidden');
+            messagesArea.classList.add('flex');
+            isFirstMessage = false;
+        }
+
+        // Nuevo Chat
+        const crearNuevoChat = () => {
+            currentChatId = null; // Borra el ID actual
+            messagesArea.innerHTML = ''; // Borra la pantalla actual
             messagesArea.classList.add('hidden');
+            messagesArea.classList.remove('flex');
             emptyState.classList.remove('hidden');
             emptyState.classList.add('flex');
             isFirstMessage = true;
-            fetch('/reset', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ modo: modoActual })
-            });
+            cargarHistorialBaseDeDatos();
         };
-        document.getElementById('new-chat-btn').addEventListener('click', resetChat);
-        document.getElementById('new-chat-mobile').addEventListener('click', resetChat);
 
-        // Formato básico para negritas y saltos de línea
+        document.getElementById('new-chat-btn').addEventListener('click', crearNuevoChat);
+        document.getElementById('new-chat-mobile').addEventListener('click', crearNuevoChat);
+        document.getElementById('new-chat-btn-mini')?.addEventListener('click', crearNuevoChat);
+
+        function cargarChatEspecifico(chatId, todosLosMensajes) {
+            currentChatId = chatId;
+            messagesArea.innerHTML = '';
+            prepararVentanaParaChat();
+
+            const filtrados = todosLosMensajes.filter(m => m.chat_id === chatId);
+            filtrados.forEach(msg => {
+                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false); // No scrollear agresivamente a todo
+            });
+            setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
+            
+            // Si estmos en móvil, escondemos el sidebar
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('hidden');
+            }
+        }
+
+        // Markdown minimal parser
         function formatText(text) {
             let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b class="text-white">$1</b>'); 
+            formatted = formatted.replace(/\n\*\s(.*?)/g, '<br>• $1');
             formatted = formatted.replace(/\n/g, '<br>');
             return formatted;
         }
@@ -230,37 +338,45 @@
             const message = userInput.value.trim();
             if (!message) return;
 
-            // Transición del "Estado Vacío" a la "Ventana de Chat"
-            if (isFirstMessage) {
-                emptyState.classList.remove('flex');
-                emptyState.classList.add('hidden');
-                messagesArea.classList.remove('hidden');
-                messagesArea.classList.add('flex');
-                isFirstMessage = false;
-            }
+            if (isFirstMessage) prepararVentanaParaChat();
 
             addMessageBubble(message, 'user');
             
             userInput.value = '';
             userInput.style.height = 'auto';
-            sendBtn.classList.remove('bg-white', 'text-black');
-            sendBtn.classList.add('bg-gray-100/10', 'text-white');
+            sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
             
-            // Estado Cargando
             sendIcon.classList.add('hidden');
             loader.classList.remove('hidden');
             sendBtn.disabled = true;
 
             try {
+                // Generamos un ID nuevo si no tenemos uno guardado de antes.
+                if (!currentChatId) {
+                    currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9);
+                }
+
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mensaje: message, modo: modoActual })
+                    body: JSON.stringify({ 
+                        mensaje: message, 
+                        modo: currentModo,
+                        email: userEmail,
+                        chat_id: currentChatId 
+                    })
                 });
+
                 const data = await response.json();
+                currentChatId = data.chat_id; // Rescatamos el ID del servidor por si acaso
+                
                 addMessageBubble(data.respuesta, 'ai');
+
+                // Recargar el sidebar silenciosamente para que aparezca
+                cargarHistorialBaseDeDatos();
+
             } catch (err) {
-                addMessageBubble('Error de conexión con IA Castillo.', 'ai');
+                addMessageBubble('Error de conexión o Base de Datos no configurada.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden');
                 loader.classList.add('hidden');
@@ -270,8 +386,7 @@
             }
         }
 
-        // Añade el mensaje (La UI estilo Gemini no usa burbujas de colores, es texto plano)
-        function addMessageBubble(text, role) {
+        function addMessageBubble(text, role, scroll = true) {
             const wrapper = document.createElement('div');
             wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4';
 
@@ -296,11 +411,9 @@
             }
 
             messagesArea.appendChild(wrapper);
-            
-            // Auto-scroll
-            setTimeout(() => {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 50);
+            if(scroll) {
+                setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 50);
+            }
         }
 
         sendBtn.addEventListener('click', postMessage);
@@ -311,7 +424,6 @@
             }
         });
         
-        userInput.focus();
     </script>
 </body>
 </html>

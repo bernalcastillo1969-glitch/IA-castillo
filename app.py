@@ -1,15 +1,24 @@
 import os
-from flask import Flask, render_template, request, jsonify, session
+import uuid
+from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
+# Cargar variables de entorno
 load_dotenv()
 
+# Configurar Flask
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Para manejar sesiones de Flask
 
+# Configurar Gemini API
 API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
+
+# Configurar Supabase Database
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ===========================
 # PERSONALIDADES DE LA IA
@@ -17,111 +26,103 @@ genai.configure(api_key=API_KEY)
 MODOS = {
     "matematicas": {
         "nombre": "Tutor de Matemáticas",
-        "icono": "📐",
-        "color": "indigo",
-        "prompt": """Eres un tutor de matemáticas experto y paciente para estudiantes de todos los niveles. Tu misión es enseñar de forma clara y paso a paso.
-        Reglas:
-        - Explica cada paso detalladamente, nunca omitas pasos.
-        - Usa ejemplos numéricos concretos siempre.
-        - Si el alumno se equivoca, corrígelo con amabilidad y explica por qué.
-        - Si te piden resolver un ejercicio, resuélvelo completo mostrando cada paso.
-        - Puedes cubrir: aritmética, álgebra, geometría, cálculo, estadística y más.
-        - Responde en el idioma del estudiante.
-        - No uses asteriscos ni símbolos innecesarios."""
+        "prompt": "Eres un tutor de matemáticas experto y paciente. Explica paso a paso con ejemplos."
     },
     "legal": {
-        "nombre": "Asistente Legal Venezuela",
-        "icono": "⚖️",
-        "color": "amber",
-        "prompt": """Eres un asistente legal especializado en las leyes venezolanas. Explicas derechos, procedimientos y normativas de Venezuela de forma clara y accesible.
-        Reglas:
-        - Explica leyes venezolanas en términos simples que cualquier ciudadano entienda.
-        - Cubre temas como: LOPCYMAT, Ley del Trabajo (LOTTT), Código Civil, Código Penal, SAIME, RIF, SENIAT, derechos del consumidor, familia, herencias, etc.
-        - Siempre aclara que eres un asistente informativo y que para casos graves deben consultar un abogado.
-        - Da respuestas prácticas con los pasos a seguir cuando aplique.
-        - No uses asteriscos ni símbolos innecesarios.
-        - Responde siempre en español."""
+        "nombre": "Asistente Legal",
+        "prompt": "Eres un asistente legal especializado en las leyes venezolanas. Explica de forma clara y accesible."
     },
     "chef": {
         "nombre": "Chef Recetas",
-        "icono": "👨‍🍳",
-        "color": "emerald",
-        "prompt": """Eres un chef profesional y creativo. Tu especialidad es sugerir recetas deliciosas usando los ingredientes que el usuario tiene disponibles.
-        Reglas:
-        - Cuando el usuario te diga qué ingredientes tiene, sugiere recetas completas y creativas que pueda hacer con ellos.
-        - Da las instrucciones de preparación paso a paso, con tiempos y cantidades.
-        - Adapta las recetas al contexto venezolano cuando sea posible (ingredientes locales).
-        - Si no tiene algún ingrediente clave, sugiere sustitutos accesibles.
-        - Sé entusiasta, descriptivo y haz que la comida suene deliciosa.
-        - No uses asteriscos ni símbolos innecesarios."""
+        "prompt": "Eres un chef profesional. Sugiere recetas creativas con los ingredientes que te den."
     },
     "psicologo": {
         "nombre": "Apoyo Emocional",
-        "icono": "🧠",
-        "color": "pink",
-        "prompt": """Eres un psicólogo virtual de apoyo emocional. Tu misión es escuchar, comprender y ayudar al usuario a sentirse mejor y reflexionar sobre sus emociones.
-        Reglas:
-        - Escucha activamente y valida los sentimientos del usuario sin juzgar.
-        - Usa técnicas de terapia cognitivo-conductual y mindfulness de modo sencillo.
-        - Haz preguntas reflexivas que ayuden al usuario a encontrar sus propias respuestas.
-        - Si detectas señales de crisis grave, sugiere llamar a una línea de crisis o buscar ayuda profesional presencial.
-        - Mantén un tono cálido, empático, tranquilizador y sin juicios.
-        - Recuerda siempre el contexto de la conversación para dar una respuesta coherente.
-        - No uses asteriscos ni símbolos innecesarios."""
+        "prompt": "Eres un psicólogo virtual. Escucha activamente y ayuda con empatía y sin juicios."
     }
 }
 
-# Almacenamos el historial de chat en memoria (por sesión)
-historial_chats = {}
-
-def obtener_chat(session_id, modo):
-    """Obtiene o crea una sesión de chat con memoria para el modo dado."""
-    clave = f"{session_id}_{modo}"
-    if clave not in historial_chats:
-        config_modo = MODOS.get(modo, MODOS["matematicas"])
-        modelo = genai.GenerativeModel(
-            model_name='gemini-1.5-flash',
-            system_instruction=config_modo["prompt"]
-        )
-        historial_chats[clave] = modelo.start_chat(history=[])
-    return historial_chats[clave]
-
 @app.route('/')
 def index():
-    if 'session_id' not in session:
-        session['session_id'] = os.urandom(16).hex()
-    return render_template('index.html', modos=MODOS)
+    return render_template('index.html')
+
+@app.route('/history', methods=['POST'])
+def get_history():
+    """Devuelve todo el historial de chats de un usuario específico."""
+    data = request.get_json()
+    user_email = data.get('email')
+    
+    if not user_email:
+        return jsonify([])
+
+    try:
+        # Traer todos los mensajes del usuario desde Supabase
+        response = supabase.table('chats').select('*').eq('user_email', user_email).order('created_at', desc=False).execute()
+        return jsonify(response.data)
+    except Exception as e:
+        print("Error fetch history:", e)
+        return jsonify([])
 
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.get_json()
     user_message = data.get('mensaje')
     modo = data.get('modo', 'matematicas')
+    user_email = data.get('email', 'invitado@iacastillo.com')
+    
+    # Si el frontend no manda chat_id, creamos uno nuevo
+    chat_id = data.get('chat_id')
+    if not chat_id:
+        chat_id = str(uuid.uuid4())
 
     if not user_message:
-        return jsonify({"respuesta": "¿En qué puedo ayudarte?"}), 400
+        return jsonify({"respuesta": "¿En qué puedo ayudarte?", "chat_id": chat_id}), 400
 
-    if modo not in MODOS:
-        return jsonify({"respuesta": "Modo no válido."}), 400
+    config_modo = MODOS.get(modo, MODOS["matematicas"])
 
     try:
-        session_id = session.get('session_id', 'default')
-        chat_session = obtener_chat(session_id, modo)
-        response = chat_session.send_message(user_message)
-        return jsonify({"respuesta": response.text})
-    except Exception as e:
-        return jsonify({"respuesta": f"Ocurrió un error: {str(e)}"}), 500
+        # 1. Recuperar memoria REAL de este chat desde Supabase
+        history_data = supabase.table('chats').select('role', 'content').eq('chat_id', chat_id).order('created_at', desc=False).execute()
+        
+        # 2. Formatear la historia para que Gemini la entienda
+        formatted_history = []
+        for msg in history_data.data:
+            role = 'model' if msg['role'] == 'ai' else 'user'
+            formatted_history.append({"role": role, "parts": [msg['content']]})
 
-@app.route('/reset', methods=['POST'])
-def reset_chat():
-    """Limpia el historial de conversación para empezar de nuevo."""
-    data = request.get_json()
-    modo = data.get('modo', 'matematicas')
-    session_id = session.get('session_id', 'default')
-    clave = f"{session_id}_{modo}"
-    if clave in historial_chats:
-        del historial_chats[clave]
-    return jsonify({"ok": True})
+        # 3. Iniciar el cerebro de Gemini con toda la memoria pasada
+        modelo = genai.GenerativeModel(
+            model_name='gemini-1.5-flash',
+            system_instruction=config_modo["prompt"]
+        )
+        chat_session = modelo.start_chat(history=formatted_history)
+
+        # 4. Guardar mensaje del usuario en Base de Datos
+        supabase.table('chats').insert({
+            'user_email': user_email,
+            'chat_id': chat_id,
+            'role': 'user',
+            'content': user_message,
+            'modo': modo
+        }).execute()
+
+        # 5. Generar respuesta de Gemini
+        response = chat_session.send_message(user_message)
+        respuesta_ia = response.text
+
+        # 6. Guardar respuesta de la IA en Base de Datos
+        supabase.table('chats').insert({
+            'user_email': user_email,
+            'chat_id': chat_id,
+            'role': 'ai',
+            'content': respuesta_ia,
+            'modo': modo
+        }).execute()
+
+        return jsonify({"respuesta": respuesta_ia, "chat_id": chat_id})
+    
+    except Exception as e:
+        return jsonify({"respuesta": f"Lo siento, mis servidores están saturados: {str(e)}", "chat_id": chat_id}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
