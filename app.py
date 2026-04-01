@@ -85,18 +85,29 @@ def chat():
         )
         chat_session = modelo.start_chat(history=formatted_history)
 
-        # Preparamos el contenido a enviar al modelo (Texto + Imagen opcional)
-        message_parts = [user_message]
+        # Preparamos el contenido a enviar al modelo
+        message_parts = []
+        if user_message:
+            message_parts.append(user_message)
+        
         db_message = user_message
 
         if image_data and image_mime:
-            # Decodificar Base64 directo a bytes
             raw_bytes = base64.b64decode(image_data)
-            message_parts.append({
-                "mime_type": image_mime,
-                "data": raw_bytes
-            })
-            db_message = user_message + "\n\n*(📷 Imagen / Documento adjunto analizado)*"
+            message_parts.append({"mime_type": image_mime, "data": raw_bytes})
+            db_message = (db_message + "\n\n*(📷 Imagen / Documento adjunto analizado)*").strip()
+            
+        # Manejo de Audio (Nota de Voz)
+        audio_data = data.get('audio_data')
+        audio_mime = data.get('audio_mime')
+        if audio_data and audio_mime:
+            audio_bytes = base64.b64decode(audio_data)
+            message_parts.append({"mime_type": audio_mime, "data": audio_bytes})
+            db_message = (db_message + "\n\n*(🎤 Nota de voz analizada)*").strip()
+            
+        if not message_parts:
+            # Si envían audio sin texto, Gemini necesita al menos algo, o solo el audio funciona. Solo el audio sí funciona en multimodal.
+            pass
 
         # Guardar mensaje del usuario en BD
         supabase.table('chats').insert({

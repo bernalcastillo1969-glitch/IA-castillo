@@ -160,11 +160,23 @@
             
             <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20] rounded-[32px] flex flex-col border border-gray-700 shadow-xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-colors">
                 
-                <!-- Vista Previa de la Imagen (Si hay una adjunta) -->
-                <div id="image-preview-container" class="hidden px-4 pt-3 pb-1">
-                    <div class="relative inline-block border border-gray-600 rounded-xl overflow-hidden shadow-sm h-16 w-16 group">
+                <!-- Vista Previa de la Archivos y Notas (Si hay una adjunta) -->
+                <div id="media-preview-container" class="hidden px-4 pt-3 pb-1 flex gap-2">
+                    <!-- Miniatura de Imagen -->
+                    <div id="image-wrapper" class="relative inline-block border border-gray-600 rounded-xl overflow-hidden shadow-sm h-16 w-16 group hidden">
                         <img id="image-thumbnail" src="" class="h-16 w-16 object-cover" />
                         <button id="remove-image-btn" class="absolute inset-0 bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Previa de Audio -->
+                    <div id="audio-wrapper" class="relative items-center bg-[#333537] border border-gray-600 rounded-xl px-4 py-2 hidden group">
+                        <i class="fa-solid fa-microphone-lines text-blue-400 mr-2"></i>
+                        <span class="text-sm font-medium mr-4">Nota de Voz</span>
+                        <!-- Control de Play nativo (oculto visualmente pero útil) -->
+                        <audio id="audio-preview" controls class="hidden"></audio>
+                        <button id="remove-audio-btn" class="text-gray-400 hover:text-red-400 transition-colors">
                             <i class="fa-solid fa-times"></i>
                         </button>
                     </div>
@@ -172,8 +184,8 @@
                 
                 <div class="flex items-center px-2 py-3">
                     
-                    <!-- Botón Micrófono para Dictado -->
-                    <button id="mic-btn" class="text-gray-400 hover:text-white p-2.5 mx-0.5 rounded-full transition-colors flex-shrink-0" title="Dictar por voz">
+                    <!-- Botón Micrófono para Grabar Nota de Voz Real -->
+                    <button id="record-audio-btn" class="text-gray-400 hover:text-white p-2.5 mx-0.5 rounded-full transition-colors flex-shrink-0 relative" title="Grabar y adjuntar Nota de Voz">
                         <i class="fa-solid fa-microphone text-[17px]"></i>
                     </button>
 
@@ -186,7 +198,7 @@
                     <textarea 
                         id="user-input" 
                         rows="1"
-                        placeholder="Pregunta, adjunta una foto o presiona el micrófono..." 
+                        placeholder="Pregunta o adjunta un archivo..." 
                         class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-2 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15.5px] placeholder-gray-500 mt-0.5"
                     ></textarea>
 
@@ -200,7 +212,7 @@
             </div>
             
             <p class="text-center text-gray-500 text-[11px] mt-3 font-medium pointer-events-auto">
-                Asistente Desarrollado por Bernal · Reconocimiento de Voz Activo
+                IA Castillo Visión ahora lee imágenes y **¡Nota de Voz Nativa disponible!** Escucha en cualquier idioma.
             </p>
         </div>
 
@@ -208,11 +220,7 @@
 
     <script>
         /* === CONFIGURACIÓN GLOBAL === */
-        // Configurar Marked.js para interpretar saltos de línea (\n) directamente como <br>
-        marked.setOptions({
-            breaks: true,
-            gfm: true
-        });
+        marked.setOptions({ breaks: true, gfm: true });
 
         /* === SESIÓN Y BASE DE DATOS === */
         let userEmail = localStorage.getItem('userEmail');
@@ -224,88 +232,34 @@
         const sidebar = document.getElementById('sidebar');
         
         document.getElementById('open-mobile-sidebar-btn').addEventListener('click', () => {
-            sidebar.classList.remove('drawer-closed');
-            sidebar.classList.add('drawer-open');
-            mobileOverlay.classList.remove('overlay-closed');
-            mobileOverlay.classList.add('overlay-open');
+            sidebar.classList.remove('drawer-closed'); sidebar.classList.add('drawer-open');
+            mobileOverlay.classList.remove('overlay-closed'); mobileOverlay.classList.add('overlay-open');
         });
 
         const closeMobileNav = () => {
             if(window.innerWidth < 768) {
-                sidebar.classList.add('drawer-closed');
-                sidebar.classList.remove('drawer-open');
-                mobileOverlay.classList.add('overlay-closed');
-                mobileOverlay.classList.remove('overlay-open');
+                sidebar.classList.add('drawer-closed'); sidebar.classList.remove('drawer-open');
+                mobileOverlay.classList.add('overlay-closed'); mobileOverlay.classList.remove('overlay-open');
             }
         };
 
         document.getElementById('close-mobile-sidebar-btn').addEventListener('click', closeMobileNav);
         mobileOverlay.addEventListener('click', closeMobileNav);
 
-        /* === MICRÓFONO (WEBSPEECH API) === */
-        const micBtn = document.getElementById('mic-btn');
-        const micIcon = micBtn.querySelector('i');
-        let isRecording = false;
-        let recognition = null;
 
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognition = new SpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = 'es-ES';
-
-            recognition.onstart = function() {
-                isRecording = true;
-                micIcon.classList.remove('text-[17px]');
-                micIcon.classList.add('mic-recording');
-                userInput.placeholder = "Escuchando...";
-            };
-
-            recognition.onresult = function(event) {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                userInput.value += (userInput.value ? ' ' : '') + transcript;
-                checkInputState();
-            };
-
-            recognition.onerror = function(event) {
-                console.error("Error micrófono:", event.error);
-                userInput.placeholder = "Error al escuchar. Escribe tu texto.";
-                stopRecording();
-            };
-
-            recognition.onend = function() {
-                stopRecording();
-            };
-        }
-
-        const stopRecording = () => {
-            isRecording = false;
-            micIcon.classList.remove('mic-recording');
-            micIcon.classList.add('text-[17px]');
-            userInput.placeholder = "Pregunta, adjunta una foto o presiona el micrófono...";
-        };
-
-        micBtn.addEventListener('click', () => {
-            if (!recognition) {
-                alert("Uy, tu navegador no soporta entrada de voz nativa (Intenta en Chrome o Safari modernos).");
-                return;
-            }
-            if (isRecording) {
-                recognition.stop();
-            } else {
-                recognition.start();
-            }
-        });
-
-
-        /* === MANEJO DE IMÁGENES === */
+        /* === MANEJO MULTIMEDIA: IMÁN Y AUDIO BASE64 === */
         let currentImageBase64 = null;
         let currentImageMimeType = null;
+        
+        let currentAudioBase64 = null;
+        let currentAudioMimeType = null;
 
+        const mediaPreviewContainer = document.getElementById('media-preview-container');
+        
+        /* -- IMAGEN -- */
         const fileInput = document.getElementById('file-input');
         const attachBtn = document.getElementById('attach-btn');
-        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imageWrapper = document.getElementById('image-wrapper');
         const imageThumbnail = document.getElementById('image-thumbnail');
         const removeImageBtn = document.getElementById('remove-image-btn');
 
@@ -319,7 +273,8 @@
             reader.onload = (event) => {
                 const dataUrl = event.target.result;
                 imageThumbnail.src = dataUrl;
-                imagePreviewContainer.classList.remove('hidden');
+                imageWrapper.classList.remove('hidden');
+                mediaPreviewContainer.classList.remove('hidden');
                 
                 const parts = dataUrl.split(',');
                 currentImageMimeType = parts[0].match(/:(.*?);/)[1];
@@ -332,12 +287,91 @@
         removeImageBtn.addEventListener('click', limpiarFoto);
 
         function limpiarFoto() {
-            fileInput.value = '';
-            currentImageBase64 = null;
-            currentImageMimeType = null;
-            imagePreviewContainer.classList.add('hidden');
+            fileInput.value = ''; currentImageBase64 = null; currentImageMimeType = null;
+            imageWrapper.classList.add('hidden');
+            if(!currentAudioBase64) mediaPreviewContainer.classList.add('hidden');
             checkInputState();
         }
+
+        /* -- NOTAS DE VOZ REALES CON MEDIA RECORDER -- */
+        const recordBtn = document.getElementById('record-audio-btn');
+        const recordIcon = recordBtn.querySelector('i');
+        const audioWrapper = document.getElementById('audio-wrapper');
+        const removeAudioBtn = document.getElementById('remove-audio-btn');
+        
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        recordBtn.addEventListener('click', async () => {
+            if (isRecording) {
+                // Parar de Grabar
+                mediaRecorder.stop();
+                return;
+            }
+            
+            // Empezar a Grabar
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) audioChunks.push(e.data);
+                };
+
+                mediaRecorder.onstart = () => {
+                    isRecording = true;
+                    recordIcon.classList.remove('text-[17px]');
+                    recordIcon.classList.add('mic-recording');
+                    document.getElementById('user-input').placeholder = "Grabando nota de voz...";
+                };
+
+                mediaRecorder.onstop = () => {
+                    isRecording = false;
+                    recordIcon.classList.remove('mic-recording');
+                    recordIcon.classList.add('text-[17px]');
+                    document.getElementById('user-input').placeholder = "Escribe o envía tu nota...";
+
+                    // Detener todas las pistas para apagar la luz roja del mic
+                    stream.getTracks().forEach(track => track.stop());
+
+                    // Empaquetar Audio en WebM o MP4 dependiendo del navegador
+                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const dataUrl = event.target.result;
+                        const parts = dataUrl.split(',');
+                        currentAudioMimeType = parts[0].match(/:(.*?);/)[1];
+                        currentAudioBase64 = parts[1];
+                        
+                        // Mostrar Preview de Audio
+                        audioWrapper.classList.remove('hidden');
+                        audioWrapper.classList.add('flex');
+                        mediaPreviewContainer.classList.remove('hidden');
+                        checkInputState();
+                    };
+                    reader.readAsDataURL(audioBlob);
+                };
+
+                mediaRecorder.start();
+
+            } catch (err) {
+                alert("Para enviar Notas de Voz, debes permitir el uso del Micrófono (Solo funciona en URLs seguras o Locales). " + err);
+            }
+        });
+
+        removeAudioBtn.addEventListener('click', limpiarAudio);
+        
+        function limpiarAudio() {
+            currentAudioBase64 = null; currentAudioMimeType = null;
+            audioWrapper.classList.add('hidden');
+            audioWrapper.classList.remove('flex');
+            if(!currentImageBase64) mediaPreviewContainer.classList.add('hidden');
+            checkInputState();
+        }
+
 
         /* === LOGIN Y UI BÁSICA === */
         const loginModal = document.getElementById('login-modal');
@@ -408,13 +442,13 @@
             btn.addEventListener('click', () => {
                 userInput.value = btn.dataset.text;
                 checkInputState();
-                postMessage(); // Auto enviar para agilidad
+                postMessage(); 
             });
         });
 
         function checkInputState() {
             userInput.style.height = 'auto'; userInput.style.height = (userInput.scrollHeight) + 'px';
-            if(userInput.value.trim().length > 0 || currentImageBase64) {
+            if(userInput.value.trim().length > 0 || currentImageBase64 || currentAudioBase64) {
                 sendBtn.classList.add('bg-white', 'text-black'); sendBtn.classList.remove('bg-gray-100/10', 'text-white');
             } else {
                 sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
@@ -433,7 +467,7 @@
             currentChatId = null; messagesArea.innerHTML = '';
             messagesArea.classList.add('hidden'); messagesArea.classList.remove('flex');
             emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
-            isFirstMessage = true; limpiarFoto(); cargarHistorialBaseDeDatos();
+            isFirstMessage = true; limpiarFoto(); limpiarAudio(); cargarHistorialBaseDeDatos();
             closeMobileNav();
         };
 
@@ -452,22 +486,21 @@
             setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
         }
 
-        // Nueva función de Formateo que usa Marked.js para interpretar el Markdown de Gemini de forma PERFECTA
         function formatText(text) {
-            // Eliminar identificadores internos feos de bases de datos antiguas si existen
-            const txt = text.replace(/\*\(\S+ Imagen \/ Documento adjunto analizado\)\*/g, '');
-            // Convertir texto plano de MD a HTML correcto usando marked.js
+            const txt = text.replace(/\*\(\S+ Imagen \/ Documento adjunto analizado\)\*/g, '')
+                            .replace(/\*\(\S+ Nota de voz analizada\)\*/g, '');
             return marked.parse(txt); 
         }
 
         async function postMessage() {
             const message = userInput.value.trim();
-            if (!message && !currentImageBase64) return;
+            if (!message && !currentImageBase64 && !currentAudioBase64) return;
 
             if (isFirstMessage) prepararVentanaParaChat();
 
+            // Pintar burbuja local
             const imgDataURL = currentImageBase64 ? imageThumbnail.src : null;
-            addMessageBubble(message, 'user', true, imgDataURL);
+            addMessageBubble(message, 'user', true, imgDataURL, currentAudioBase64 != null);
             
             userInput.value = ''; userInput.style.height = '24px';
             sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
@@ -477,7 +510,12 @@
 
             const payload_image_data = currentImageBase64;
             const payload_mime_type = currentImageMimeType;
+            
+            const payload_audio_data = currentAudioBase64;
+            const payload_audio_mime = currentAudioMimeType;
+            
             limpiarFoto(); 
+            limpiarAudio();
 
             try {
                 if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
@@ -490,7 +528,9 @@
                         email: userEmail,
                         chat_id: currentChatId,
                         image_data: payload_image_data,
-                        image_mime: payload_mime_type
+                        image_mime: payload_mime_type,
+                        audio_data: payload_audio_data,
+                        audio_mime: payload_audio_mime
                     })
                 });
 
@@ -500,7 +540,7 @@
                 addMessageBubble(data.respuesta, 'ai');
                 cargarHistorialBaseDeDatos(); 
             } catch (err) {
-                addMessageBubble('Error al conectar con los servidores de IA Castillo. Reintente.', 'ai');
+                addMessageBubble('Error al conectar con los servidores de IA Castillo. Reintentar.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden'); loader.classList.add('hidden');
                 sendBtn.disabled = false;
@@ -509,13 +549,13 @@
             }
         }
 
-        function addMessageBubble(text, role, scroll = true, imageDataURL = null) {
+        function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false) {
             const wrapper = document.createElement('div');
             wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans';
 
             const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-700"/>` : '';
+            const audioHtml = hasAudio ? `<div class="bg-[#333537] text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-400"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';
 
-            // Se integra la clase "markdown-body" para la respuesta de la IA
             if (role === 'user') {
                 wrapper.innerHTML = `
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#333537] flex items-center justify-center flex-shrink-0 mt-1 uppercase text-xs font-bold shadow-md shadow-black/20">
@@ -523,6 +563,7 @@
                     </div>
                     <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">
                         ${photoHtml}
+                        ${audioHtml}
                         ${text}
                     </div>
                 `;
