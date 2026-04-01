@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
@@ -75,19 +78,9 @@
             <h1 class="text-[24px] font-[400] text-[#202124] mb-2 leading-tight tracking-[0px]">Iniciar sesión con Google</h1>
             <p class="text-[#202124] text-[16px] mb-8 leading-normal font-normal">Para ir a <strong>IA Castillo Web</strong></p>
             
-            <div class="w-full relative form-group text-left">
-                <!-- Input de Material Design -->
-                <input type="email" id="user-email-input" class="peer w-full text-[16px] p-[13px] bg-transparent border border-[#dadce0] rounded text-[#202124] outline-none hover:border-[#202124] focus:border-[#1a73e8] focus:border-2 transition-all placeholder-transparent" placeholder="Correo electrónico o teléfono">
-                <label for="user-email-input" class="absolute left-3 -top-[10px] px-1 bg-white text-[12px] text-[#1a73e8] peer-placeholder-shown:text-[16px] peer-placeholder-shown:text-[#5f6368] peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent pointer-events-none transition-all peer-focus:-top-[10px] peer-focus:text-[12px] peer-focus:text-[#1a73e8] peer-focus:bg-white font-medium">Correo electrónico</label>
-            </div>
+            <div id="google-button-container" class="mt-4 mb-4 flex justify-center w-full min-h-[40px]"></div>
             
-            <p class="w-full text-left text-[#1a73e8] text-[14px] mt-2 font-medium cursor-pointer mb-12 hover:underline">¿Has olvidado tu correo electrónico?</p>
-            
-            <div class="w-full flex justify-end items-center mt-2">
-                <button id="login-btn-action" class="bg-[#1a73e8] hover:bg-[#1b6cdc] text-white font-medium px-6 py-[9px] rounded text-[14px] transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a73e8] focus:ring-offset-1">
-                    Siguiente
-                </button>
-            </div>
+            <p class="w-full text-center text-[#5f6368] text-[13px] mt-6 font-medium cursor-pointer mb-2 hover:underline">Autenticación Segura Oauth2</p>
         </div>
     </div>
 
@@ -392,18 +385,36 @@
         }
 
 
-        /* === LOGIN Y UI BÁSICA === */
+        /* === LOGIN Y UI BÁSICA CON AUTH OFICIAL GOOGLE === */
         const loginModal = document.getElementById('login-modal');
-        const emailInputUI = document.getElementById('user-email-input');
+        
+        // Verifica si ya hay cuenta
+        if (userEmail) { 
+            iniciarSesionUI(userEmail); 
+        } else {
+            // Manejador del Login con Google
+            window.handleGoogleLogin = (response) => {
+                const payload = jwt_decode(response.credential);
+                const email = payload.email;
+                if (email) {
+                    localStorage.setItem('userEmail', email); 
+                    userEmail = email; 
+                    iniciarSesionUI(email);
+                }
+            };
 
-        if (userEmail) { iniciarSesionUI(userEmail); }
-
-        document.getElementById('login-btn-action').addEventListener('click', () => {
-            const email = emailInputUI.value.trim().toLowerCase();
-            if (email && email.includes('@')) {
-                localStorage.setItem('userEmail', email); userEmail = email; iniciarSesionUI(email);
-            }
-        });
+            window.onload = () => {
+                google.accounts.id.initialize({
+                    client_id: "507594110108-1rf1ktp1cgsv99oicdnkqtjres1elgau.apps.googleusercontent.com",
+                    callback: handleGoogleLogin
+                });
+                google.accounts.id.renderButton(
+                    document.getElementById("google-button-container"),
+                    { theme: "outline", size: "large", type: "standard", text: "continue_with" }
+                );
+                google.accounts.id.prompt(); // Mostrar pop-up de un toque si está disponible
+            };
+        }
 
         document.getElementById('logout-btn').addEventListener('click', () => { localStorage.removeItem('userEmail'); location.reload(); });
 
