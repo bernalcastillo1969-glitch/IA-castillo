@@ -48,7 +48,7 @@
     <!-- Sidebar (Barra Izquierda para Historial) -->
     <aside class="w-[280px] hidden md:flex flex-col py-4 border-r border-gray-800 bg-[#1e1f20] shrink-0 transition-all duration-300" id="sidebar">
         <div class="px-4 flex items-center justify-between mb-8 cursor-pointer">
-            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-[10px] bg-[#131314] border border-gray-800 text-gray-400 px-2 py-0.5 rounded-md ml-1 tracking-wider uppercase">Pro</span></h2>
+            <h2 class="text-xl font-bold gradient-text" id="toggle-sidebar">IA Castillo <span class="text-[10px] bg-[#131314] border border-gray-800 text-gray-400 px-2 py-0.5 rounded-md ml-1 tracking-wider uppercase">Pro Vision</span></h2>
             <button class="text-gray-400 hover:text-white" onclick="document.getElementById('sidebar').classList.add('hidden'); document.getElementById('sidebar-collapsed').classList.remove('hidden');"><i class="fa-solid fa-list"></i></button>
         </div>
         
@@ -76,9 +76,7 @@
         <button class="text-gray-400 hover:text-white mb-8 text-xl" onclick="document.getElementById('sidebar').classList.remove('hidden'); document.getElementById('sidebar-collapsed').classList.add('hidden');">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <button id="new-chat-btn-mini" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors shadow-sm border border-gray-800" title="Nuevo chat">
-            <i class="fa-solid fa-plus"></i>
-        </button>
+        <button id="new-chat-btn-mini" class="text-gray-400 hover:text-white bg-[#131314] p-3 rounded-full mb-auto transition-colors shadow-sm border border-gray-800" title="Nuevo chat"><i class="fa-solid fa-plus"></i></button>
     </aside>
 
     <!-- Contenido Principal -->
@@ -86,15 +84,15 @@
         
         <!-- Navbar Superior (Móvil) -->
         <header class="md:hidden flex items-center justify-between p-4 px-5 text-gray-200 bg-[#131314] z-10 border-b border-gray-800">
-            <button class="text-xl" onclick="alert('Historial en dispositivo móvil próximamente!')"><i class="fa-solid fa-bars"></i></button>
-            <span class="font-medium text-lg">IA Castillo</span>
+            <button class="text-xl" onclick="alert('Historial en celular próximamente!')"><i class="fa-solid fa-bars"></i></button>
+            <span class="font-medium text-lg">IA Castillo <i class="fa-regular fa-eye text-blue-500 text-sm ml-1"></i></span>
             <button id="new-chat-mobile" class="text-xl"><i class="fa-solid fa-square-plus text-blue-400 hover:text-blue-300"></i></button>
         </header>
 
         <!-- Contenedor del Chat (Scrollable) -->
         <div id="chat-container" class="flex-1 overflow-y-auto chat-scroll flex flex-col px-4 md:px-0 scroll-smooth pb-40">
             
-            <!-- Estado Vacío Inicial (Saludo grande) -->
+            <!-- Estado Vacío Inicial -->
             <div id="empty-state" class="w-full h-full flex flex-col items-center justify-center mt-6 md:-mt-10 transition-opacity duration-300">
                 
                 <div class="w-full max-w-[800px] text-left md:pl-8 mb-8">
@@ -102,26 +100,22 @@
                     <h2 class="text-[44px] md:text-[56px] font-medium leading-[1.1] text-[#444746]">¿Por dónde empezamos?</h2>
                 </div>
 
-                <!-- Botones de sugerencias como ChatGPT o Gemini -->
                 <div class="flex flex-wrap justify-center md:justify-start gap-3 mt-4 max-w-[800px] px-2 w-full md:pl-8">
-                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Explícame cómo resolver una ecuación cuadrática paso a paso.">
-                        <i class="fa-solid fa-square-root-variable text-blue-400"></i> Ayúdame con Matemáticas
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Extrae el texto de la imagen adjunta.">
+                        <i class="fa-solid fa-file-image text-blue-400"></i> Leer documento o foto
                     </button>
-                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Dame una receta rápida que pueda hacer solo con pasta, huevo, ajo y aceite.">
-                        <i class="fa-solid fa-utensils text-orange-400"></i> Sugiere una receta rápida
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="¿Puedes darme la receta para hacer pabellón criollo Venezolano?">
+                        <i class="fa-solid fa-utensils text-orange-400"></i> Sugiere una receta
                     </button>
-                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Dime un consejo de psicología para mejorar mi nivel de estrés esta semana.">
-                        <i class="fa-solid fa-brain text-purple-400"></i> Consejos para liberar estrés
-                    </button>
-                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Resume los beneficios principales del registro de patentes en Venezuela.">
-                        <i class="fa-solid fa-scale-balanced text-green-400"></i> Asesoría Legal Rápida
+                    <button class="suggestion-btn bg-[#1e1f20] hover:bg-[#2a2c2e] text-[14px] font-medium text-gray-300 px-5 py-3 rounded-full border border-gray-700 transition-colors flex items-center gap-2" data-text="Explica cómo se resuelve el teorema de Pitágoras.">
+                        <i class="fa-solid fa-square-root-variable text-purple-400"></i> Ayuda Matemática
                     </button>
                 </div>
             </div>
 
-            <!-- Área donde aparecerán los mensajes (Historial Vivo) -->
+            <!-- Área donde aparecerán los mensajes -->
             <div id="messages-area" class="w-full max-w-[800px] mx-auto flex-col gap-8 pt-8 hidden">
-                <!-- Los mensajes se inyectan acá -->
+                <!-- Mensajes dinámicos -->
             </div>
 
         </div>
@@ -129,67 +123,120 @@
         <!-- Caja de Entrada Fija -->
         <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-10 pb-6 px-4 md:px-0 flex flex-col items-center pointer-events-none">
             
-            <div class="w-full max-w-[800px] relative pointer-events-auto">
-                <div class="bg-[#1e1f20] rounded-[32px] flex items-center px-4 py-3 focus-within:bg-[#333537] focus-within:ring-1 focus-within:ring-gray-700 transition-all shadow-xl">
+            <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20] rounded-[32px] flex flex-col border border-gray-700 shadow-xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-colors">
+                
+                <!-- Vista Previa de la Imagen (Si hay una adjunta) -->
+                <div id="image-preview-container" class="hidden px-4 pt-3 pb-1">
+                    <div class="relative inline-block border border-gray-600 rounded-xl overflow-hidden shadow-sm h-16 w-16 group">
+                        <img id="image-thumbnail" src="" class="h-16 w-16 object-cover" />
+                        <button id="remove-image-btn" class="absolute inset-0 bg-black/60 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center px-4 py-3">
+                    <!-- Botón de Adjuntar Archivo Oculto -->
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
                     
-                    <button class="text-gray-400 hover:text-white p-2 rounded-full transition-colors flex-shrink-0">
-                        <i class="fa-solid fa-image text-[16px]"></i>
+                    <button id="attach-btn" class="text-gray-400 hover:text-blue-400 p-2 rounded-full transition-colors flex-shrink-0" title="Subir imagen">
+                        <i class="fa-solid fa-image text-[18px]"></i>
                     </button>
                     
                     <textarea 
                         id="user-input" 
                         rows="1"
-                        placeholder="Pregunta o escribe lo que necesites..." 
-                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px]"
+                        placeholder="Pregunta o adjunta una foto..." 
+                        class="flex-1 bg-transparent border-none outline-none text-[#e3e3e3] px-3 resize-none max-h-32 min-h-[24px] overflow-hidden text-[15px] placeholder-gray-500 mt-0.5"
                     ></textarea>
 
-                    <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black shadow-lg">
+                    <button id="send-btn" class="bg-gray-100/10 text-white w-9 h-9 rounded-full flex items-center justify-center transition-all ml-1 flex-shrink-0 hover:bg-white hover:text-black hover:shadow-lg disabled:opacity-50">
                         <i class="fa-solid fa-arrow-up text-[14px]" id="send-icon"></i>
                         <div id="loader" class="hidden flex gap-1 items-center justify-center">
                             <div class="loader-dot dot1"></div><div class="loader-dot dot2"></div><div class="loader-dot"></div>
                         </div>
                     </button>
                 </div>
-                <p class="text-center text-gray-500 text-[11px] mt-3 font-medium">
-                    IA Castillo puede cometer errores en tareas complejas, verifica las respuestas importantes.
-                </p>
             </div>
+            
+            <p class="text-center text-gray-500 text-[11px] mt-3 font-medium pointer-events-auto">
+                IA Castillo Visión ahora lee documentos e imágenes al instante.
+            </p>
         </div>
 
     </main>
 
     <script>
-        /* === SESIÓN / LOGIN === */
+        /* === SESIÓN Y BASE DE DATOS === */
         let userEmail = localStorage.getItem('userEmail');
         let currentChatId = null; 
         let isFirstMessage = true;
 
-        const loginModal = document.getElementById('login-modal');
-        const emailInput = document.getElementById('user-email-input');
+        /* MANEJO DE IMÁGENES */
+        let currentImageBase64 = null;
+        let currentImageMimeType = null;
 
-        if (userEmail) {
-            iniciarSesionUI(userEmail);
+        const fileInput = document.getElementById('file-input');
+        const attachBtn = document.getElementById('attach-btn');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imageThumbnail = document.getElementById('image-thumbnail');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+
+        // Disparar input file
+        attachBtn.addEventListener('click', () => fileInput.click());
+
+        // Procesar imagen convertida a Base64 sin subirla al servidor estático
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const dataUrl = event.target.result;
+                
+                // Mostrar preview en HD
+                imageThumbnail.src = dataUrl;
+                imagePreviewContainer.classList.remove('hidden');
+                
+                // Extraer el base64 limpio (sin prefijo "data:image/jpeg;base64,") para la API
+                const parts = dataUrl.split(',');
+                currentImageMimeType = parts[0].match(/:(.*?);/)[1];
+                currentImageBase64 = parts[1];
+                
+                // Activar boton azul porque hay enviar
+                sendBtn.classList.add('bg-blue-600', 'text-white'); 
+                sendBtn.classList.remove('bg-gray-100/10', 'hover:bg-white', 'hover:text-black');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Eliminar foto antes de enviar
+        removeImageBtn.addEventListener('click', () => {
+            limpiarFoto();
+        });
+
+        function limpiarFoto() {
+            fileInput.value = '';
+            currentImageBase64 = null;
+            currentImageMimeType = null;
+            imagePreviewContainer.classList.add('hidden');
+            checkInputState();
         }
 
+        /* MANEJO UI BÁSICA */
+        const loginModal = document.getElementById('login-modal');
+        const emailInputUI = document.getElementById('user-email-input');
+
+        if (userEmail) { iniciarSesionUI(userEmail); }
+
         document.getElementById('login-btn-action').addEventListener('click', () => {
-            const email = emailInput.value.trim().toLowerCase();
+            const email = emailInputUI.value.trim().toLowerCase();
             if (email && email.includes('@')) {
-                localStorage.setItem('userEmail', email);
-                userEmail = email;
-                iniciarSesionUI(email);
-            } else {
-                alert("Por favor un correo válido :)");
+                localStorage.setItem('userEmail', email); userEmail = email; iniciarSesionUI(email);
             }
         });
 
-        document.getElementById('user-email-input').addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') document.getElementById('login-btn-action').click();
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.removeItem('userEmail');
-            location.reload(); 
-        });
+        document.getElementById('logout-btn').addEventListener('click', () => { localStorage.removeItem('userEmail'); location.reload(); });
 
         function iniciarSesionUI(email) {
             loginModal.classList.add('opacity-0', 'pointer-events-none');
@@ -204,7 +251,6 @@
             cargarHistorialBaseDeDatos();
         }
 
-        /* === HISTORIAL (Supabase) === */
         async function cargarHistorialBaseDeDatos() {
             try {
                 const res = await fetch('/history', {
@@ -216,28 +262,20 @@
                 
                 const chats = {};
                 mensajes.forEach(msg => {
-                    if(!chats[msg.chat_id]) chats[msg.chat_id] = { id: msg.chat_id, fecha: msg.created_at, content: msg.content };
+                    if(!chats[msg.chat_id]) chats[msg.chat_id] = { id: msg.chat_id, content: msg.content };
                 });
 
                 const historyContainer = document.getElementById('history-container');
                 historyContainer.innerHTML = '';
                 
-                if (Object.keys(chats).length === 0) {
-                    historyContainer.innerHTML = '<p class="text-gray-600 text-[11px] px-2 italic mt-4">Sin registro histórico aún.</p>';
-                    return;
-                }
-
                 Object.values(chats).reverse().forEach(chat => {
-                    const truncContent = chat.content.substring(0, 28) + '...';
-                    
+                    const truncContent = chat.content.substring(0, 25) + '...';
                     const div = document.createElement('div');
                     div.className = "history-item text-gray-300 text-[13px] px-3 py-2.5 rounded-lg flex items-center gap-3 w-full overflow-hidden font-medium";
                     div.innerHTML = `<i class="fa-regular fa-message text-gray-500"></i> <span class="truncate block flex-1 text-left">${truncContent}</span>`;
-                    
                     div.onclick = () => cargarChatEspecifico(chat.id, mensajes);
                     historyContainer.appendChild(div);
                 });
-
             } catch (e) { console.error("History fail:", e); }
         }
 
@@ -254,39 +292,32 @@
         document.querySelectorAll('.suggestion-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 userInput.value = btn.dataset.text;
-                userInput.focus();
-                // Opcional: Autoclic para enviarlo al instante
-                // postMessage(); 
-                sendBtn.classList.add('bg-white', 'text-black'); sendBtn.classList.remove('bg-gray-100/10', 'text-white');
+                checkInputState();
             });
         });
 
-        userInput.addEventListener('input', function() {
-            this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';
-            if(this.value.trim().length > 0) {
+        function checkInputState() {
+            userInput.style.height = 'auto'; userInput.style.height = (userInput.scrollHeight) + 'px';
+            if(userInput.value.trim().length > 0 || currentImageBase64) {
                 sendBtn.classList.add('bg-white', 'text-black'); sendBtn.classList.remove('bg-gray-100/10', 'text-white');
             } else {
                 sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
             }
-        });
+        }
+
+        userInput.addEventListener('input', checkInputState);
 
         function prepararVentanaParaChat() {
-            emptyState.classList.add('hidden');
-            emptyState.classList.remove('flex');
-            messagesArea.classList.remove('hidden');
-            messagesArea.classList.add('flex');
+            emptyState.classList.add('hidden'); emptyState.classList.remove('flex');
+            messagesArea.classList.remove('hidden'); messagesArea.classList.add('flex');
             isFirstMessage = false;
         }
 
         const crearNuevoChat = () => {
-            currentChatId = null;
-            messagesArea.innerHTML = '';
-            messagesArea.classList.add('hidden');
-            messagesArea.classList.remove('flex');
-            emptyState.classList.remove('hidden');
-            emptyState.classList.add('flex');
-            isFirstMessage = true;
-            cargarHistorialBaseDeDatos();
+            currentChatId = null; messagesArea.innerHTML = '';
+            messagesArea.classList.add('hidden'); messagesArea.classList.remove('flex');
+            emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+            isFirstMessage = true; limpiarFoto(); cargarHistorialBaseDeDatos();
         };
 
         document.getElementById('new-chat-btn').addEventListener('click', crearNuevoChat);
@@ -294,16 +325,14 @@
         document.getElementById('new-chat-btn-mini')?.addEventListener('click', crearNuevoChat);
 
         function cargarChatEspecifico(chatId, todosLosMensajes) {
-            currentChatId = chatId;
-            messagesArea.innerHTML = '';
+            currentChatId = chatId; messagesArea.innerHTML = '';
             prepararVentanaParaChat();
 
             const filtrados = todosLosMensajes.filter(m => m.chat_id === chatId);
             filtrados.forEach(msg => {
-                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false);
+                addMessageBubble(msg.content, msg.role === 'user' ? 'user' : 'ai', false, null); // Sin imagen local cargada en DB por eficiencia
             });
             setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
-            
             if(window.innerWidth < 768) { document.getElementById('sidebar').classList.add('hidden'); }
         }
 
@@ -316,19 +345,23 @@
 
         async function postMessage() {
             const message = userInput.value.trim();
-            if (!message) return;
+            if (!message && !currentImageBase64) return;
 
             if (isFirstMessage) prepararVentanaParaChat();
 
-            addMessageBubble(message, 'user');
+            // Pintar la burbuja del usuario visualmente, cruzando texto y si hay foto, el DataURL 
+            const imgDataURL = currentImageBase64 ? imageThumbnail.src : null;
+            addMessageBubble(message, 'user', true, imgDataURL);
             
-            userInput.value = '';
-            userInput.style.height = 'auto';
+            userInput.value = ''; userInput.style.height = 'auto';
             sendBtn.classList.remove('bg-white', 'text-black'); sendBtn.classList.add('bg-gray-100/10', 'text-white');
             
-            sendIcon.classList.add('hidden');
-            loader.classList.remove('hidden');
+            sendIcon.classList.add('hidden'); loader.classList.remove('hidden');
             sendBtn.disabled = true;
+
+            const payload_image_data = currentImageBase64;
+            const payload_mime_type = currentImageMimeType;
+            limpiarFoto(); // Se borra de la UI de subida al enviar
 
             try {
                 if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
@@ -339,7 +372,9 @@
                     body: JSON.stringify({ 
                         mensaje: message, 
                         email: userEmail,
-                        chat_id: currentChatId 
+                        chat_id: currentChatId,
+                        image_data: payload_image_data,
+                        image_mime: payload_mime_type
                     })
                 });
 
@@ -347,21 +382,22 @@
                 currentChatId = data.chat_id;
                 
                 addMessageBubble(data.respuesta, 'ai');
-                cargarHistorialBaseDeDatos(); // Refrescamos el historial en pantalla
+                cargarHistorialBaseDeDatos(); 
             } catch (err) {
-                addMessageBubble('Error. Revisa tu conexión a Vercel/Supabase.', 'ai');
+                addMessageBubble('Error en los servidores visuales. Puede que tu foto pesara demasiado, ¡pero intenta otra vez!.', 'ai');
             } finally {
-                sendIcon.classList.remove('hidden');
-                loader.classList.add('hidden');
+                sendIcon.classList.remove('hidden'); loader.classList.add('hidden');
                 sendBtn.disabled = false;
                 chatContainer.scrollTop = chatContainer.scrollHeight;
                 userInput.focus();
             }
         }
 
-        function addMessageBubble(text, role, scroll = true) {
+        function addMessageBubble(text, role, scroll = true, imageDataURL = null) {
             const wrapper = document.createElement('div');
             wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans';
+
+            const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-700"/>` : '';
 
             if (role === 'user') {
                 wrapper.innerHTML = `
@@ -369,6 +405,7 @@
                         ${userEmail.charAt(0)}
                     </div>
                     <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">
+                        ${photoHtml}
                         ${formatText(text)}
                     </div>
                 `;
