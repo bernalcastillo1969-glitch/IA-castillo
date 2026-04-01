@@ -92,7 +92,7 @@ def chat():
 
         # 3. Iniciar el cerebro de Gemini con toda la memoria pasada
         modelo = genai.GenerativeModel(
-            model_name='gemini-flash-latest',
+            model_name='gemini-3.1-flash-lite-preview',
             system_instruction=config_modo["prompt"]
         )
         chat_session = modelo.start_chat(history=formatted_history)
