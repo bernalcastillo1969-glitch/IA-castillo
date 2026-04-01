@@ -561,20 +561,14 @@
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#333537] flex items-center justify-center flex-shrink-0 mt-1 uppercase text-xs font-bold shadow-md shadow-black/20">
                         ${userEmail.charAt(0)}
                     </div>
-                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">
-                        ${photoHtml}
-                        ${audioHtml}
-                        ${text}
-                    </div>
+                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">${photoHtml}${audioHtml}${text}</div>
                 `;
             } else {
                 wrapper.innerHTML = `
                     <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 mt-1 shadow-lg shadow-blue-500/20">
                         <i class="fa-solid fa-sparkles text-white text-[14px]"></i>
                     </div>
-                    <div class="flex-1 pt-1.5 font-normal markdown-body">
-                        ${formatText(text)}
-                    </div>
+                    <div class="flex-1 pt-0.5 font-normal markdown-body">${formatText(text)}</div>
                 `;
             }
 
