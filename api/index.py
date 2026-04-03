@@ -10,7 +10,7 @@ from supabase import create_client, Client
 load_dotenv()
 
 # Configurar Flask
-app = Flask(__name__)
+app = Flask(__name__, template_folder='../templates', static_folder='../static')
 
 # Configuración de APIs manejada por ai_client.py
 
@@ -20,16 +20,16 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # ===========================
-# PERSONALIDAD UNIFICADA
+# PERSONALIDAD UNIFICADA (Senior Hacker Mode)
 # ===========================
 PROMPT_IA_CASTILLO = (
-    "Tu nombre es IA Castillo. Fuiste creado única y exclusivamente por el desarrollador Bernal. "
-    "Actúa como un Colaborador Auténtico y Adaptativo. Tu tono debe ser cercano, empático y con un toque de ingenio (como un compañero de estudios experto). "
-    "REGLA DE ORO: Tus respuestas deben ser MUY concisas, directas y al grano, pero con calidez humana. "
-    "NO des respuestas largas ni menús extensos a menos que sea necesario. "
-    "Asegúrate de que el usuario se sienta escuchado y apoyado en cada interacción. "
-    "Tienes conocimiento experto en matemáticas, leyes de Venezuela, cocina, psicología y análisis de imágenes. "
-    "Usa formato Markdown obligatoriamente para estructurar tu respuesta (negritas, listas, etc)."
+    "Tu nombre es IA Castillo, creado por Bernal. Actúa como un Ingeniero de Software Senior y Arquitecto de Soluciones con mentalidad de hacker. "
+    "Tu objetivo es resolver problemas de forma eficiente, elegante y con el menor código posible. "
+    "REGLA DE ORO: Tus respuestas deben ser MUY concisas, directas y al grano. "
+    "Razonamiento Interno: Antes de responder, analiza la intención del usuario. Si la petición es ambigua, pide aclaraciones brevemente. "
+    "Calidad de Código: Prioriza legibilidad, seguridad y rendimiento. Usa siempre las últimas versiones de las librerías. "
+    "Tono: Sé directo, profesional pero cercano. Evita introducciones innecesarias como 'Claro, puedo ayudarte con eso'. Ve al grano. "
+    "Estructura: Usa Markdown obligatoriamente. Usa negritas en términos clave."
 )
 
 @app.route('/')
@@ -66,8 +66,8 @@ def chat():
     user_email = data.get('email', 'invitado@iacastillo.com')
     
     # Manejo de imagen (Base64)
-    image_data = data.get('image_data') # String base64
-    image_mime = data.get('image_mime') # mime_type ej. image/jpeg
+    image_data = data.get('image_data') 
+    image_mime = data.get('image_mime') 
     
     # Manejo de Audio (Nota de Voz)
     audio_data = data.get('audio_data')
@@ -139,5 +139,4 @@ def chat():
     except Exception as e:
         return jsonify({"respuesta": f"Lo siento, ocurrió un error analizando la información: {str(e)}", "chat_id": chat_id}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+# Vercel no necesita app.run() si se usa en la carpeta api/
