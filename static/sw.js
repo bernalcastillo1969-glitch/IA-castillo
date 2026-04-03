@@ -1,24 +1,35 @@
-const CACHE_NAME = 'ia-castillo-v2';
+const CACHE_NAME = 'ia-castillo-v5';
 const ASSETS_TO_CACHE = [
-  '/',
-  'https://ia-castillo.vercel.app/static/icons/icon-192.png',
-  'https://ia-castillo.vercel.app/static/icons/icon-512.png',
-  'https://ia-castillo.vercel.app/static/icons/screenshot-1.png'
+  '/static/icons/icon-192.png',
+  '/static/icons/icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Caching manifest assets...');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });
 
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
+  // Limpiar caches antiguos
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+      );
+    })
+  );
+});
+
 self.addEventListener('fetch', (event) => {
+  // Estrategia: Network-First para evitar que se quede pegada la versión vieja
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
     })
   );
 });
