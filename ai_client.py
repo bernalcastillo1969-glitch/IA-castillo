@@ -36,7 +36,7 @@ class GeminiProvider(AIProvider):
         return response.text
 
 class GroqProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "llama-3.1-70b-versatile"):
+    def __init__(self, api_key: str, model_name: str = "llama-3.3-70b-versatile"):
         self.client = Groq(api_key=api_key)
         self.model_name = model_name
 
@@ -53,7 +53,7 @@ class GroqProvider(AIProvider):
         if prompt:
             messages.append({"role": "user", "content": prompt})
         
-        # Groq Llama 3.1 70b is text only. If multimodal_parts exist, they'll be ignored or should have been handled by Gemini.
+        # Groq Llama 3.3 70b is text only. If multimodal_parts exist, they'll be handled by Gemini.
         
         completion = self.client.chat.completions.create(
             messages=messages,
@@ -67,4 +67,4 @@ class AIFactory:
         if has_multimodal:
             return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-1.5-flash")
         else:
-            return GroqProvider(os.getenv("GROQ_API_KEY"), "llama-3.1-70b-versatile")
+            return GroqProvider(os.getenv("GROQ_API_KEY"), "llama-3.3-70b-versatile")
