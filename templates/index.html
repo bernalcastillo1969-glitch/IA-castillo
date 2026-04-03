@@ -695,24 +695,28 @@
 
         function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans bubble-appear';
+            wrapper.className = 'w-full flex mb-5 font-sans bubble-appear';
 
-            const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-700"/>` : '';
-            const audioHtml = hasAudio ? `<div class="bg-[#333537] text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-400"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';
+            const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-500"/>` : '';
+            const audioHtml = hasAudio ? `<div class="bg-black/20 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-300"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';
 
             if (role === 'user') {
+                wrapper.classList.add('justify-end');
                 wrapper.innerHTML = `
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#333537] flex items-center justify-center flex-shrink-0 mt-1 uppercase text-xs font-bold shadow-md shadow-black/20">
-                        ${userEmail.charAt(0)}
+                    <div class="bg-[#005c4b] text-[#e3e3e3] px-4 py-3 rounded-2xl rounded-tr-sm max-w-[90%] md:max-w-[75%] shadow-md border border-[#006b58]/50">
+                        ${photoHtml}${audioHtml}
+                        <div class="text-[15px] leading-relaxed whitespace-pre-wrap">${text}</div>
                     </div>
-                    <div class="flex-1 text-[#e3e3e3] text-[15.5px] leading-relaxed pt-1.5 font-medium whitespace-pre-wrap">${photoHtml}${audioHtml}${text}</div>
                 `;
             } else {
+                wrapper.classList.add('justify-start');
                 wrapper.innerHTML = `
-                    <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 mt-1 shadow-lg shadow-blue-500/20">
-                        <i class="fa-solid fa-sparkles text-white text-[14px]"></i>
+                    <div class="bg-[#1e1f20] text-[#e3e3e3] px-4 py-3.5 rounded-2xl rounded-tl-sm max-w-[90%] md:max-w-[80%] shadow-md border border-gray-700 relative">
+                        <div class="absolute -left-3 -top-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 border-2 border-[#131314]">
+                            <i class="fa-solid fa-sparkles text-white text-[10px]"></i>
+                        </div>
+                        <div class="font-normal markdown-body pt-1">${formatText(text)}</div>
                     </div>
-                    <div class="flex-1 pt-0.5 font-normal markdown-body">${formatText(text)}</div>
                 `;
             }
 
