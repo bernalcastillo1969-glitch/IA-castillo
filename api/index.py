@@ -44,6 +44,50 @@ def manifest():
 def service_worker():
     return app.send_static_file('sw.js')
 
+@app.route('/stats')
+def stats():
+    try:
+        # Consulta rápida a Supabase para contar usuarios y mensajes
+        response = supabase.table('chats').select('user_email').execute()
+        all_emails = [r['user_email'] for r in response.data]
+        unique_users = len(set(all_emails)) if all_emails else 0
+        total_messages = len(all_emails)
+        
+        return f"""
+        <html>
+            <head>
+                <title>Stats | IA Castillo</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+            </head>
+            <body class="bg-[#131314] text-[#e3e3e3] flex items-center justify-center h-screen font-sans">
+                <div class="bg-[#1e1f20] p-10 rounded-[40px] border border-gray-800 shadow-2xl text-center max-w-lg w-full mx-4">
+                    <div class="flex justify-center mb-6">
+                        <div class="w-16 h-16 bg-blue-600/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
+                            <i class="fa-solid fa-chart-line text-blue-400 text-2xl"></i>
+                        </div>
+                    </div>
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-8">Panel de Bernal</h1>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="bg-[#131314] p-6 rounded-3xl border border-gray-800">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-1">Usuarios</p>
+                            <p class="text-3xl font-bold">{unique_users}</p>
+                        </div>
+                        <div class="bg-[#131314] p-6 rounded-3xl border border-gray-800">
+                            <p class="text-gray-500 text-[10px] uppercase font-black tracking-widest mb-1">Mensajes</p>
+                            <p class="text-3xl font-bold">{total_messages}</p>
+                        </div>
+                    </div>
+                    
+                    <p class="mt-10 text-gray-600 text-[11px] font-medium tracking-tight">Estadísticas reales registradas en Supabase.</p>
+                </div>
+            </body>
+        </html>
+        """
+    except Exception as e:
+        return f"Error al cargar estadísticas: {str(e)}"
+
 @app.route('/history', methods=['POST'])
 def get_history():
     data = request.get_json()
