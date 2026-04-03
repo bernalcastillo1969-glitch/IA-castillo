@@ -11,7 +11,7 @@ class AIProvider(ABC):
         pass
 
 class GeminiProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.5-flash"):
         genai.configure(api_key=api_key)
         self.model_name = model_name
 
@@ -21,19 +21,38 @@ class GeminiProvider(AIProvider):
             system_instruction=system_instruction
         )
         
-        # In Gemini history format is different: {"role": "user", "parts": ["text"]}
-        # We assume history passed is already in Gemini format or we convert it here.
-        # Given app.py, it was already formatting it as: {"role": role, "parts": [msg['content']]}
+        # SANEAR HISTORIAL: Gemini falla si los roles no alternan o si termina en 'user'
+        sanitized_history = []
+        last_role = None
+        for entry in history:
+            role = entry.get("role")
+            if role != last_role:
+                sanitized_history.append(entry)
+                last_role = role
         
-        chat_session = model.start_chat(history=history)
+        # Debe terminar en 'model' para que el primer mensaje de send_message sea 'user'
+        if sanitized_history and sanitized_history[-1]["role"] == "user":
+            sanitized_history.pop()
+
+        chat_session = model.start_chat(history=sanitized_history)
         
         message_parts = [prompt] if prompt else []
         if multimodal_parts:
             for part in multimodal_parts:
                 message_parts.append(part)
         
-        response = chat_session.send_message(message_parts)
-        return response.text
+        try:
+            response = chat_session.send_message(message_parts)
+            # Verificar si hay candidatos (si no, probablemente fue bloqueado por seguridad)
+            if not response.candidates:
+                return "⚠️ La IA Castillo no pudo generar una respuesta debido a filtros de seguridad o un error técnico. Intenta reformular tu consulta."
+            
+            return response.text
+        except Exception as e:
+            error_msg = str(e)
+            if "blocked" in error_msg.lower():
+                return "⚠️ El contenido fue bloqueado por las políticas de seguridad de la IA."
+            return f"Error en la comunicación con la IA: {error_msg}"
 
 class GroqProvider(AIProvider):
     def __init__(self, api_key: str, model_name: str = "llama-3.3-70b-versatile"):
@@ -65,6 +84,6 @@ class AIFactory:
     @staticmethod
     def get_provider(has_multimodal: bool) -> AIProvider:
         if has_multimodal:
-            return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-1.5-flash")
+            return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-2.5-flash")
         else:
             return GroqProvider(os.getenv("GROQ_API_KEY"), "llama-3.3-70b-versatile")
