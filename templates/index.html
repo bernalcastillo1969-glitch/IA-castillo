@@ -31,12 +31,14 @@
         .chat-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
         .gradient-text {
-            background: linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #d96570 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #9b72cb 50%, #d96570 56%, #131314 75%, #131314 100%);
+            background: linear-gradient(74deg, #4285f4 0, #9b72cb 9%, #d96570 20%, #d96570 24%, #9b72cb 35%, #4285f4 44%, #9b72cb 50%, #d96570 56%, #4285f4 100%);
             background-size: 400% 100%;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: animate-gradient 8s linear infinite;
         }
+        @keyframes animate-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
         .loader-dot { width: 6px; height: 6px; border-radius: 50%; background: #a8c7fa; animation: bounce 1.4s infinite ease-in-out both; }
         .dot1 { animation-delay: -0.32s; }
@@ -80,6 +82,32 @@
         .delay-200 { animation-delay: 0.2s; }
         .delay-400 { animation-delay: 0.4s; }
         .delay-600 { animation-delay: 0.6s; }
+
+        .bubble-appear {
+            animation: bubble-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+        }
+        @keyframes bubble-appear {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .glass-panel {
+            background: rgba(30, 31, 32, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .suggestion-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .suggestion-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            background-color: #2a2c2e;
+            border-color: #4285f4;
+            box-shadow: 0 10px 20px -10px rgba(66, 133, 244, 0.3);
+        }
     </style>
 
     <!-- MODAL DE LOGIN PROFESIONAL (Simplificado para Máxima Fiabilidad) -->
@@ -192,7 +220,7 @@
                 </div>
 
                 <div class="w-full max-w-[800px] text-center md:text-left mb-10 overflow-hidden">
-                    <h1 class="text-[32px] md:text-[56px] font-bold leading-[1.2] md:leading-[1.1] mb-2 gradient-text inline-block fade-in-up">✨ Hola, <span id="greeting-name">Amigo</span></h1>
+                    <h1 class="text-[32px] md:text-[56px] font-bold leading-[1.2] md:leading-[1.1] mb-2 gradient-text inline-block fade-in-up">✨ Hola,</h1>
                     <h2 class="text-[28px] md:text-[56px] font-bold leading-[1.2] md:leading-[1.1] text-gray-600 fade-in-up delay-200">¿En qué puedo ayudarte?</h2>
                     <p class="text-gray-500 mt-4 text-sm md:text-lg fade-in-up delay-400 font-medium tracking-tight">AI Castillo está listo para analizar tus imágenes, voz y documentos.</p>
                 </div>
@@ -220,7 +248,7 @@
         <!-- Caja de Entrada Fija -->
         <div class="absolute bottom-0 w-full bg-gradient-to-t from-[#131314] via-[#131314] to-transparent pt-8 pb-3 px-4 md:px-0 flex flex-col items-center pointer-events-none z-20">
             
-            <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20] rounded-[32px] flex flex-col border border-gray-700 shadow-xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-gray-700 transition-colors">
+            <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20]/80 backdrop-blur-2xl rounded-[32px] flex flex-col border border-white/5 shadow-2xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-500">
                 
                 <!-- Vista Previa de la Archivos y Notas (Si hay una adjunta) -->
                 <div id="media-preview-container" class="hidden px-4 pt-3 pb-1 flex gap-2">
@@ -448,8 +476,7 @@
             document.getElementById('user-display-email').textContent = email;
             document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
             
-            const nombreCorreo = email.split('@')[0];
-            document.getElementById('greeting-name').textContent = nombreCorreo.charAt(0).toUpperCase() + nombreCorreo.slice(1);
+            // Nombre en el saludo eliminado a petición del usuario.
             
             cargarHistorialBaseDeDatos();
         }
@@ -654,7 +681,7 @@
 
         function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false) {
             const wrapper = document.createElement('div');
-            wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans';
+            wrapper.className = 'w-full flex gap-4 md:gap-6 mb-4 font-sans bubble-appear';
 
             const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-700"/>` : '';
             const audioHtml = hasAudio ? `<div class="bg-[#333537] text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-400"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';

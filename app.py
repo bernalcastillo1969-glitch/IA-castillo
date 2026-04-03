@@ -2,7 +2,7 @@ import os
 import uuid
 import base64
 from flask import Flask, render_template, request, jsonify
-import google.generativeai as genai
+from ai_client import AIFactory
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
@@ -12,9 +12,7 @@ load_dotenv()
 # Configurar Flask
 app = Flask(__name__)
 
-# Configurar Gemini API
-API_KEY = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=API_KEY)
+# Configuración de APIs manejada por ai_client.py
 
 # Configurar Supabase Database
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -91,33 +89,24 @@ def chat():
             role = 'model' if msg['role'] == 'ai' else 'user'
             formatted_history.append({"role": role, "parts": [msg['content']]})
 
-        modelo = genai.GenerativeModel(
-            model_name='gemini-3.1-flash-lite-preview',
-            system_instruction=PROMPT_IA_CASTILLO
-        )
-        chat_session = modelo.start_chat(history=formatted_history)
-
-        # Preparamos el contenido a enviar al modelo
-        message_parts = []
-        if user_message:
-            message_parts.append(user_message)
+        # Detectar si es multimodal (imagen o audio)
+        has_multimodal = bool((image_data and image_mime) or (audio_data and audio_mime))
         
+        # Obtener el proveedor adecuado (Groq para texto, Gemini para multimodal)
+        provider = AIFactory.get_provider(has_multimodal)
+        
+        multimodal_parts = []
         db_message = user_message
 
         if image_data and image_mime:
             raw_bytes = base64.b64decode(image_data)
-            message_parts.append({"mime_type": image_mime, "data": raw_bytes})
+            multimodal_parts.append({"mime_type": image_mime, "data": raw_bytes})
             db_message = (db_message + "\n\n*(📷 Imagen / Documento adjunto analizado)*").strip()
             
-        # Manejo de Audio (Nota de Voz)
         if audio_data and audio_mime:
             audio_bytes = base64.b64decode(audio_data)
-            message_parts.append({"mime_type": audio_mime, "data": audio_bytes})
+            multimodal_parts.append({"mime_type": audio_mime, "data": audio_bytes})
             db_message = (db_message + "\n\n*(🎤 Nota de voz analizada)*").strip()
-            
-        if not message_parts:
-            # Si envían audio sin texto, Gemini necesita al menos algo, o solo el audio funciona. Solo el audio sí funciona en multimodal.
-            pass
 
         # Guardar mensaje del usuario en BD
         supabase.table('chats').insert({
@@ -128,9 +117,13 @@ def chat():
             'modo': 'general' 
         }).execute()
 
-        # Generar respuesta de Gemini con Visión
-        response = chat_session.send_message(message_parts)
-        respuesta_ia = response.text
+        # Generar respuesta usando el proveedor seleccionado
+        respuesta_ia = provider.get_response(
+            prompt=user_message,
+            system_instruction=PROMPT_IA_CASTILLO,
+            history=formatted_history,
+            multimodal_parts=multimodal_parts
+        )
 
         # Guardar respuesta IA en BD
         supabase.table('chats').insert({
