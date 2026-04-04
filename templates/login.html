@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effective Login Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: url('/static/bg-login.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+        .glass {
+            background: rgba(30, 31, 32, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="glass max-w-md w-full p-10 flex flex-col items-center border border-gray-700">
+        <h1 class="text-3xl font-bold mb-2 text-center text-white tracking-wider"><span class="text-orange-400">E</span>ffective <span class="text-orange-400">L</span>ogin <span class="text-orange-400">F</span>orm</h1>
+        <form method="POST" action="/login" class="w-full mt-8 space-y-6">
+            <div class="relative">
+                <input type="text" name="username" placeholder="Username" required class="w-full py-3 pl-12 pr-4 rounded-lg border border-gray-600 bg-[#131314] text-white focus:border-orange-400 focus:ring-2 focus:ring-orange-200 outline-none">
+                <i class="fa fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <div class="relative">
+                <input type="password" name="password" placeholder="Password" required class="w-full py-3 pl-12 pr-4 rounded-lg border border-gray-600 bg-[#131314] text-white focus:border-orange-400 focus:ring-2 focus:ring-orange-200 outline-none">
+                <i class="fa fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-300">
+                <label class="flex items-center">
+                    <input type="checkbox" name="remember" class="accent-orange-400 mr-2">
+                    Remember me
+                </label>
+                <a href="#" class="text-orange-400 hover:underline">Forgot Password?</a>
+            </div>
+            <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-all">LOGIN</button>
+        </form>
+        <p class="mt-8 text-xs text-gray-400 text-center">© 2018 Effective Login Form. All rights reserved | Design by <span class="text-orange-400">Colorlib</span></p>
+    </div>
+</body>
+</html>
