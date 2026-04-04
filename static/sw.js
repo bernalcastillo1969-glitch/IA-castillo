@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ia-castillo-v6';
+const CACHE_NAME = 'ia-castillo-v7';
 const ASSETS_TO_CACHE = [
   '/static/icons/icon-192.png',
   '/static/icons/icon-512.png'
