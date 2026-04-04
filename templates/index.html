@@ -349,10 +349,29 @@
             </div>
             
             <p class="text-center text-gray-500 text-[10px] md:text-[11px] mt-1.5 mb-1 font-medium pointer-events-auto leading-tight">
-                Asistente Desarrollado por Bernal · Visión y Audio Activos.
+                Asistente Desarrollado por Bernal · Visión y Audio Activos. &nbsp;·&nbsp;
+                <button id="voice-mode-btn" class="text-blue-400 hover:text-blue-300 font-bold transition-colors">🎙️ Modo Voz</button>
             </p>
         </div>
 
+    </main>
+
+    <!-- MODO VOZ (Pantalla Completa Estilo Alexa) -->
+    <div id="voice-overlay" class="fixed inset-0 bg-[#0c0c0d]/95 backdrop-blur-xl z-[200] flex-col items-center justify-center gap-6" style="display:none;">
+        <p class="text-gray-400 text-sm tracking-widest uppercase font-bold">Modo Voz · IA Castillo</p>
+        
+        <!-- Orb Central Animado -->
+        <div id="voice-orb" class="w-36 h-36 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-[0_0_80px_rgba(66,133,244,0.4)] cursor-pointer relative transition-all duration-300">
+            <div id="orb-pulse" class="absolute inset-0 rounded-full bg-blue-500/30 animate-ping" style="display:none;"></div>
+            <i id="voice-orb-icon" class="fa-solid fa-microphone text-white text-5xl"></i>
+        </div>
+
+        <p id="voice-status" class="text-white text-base font-medium">Toca el orbe para hablar</p>
+        <p id="voice-transcript" class="text-gray-400 text-sm italic max-w-xs text-center min-h-[20px]"></p>
+
+        <button id="voice-close-btn" class="mt-4 text-gray-500 hover:text-white transition-colors flex items-center gap-2 text-sm">
+            <i class="fa-solid fa-times"></i> Cerrar Modo Voz
+        </button>
     </main>
 
     <script>
@@ -772,6 +791,112 @@
                 postMessage();
             }
         });
+        /* === MODO VOZ (Estilo Alexa) === */
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const voiceOrb = document.getElementById('voice-orb');
+        const orbPulse = document.getElementById('orb-pulse');
+        const voiceOrbIcon = document.getElementById('voice-orb-icon');
+        const voiceStatus = document.getElementById('voice-status');
+        const voiceTranscript = document.getElementById('voice-transcript');
+
+        document.getElementById('voice-mode-btn').addEventListener('click', () => {
+            voiceOverlay.style.display = 'flex';
+        });
+        document.getElementById('voice-close-btn').addEventListener('click', () => {
+            voiceOverlay.style.display = 'none';
+            window.speechSynthesis.cancel();
+        });
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.interimResults = true;
+            recognition.maxAlternatives = 1;
+            let isListening = false;
+
+            voiceOrb.addEventListener('click', async () => {
+                if (isListening) { recognition.stop(); return; }
+                window.speechSynthesis.cancel();
+                recognition.start();
+            });
+
+            recognition.onstart = () => {
+                isListening = true;
+                voiceOrbIcon.className = 'fa-solid fa-stop text-white text-5xl';
+                orbPulse.style.display = 'block';
+                voiceStatus.textContent = 'Escuchando... Habla ahora 🎙️';
+                voiceTranscript.textContent = '';
+                voiceOrb.style.boxShadow = '0 0 120px rgba(239,68,68,0.6)';
+            };
+
+            recognition.onresult = (e) => {
+                const texto = Array.from(e.results).map(r => r[0].transcript).join('');
+                voiceTranscript.textContent = texto;
+            };
+
+            recognition.onend = async () => {
+                isListening = false;
+                voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
+                orbPulse.style.display = 'none';
+                voiceOrb.style.boxShadow = '0 0 80px rgba(66,133,244,0.4)';
+                
+                const textoFinal = voiceTranscript.textContent.trim();
+                if (!textoFinal) { voiceStatus.textContent = 'No te escuché. Toca para intentar de nuevo.'; return; }
+
+                voiceStatus.textContent = '🧠 Pensando...';
+                voiceOrbIcon.className = 'fa-solid fa-spinner fa-spin text-white text-5xl';
+
+                try {
+                    if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
+                    const res = await fetch('/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mensaje: textoFinal, email: userEmail, chat_id: currentChatId })
+                    });
+                    const data = await res.json();
+                    currentChatId = data.chat_id;
+                    
+                    const respuesta = data.respuesta;
+                    voiceStatus.textContent = '🔊 Respondiendo...';
+                    voiceTranscript.textContent = respuesta.substring(0, 100) + (respuesta.length > 100 ? '...' : '');
+                    
+                    // Leer respuesta en voz alta
+                    const utterance = new SpeechSynthesisUtterance(respuesta);
+                    utterance.lang = 'es-ES';
+                    utterance.rate = 1.0;
+                    utterance.onend = () => {
+                        voiceStatus.textContent = 'Toca el orbe para hablar de nuevo';
+                        voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
+                        voiceOrb.style.boxShadow = '0 0 80px rgba(66,133,244,0.4)';
+                    };
+                    speechSynthesis.speak(utterance);
+                    voiceOrbIcon.className = 'fa-solid fa-volume-high text-white text-5xl';
+
+                    // También agregar al chat normal
+                    if (isFirstMessage) prepararVentanaParaChat();
+                    addMessageBubble(textoFinal, 'user', false);
+                    addMessageBubble(respuesta, 'ai', true);
+                    cargarHistorialBaseDeDatos();
+
+                } catch(err) {
+                    voiceStatus.textContent = 'Error al conectar. Intenta de nuevo.';
+                    voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
+                }
+            };
+
+            recognition.onerror = (e) => {
+                isListening = false;
+                orbPulse.style.display = 'none';
+                voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
+                voiceStatus.textContent = 'Error de micrófono: ' + e.error;
+            };
+        } else {
+            document.getElementById('voice-mode-btn').addEventListener('click', () => {
+                alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');
+            });
+        }
         
     </script>
 </body>
