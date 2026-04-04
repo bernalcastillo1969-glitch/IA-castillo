@@ -36,31 +36,9 @@ PROMPT_IA_CASTILLO = (
 )
 
 
-# Ruta principal: muestra login si no está autenticado
 @app.route('/')
 def index():
-    if not session.get('logged_in'):
-        return render_template('login.html')
     return render_template('index.html')
-
-# Ruta para procesar login
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    # Aquí puedes poner tu lógica real de autenticación
-    if username == 'admin' and password == 'admin':
-        session['logged_in'] = True
-        session['username'] = username
-        return redirect(url_for('index'))
-    else:
-        return render_template('login.html', error='Credenciales incorrectas')
-
-# Ruta para cerrar sesión
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
 
 @app.route('/manifest.json')
 def manifest():
