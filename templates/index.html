@@ -863,11 +863,14 @@
                     currentChatId = data.chat_id;
                     
                     const respuesta = data.respuesta;
-                    voiceStatus.textContent = '🔊 Respondiendo...';
-                    voiceTranscript.textContent = respuesta.substring(0, 100) + (respuesta.length > 100 ? '...' : '');
+                    // Limpiar asteriscos y markdown para que la voz sea fluida y el texto limpio
+                    const textoLimpio = respuesta.replace(/\*/g, '');
                     
-                    // Leer respuesta en voz alta
-                    const utterance = new SpeechSynthesisUtterance(respuesta);
+                    voiceStatus.textContent = '🔊 Respondiendo...';
+                    voiceTranscript.textContent = textoLimpio.substring(0, 150) + (textoLimpio.length > 150 ? '...' : '');
+                    
+                    // Leer respuesta en voz alta (sin asteriscos)
+                    const utterance = new SpeechSynthesisUtterance(textoLimpio);
                     utterance.lang = 'es-ES';
                     utterance.rate = 1.0;
                     utterance.onend = () => {
