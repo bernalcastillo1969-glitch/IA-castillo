@@ -182,10 +182,11 @@
                     <div class="flex-1 h-[1px] bg-gray-700"></div>
                 </div>
                 
-                <!-- Email Input Estilo Phone -->
-                <div class="space-y-4">
+                <!-- Formulario OTP (2 Pasos) -->
+                <!-- Paso 1: Ingresa tu correo -->
+                <div id="step-email" class="space-y-4">
                     <div class="relative group">
-                        <i class="fa-solid fa-user-graduate absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
                         <input type="email" id="auth-email-simple" placeholder="Ingresa tu correo" 
                                class="w-full bg-[#131314] text-white py-4 pl-12 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm font-medium">
                     </div>
@@ -193,15 +194,35 @@
                     <button id="auth-enter-btn" 
                             class="w-full bg-white hover:bg-gray-100 text-black font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-xl shadow-white/5">
                         <i class="fa-solid fa-paper-plane"></i>
-                        <span>Entrar ahora</span>
+                        <span id="send-btn-text">Enviar código de verificación</span>
                     </button>
-                    
-                    <p id="auth-error-msg" class="text-center text-[11px] mt-4 text-red-400 hidden font-medium"></p>
-                    
-                    <p class="text-center text-[10px] text-gray-600 mt-4 px-4 uppercase font-black tracking-widest">
-                        Powered by Bernal Castillo
-                    </p>
                 </div>
+
+                <!-- Paso 2: Ingresa el código OTP (Inicialmente oculto) -->
+                <div id="step-otp" class="space-y-4 hidden">
+                    <p class="text-center text-gray-400 text-sm">📩 Revisa tu correo. Enviamos un código de <strong class="text-white">6 dígitos</strong>.</p>
+                    <div class="relative group">
+                        <i class="fa-solid fa-shield-halved absolute left-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+                        <input type="text" id="auth-otp-input" placeholder="Código de 6 dígitos" maxlength="6"
+                               class="w-full bg-[#131314] text-white py-4 pl-12 pr-4 rounded-2xl border border-blue-500 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all text-sm font-medium tracking-[0.5em] text-center">
+                    </div>
+                    
+                    <button id="auth-verify-btn" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-lock-open"></i>
+                        <span>Verificar y Entrar</span>
+                    </button>
+
+                    <button id="auth-back-btn" class="w-full text-gray-500 hover:text-white text-xs text-center py-2 transition-colors">
+                        ← Usar otro correo
+                    </button>
+                </div>
+                    
+                <p id="auth-error-msg" class="text-center text-[11px] mt-4 text-red-400 hidden font-medium"></p>
+                    
+                <p class="text-center text-[10px] text-gray-600 mt-4 px-4 uppercase font-black tracking-widest">
+                    Powered by Bernal Castillo
+                </p>
             </div>
         </div>
     </div>
@@ -533,34 +554,77 @@
             cargarHistorialBaseDeDatos();
         }
 
+        let otpEmail = null;
+
         async function handleSimpleEnter() {
             const emailInput = document.getElementById('auth-email-simple');
             const errorMsg = document.getElementById('auth-error-msg');
+            const btn = document.getElementById('auth-enter-btn');
             const email = emailInput.value.trim().toLowerCase();
 
-            // Validación estricta: debe tener formato real nombre@dominio.extension
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-            if (!email) {
-                errorMsg.textContent = "⚠️ Por favor escribe tu correo electrónico.";
-                errorMsg.classList.remove('hidden');
-                emailInput.focus();
-                return;
-            }
-
-            if (!emailRegex.test(email)) {
-                errorMsg.textContent = "❌ Ese no parece un correo real. Ejemplo válido: nombre@gmail.com";
-                errorMsg.classList.remove('hidden');
-                emailInput.focus();
-                return;
-            }
-
-            // Correo válido, entrar
+            if (!email) { errorMsg.textContent = "⚠️ Por favor escribe tu correo electrónico."; errorMsg.classList.remove('hidden'); return; }
+            if (!emailRegex.test(email)) { errorMsg.textContent = "❌ Ese no parece un correo real. Ejemplo: nombre@gmail.com"; errorMsg.classList.remove('hidden'); return; }
+            
+            // Deshabilitar botón y mostrar cargando
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Enviando código...</span>';
             errorMsg.classList.add('hidden');
-            iniciarSesionUI(email);
+
+            try {
+                const { error } = await _supabase.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true } });
+                if (error) throw error;
+                
+                // Código enviado con éxito → Mostrar Paso 2
+                otpEmail = email;
+                document.getElementById('step-email').classList.add('hidden');
+                document.getElementById('step-otp').classList.remove('hidden');
+                document.getElementById('auth-otp-input').focus();
+
+            } catch (err) {
+                errorMsg.textContent = "❌ Error al enviar el código: " + err.message;
+                errorMsg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span id="send-btn-text">Enviar código de verificación</span>';
+            }
+        }
+
+        async function handleVerifyOtp() {
+            const otpInput = document.getElementById('auth-otp-input');
+            const errorMsg = document.getElementById('auth-error-msg');
+            const btn = document.getElementById('auth-verify-btn');
+            const token = otpInput.value.trim();
+
+            if (token.length !== 6) { errorMsg.textContent = "⚠️ El código debe tener 6 dígitos."; errorMsg.classList.remove('hidden'); return; }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Verificando...</span>';
+            errorMsg.classList.add('hidden');
+
+            try {
+                const { data, error } = await _supabase.auth.verifyOtp({ email: otpEmail, token: token, type: 'email' });
+                if (error) throw error;
+                
+                const email = data?.user?.email || otpEmail;
+                iniciarSesionUI(email);
+
+            } catch (err) {
+                errorMsg.textContent = "❌ Código incorrecto o expirado. Intenta de nuevo.";
+                errorMsg.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span>Verificar y Entrar</span>';
+            }
         }
 
         document.getElementById('auth-enter-btn').addEventListener('click', handleSimpleEnter);
+        document.getElementById('auth-verify-btn').addEventListener('click', handleVerifyOtp);
+        document.getElementById('auth-back-btn').addEventListener('click', () => {
+            document.getElementById('step-otp').classList.add('hidden');
+            document.getElementById('step-email').classList.remove('hidden');
+            document.getElementById('auth-enter-btn').disabled = false;
+            document.getElementById('auth-enter-btn').innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Enviar código de verificación</span>';
+            document.getElementById('auth-error-msg').classList.add('hidden');
+        });
 
         /* === GOOGLE AUTH (GSI NATIVO) === */
         window.handleGoogleLogin = (response) => {
