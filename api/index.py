@@ -202,11 +202,11 @@ def chat_handler():
 
         # --- SINCRONIZACIÓN CON n8n ---
         sync_to_n8n({
-            "event": "chat_message",
+            "chatInput": raw_msg,
+            "sessionId": cid,
             "user_email": user_email,
-            "chat_id": cid,
-            "user_message": raw_msg,
             "ai_response": respuesta,
+            "event": "chat_message",
             "has_multimodal": has_multimodal,
             "is_voice": is_voice
         })
