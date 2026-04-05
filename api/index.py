@@ -102,6 +102,8 @@ def register_handler():
             msg = Message("Código IA Castillo", recipients=[email])
             msg.body = f"Tu código: {code}"
             mail.send(msg)
+        
+
         return jsonify({"message": "Código enviado"}), 200
     except Exception as e:
         print(f"[ERROR] Registro: {e}")
@@ -117,6 +119,8 @@ def verify_handler():
             if resp.data:
                 supabase.table("códigos_de_verificación").delete().eq('email', email).eq('code', code).execute()
                 supabase.table("usuarios").upsert({'email': email, 'verified': True}).execute()
+                
+
                 return jsonify({"message": "OK"}), 200
         return jsonify({"error": "Inválido"}), 400
     except Exception as e:
@@ -169,6 +173,7 @@ def chat_handler():
                 supabase.table("chats").insert({'user_email': user_email, 'chat_id': cid, 'role': 'ai', 'content': respuesta}).execute()
             except Exception as e:
                 print(f"[WARN] Guardar chat: {e}")
+
 
         return jsonify({"respuesta": respuesta, "chat_id": cid})
     except Exception as e:
