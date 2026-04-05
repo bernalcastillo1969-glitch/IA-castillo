@@ -779,9 +779,7 @@
             }
 
             // Registrar Service Worker para PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Error:', err));
-            }
+            // Service Worker registro eliminado para evitar caché persistente
         };
 
         document.getElementById('logout-btn').addEventListener('click', () => { 
@@ -1117,7 +1115,20 @@
                 alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');
             });
         }
-        
+        // --- DESINSTALAR PWA Y LIMPIAR CACHÉ (SOLUCIÓN DEFINITIVA) ---
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+        if (window.caches) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
+        }
+        console.log("PWA desmantelada. Cargando IA Castillo en vivo desde el servidor.");
     </script>
 </body>
 </html>
