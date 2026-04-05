@@ -59,9 +59,9 @@ def register():
     # Generar código de verificación
     code = ''.join(random.choices(string.digits, k=6))
     
-    # Guardar código en Supabase (asumiendo tabla verification_codes con columnas: email, code, created_at)
+    # Guardar código en Supabase (asumiendo tabla códigos_de_verificación con columnas: email, code, created_at)
     try:
-        supabase.table('verification_codes').insert({
+        supabase.table('códigos_de_verificación').insert({
             'email': email,
             'code': code
         }).execute()
@@ -89,12 +89,12 @@ def verify():
     
     # Verificar código en Supabase
     try:
-        response = supabase.table('verification_codes').select('*').eq('email', email).eq('code', code).execute()
+        response = supabase.table('códigos_de_verificación').select('*').eq('email', email).eq('code', code).execute()
         if response.data:
             # Código válido, eliminarlo y marcar usuario como verificado
-            supabase.table('verification_codes').delete().eq('email', email).eq('code', code).execute()
-            # Insertar en tabla users (asumiendo tabla users con columnas email, verified)
-            supabase.table('users').insert({
+            supabase.table('códigos_de_verificación').delete().eq('email', email).eq('code', code).execute()
+            # Insertar en tabla usuarios (asumiendo tabla usuarios con columnas email, verified)
+            supabase.table('usuarios').insert({
                 'email': email,
                 'verified': True
             }).execute()
