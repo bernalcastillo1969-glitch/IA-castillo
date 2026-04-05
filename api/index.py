@@ -182,7 +182,8 @@ def chat():
     user_message = data.get('mensaje', '')
     user_email = data.get('email', 'invitado@iacastillo.com')
     
-    # Verificar si el usuario está verificado
+    # Comentado para permitir chat libre sin verificación previa (Simplificación de onboarding)
+    """
     if user_email != 'invitado@iacastillo.com':
         try:
             response = supabase.table('users').select('verified').eq('email', user_email).execute()
@@ -190,6 +191,7 @@ def chat():
                 return jsonify({"respuesta": "Por favor, registra y verifica tu email antes de chatear.", "chat_id": ""}), 403
         except Exception as e:
             return jsonify({"respuesta": f"Error verificando usuario: {str(e)}", "chat_id": ""}), 500
+    """
     
     # Manejo de imagen (Base64)
     image_data = data.get('image_data') 
