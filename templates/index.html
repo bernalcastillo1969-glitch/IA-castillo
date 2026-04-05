@@ -40,11 +40,10 @@
     <script defer src="/_vercel/insights/script.js"></script>
     <script defer src="/_vercel/speed-insights/script.js"></script>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
-        
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Google Sans', sans-serif; background-color: #131314; color: #e3e3e3; overflow: hidden; display: flex; width: 100vw; height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: #131314; color: #e3e3e3; overflow: hidden; display: flex; width: 100vw; height: 100vh; }
         .chat-scroll::-webkit-scrollbar { width: 6px; }
         .chat-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
@@ -125,6 +124,71 @@
             background-color: #2a2c2e;
             border-color: #4285f4;
             box-shadow: 0 10px 20px -10px rgba(66, 133, 244, 0.3);
+        }
+
+        /* Botones de acción en mensajes */
+        .msg-actions {
+            display: flex;
+            gap: 2px;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .msg-action-btn {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .msg-action-btn:hover {
+            background: rgba(255,255,255,0.07);
+            color: #e3e3e3;
+        }
+        .msg-action-btn.liked {
+            color: #f472b6;
+        }
+        .msg-action-btn.liked i {
+            animation: pop-heart 0.4s ease;
+        }
+        @keyframes pop-heart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        /* Toast de Copiado */
+        .toast-notification {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #323335;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 999;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
         /* --- AVATAR HUMANOIDE ANIMADO --- */
@@ -249,6 +313,8 @@
             z-index: 10;
         }
     </style>
+</head>
+<body>
 
     <!-- MODAL DE LOGIN PROFESIONAL (Futurista con Elementos Flotantes) -->
     <div id="login-modal" class="fixed inset-0 bg-[#0c0c0d] z-[100] flex items-center justify-center p-4 md:p-10 transition-all duration-500 overflow-y-auto overflow-hidden">
@@ -420,7 +486,7 @@
             <div class="w-full max-w-[800px] relative pointer-events-auto bg-[#1e1f20]/80 backdrop-blur-2xl rounded-[32px] flex flex-col border border-white/5 shadow-2xl focus-within:bg-[#252628] focus-within:ring-1 focus-within:ring-blue-500/30 transition-all duration-500">
                 
                 <!-- Vista Previa de la Archivos y Notas (Si hay una adjunta) -->
-                <div id="media-preview-container" class="hidden px-4 pt-3 pb-1 flex gap-2">
+                <div id="media-preview-container" class="px-4 pt-3 pb-1 gap-2" style="display:none;">
                     <!-- Miniatura de Imagen -->
                     <div id="image-wrapper" class="relative inline-block border border-gray-600 rounded-xl overflow-hidden shadow-sm h-16 w-16 group hidden">
                         <img id="image-thumbnail" src="" class="h-16 w-16 object-cover" />
@@ -481,6 +547,9 @@
         </div>
 
     </main>
+
+    <!-- Toast Notification -->
+    <div id="toast-msg" class="toast-notification"><i class="fa-solid fa-check-circle text-green-400"></i><span id="toast-text">Copiado</span></div>
 
     <!-- MODO LIVE (HUMANOIDE AVATAR) -->
     <div id="voice-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-between py-16 px-6 transition-all duration-700 opacity-0" style="display:none;">
@@ -604,8 +673,8 @@
             reader.onload = (event) => {
                 const dataUrl = event.target.result;
                 imageThumbnail.src = dataUrl;
-                imageWrapper.classList.remove('hidden');
-                mediaPreviewContainer.classList.remove('hidden');
+                imageWrapper.style.display = 'inline-block';
+                mediaPreviewContainer.style.display = 'flex';
                 
                 const parts = dataUrl.split(',');
                 currentImageMimeType = parts[0].match(/:(.*?);/)[1];
@@ -619,8 +688,8 @@
 
         function limpiarFoto() {
             fileInput.value = ''; currentImageBase64 = null; currentImageMimeType = null;
-            imageWrapper.classList.add('hidden');
-            if(!currentAudioBase64) mediaPreviewContainer.classList.add('hidden');
+            imageWrapper.style.display = 'none';
+            if(!currentAudioBase64) mediaPreviewContainer.style.display = 'none';
             checkInputState();
         }
 
@@ -678,9 +747,8 @@
                         currentAudioBase64 = parts[1];
                         
                         // Mostrar Preview de Audio
-                        audioWrapper.classList.remove('hidden');
-                        audioWrapper.classList.add('flex');
-                        mediaPreviewContainer.classList.remove('hidden');
+                        audioWrapper.style.display = 'flex';
+                        mediaPreviewContainer.style.display = 'flex';
                         checkInputState();
                     };
                     reader.readAsDataURL(audioBlob);
@@ -697,9 +765,8 @@
         
         function limpiarAudio() {
             currentAudioBase64 = null; currentAudioMimeType = null;
-            audioWrapper.classList.add('hidden');
-            audioWrapper.classList.remove('flex');
-            if(!currentImageBase64) mediaPreviewContainer.classList.add('hidden');
+            audioWrapper.style.display = 'none';
+            if(!currentImageBase64) mediaPreviewContainer.style.display = 'none';
             checkInputState();
         }
 
@@ -927,9 +994,12 @@
             }
         }
 
+        let _msgCounter = 0;
+
         function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false) {
             const wrapper = document.createElement('div');
             wrapper.className = 'w-full flex mb-5 font-sans bubble-appear';
+            const msgId = 'msg-' + (++_msgCounter);
 
             const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-500"/>` : '';
             const audioHtml = hasAudio ? `<div class="bg-black/20 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-300"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';
@@ -949,13 +1019,86 @@
                         <div class="absolute -left-3 -top-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 border-2 border-[#131314]">
                             <i class="fa-solid fa-sparkles text-white text-[10px]"></i>
                         </div>
-                        <div class="font-normal markdown-body pt-1 leading-normal block overflow-hidden">${formatText(text)}</div>
+                        <div class="font-normal markdown-body pt-1 leading-normal block overflow-hidden" id="${msgId}">${formatText(text)}</div>
+                        <div class="msg-actions">
+                            <button class="msg-action-btn" onclick="copyMessage('${msgId}')" title="Copiar respuesta">
+                                <i class="fa-regular fa-copy"></i> Copiar
+                            </button>
+                            <button class="msg-action-btn" onclick="likeMessage(this)" title="Me gusta">
+                                <i class="fa-regular fa-thumbs-up"></i> Me gusta
+                            </button>
+                            <button class="msg-action-btn" onclick="dislikeMessage(this)" title="No me gusta">
+                                <i class="fa-regular fa-thumbs-down"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
             }
 
             messagesArea.appendChild(wrapper);
             if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100); }
+        }
+
+        /* === ACCIONES DE MENSAJE (Copiar, Like, Dislike) === */
+        function copyMessage(msgId) {
+            const el = document.getElementById(msgId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('✅ Respuesta copiada al portapapeles');
+            }).catch(() => {
+                // Fallback para navegadores sin clipboard API
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('✅ Respuesta copiada al portapapeles');
+            });
+        }
+
+        function likeMessage(btn) {
+            const siblingDislike = btn.nextElementSibling;
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked');
+                btn.innerHTML = '<i class="fa-regular fa-thumbs-up"></i> Me gusta';
+            } else {
+                btn.classList.add('liked');
+                btn.innerHTML = '<i class="fa-solid fa-thumbs-up"></i> Me gusta';
+                showToast('💙 ¡Gracias por tu feedback!');
+                // Quitar dislike si estaba activo
+                if (siblingDislike && siblingDislike.classList.contains('liked')) {
+                    siblingDislike.classList.remove('liked');
+                    siblingDislike.innerHTML = '<i class="fa-regular fa-thumbs-down"></i>';
+                }
+            }
+        }
+
+        function dislikeMessage(btn) {
+            const siblingLike = btn.previousElementSibling;
+            if (btn.classList.contains('liked')) {
+                btn.classList.remove('liked');
+                btn.innerHTML = '<i class="fa-regular fa-thumbs-down"></i>';
+            } else {
+                btn.classList.add('liked');
+                btn.innerHTML = '<i class="fa-solid fa-thumbs-down"></i>';
+                showToast('Gracias, mejoraremos 🙏');
+                // Quitar like si estaba activo
+                if (siblingLike && siblingLike.classList.contains('liked')) {
+                    siblingLike.classList.remove('liked');
+                    siblingLike.innerHTML = '<i class="fa-regular fa-thumbs-up"></i> Me gusta';
+                }
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         sendBtn.addEventListener('click', postMessage);

@@ -23,7 +23,8 @@ if SUPABASE_URL and SUPABASE_KEY:
     try:
         from supabase import create_client
         supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-    except: pass
+    except Exception as e:
+        print(f"[WARN] Supabase no disponible: {e}")
 
 # Configurar Mail
 from flask_mail import Mail, Message
@@ -38,7 +39,8 @@ try:
         MAIL_DEFAULT_SENDER=os.getenv("MAIL_USERNAME")
     )
     mail = Mail(app)
-except: pass
+except Exception as e:
+    print(f"[WARN] Flask-Mail no disponible: {e}")
 
 # --- SISTEMAS DE INTELIGENCIA (BEYOND ELITE 2026) ---
 
@@ -84,7 +86,9 @@ def history_handler():
     try:
         resp = supabase.table("chats").select('*').eq('user_email', email).order('created_at').execute()
         return jsonify(resp.data)
-    except: return jsonify([])
+    except Exception as e:
+        print(f"[ERROR] Historial: {e}")
+        return jsonify([])
 
 @app.route('/register', methods=['POST'])
 def register_handler():
@@ -99,7 +103,9 @@ def register_handler():
             msg.body = f"Tu código: {code}"
             mail.send(msg)
         return jsonify({"message": "Código enviado"}), 200
-    except: return jsonify({"error": "Error registro"}), 500
+    except Exception as e:
+        print(f"[ERROR] Registro: {e}")
+        return jsonify({"error": "Error registro"}), 500
 
 @app.route('/verify', methods=['POST'])
 def verify_handler():
@@ -113,7 +119,9 @@ def verify_handler():
                 supabase.table("usuarios").upsert({'email': email, 'verified': True}).execute()
                 return jsonify({"message": "OK"}), 200
         return jsonify({"error": "Inválido"}), 400
-    except: return jsonify({"error": "Error"}), 500
+    except Exception as e:
+        print(f"[ERROR] Verificación: {e}")
+        return jsonify({"error": "Error"}), 500
 
 @app.route('/chat', methods=['POST'])
 def chat_handler():
@@ -142,7 +150,8 @@ def chat_handler():
             try:
                 h_data = supabase.table("chats").select('role', 'content').eq('chat_id', cid).order('created_at').execute()
                 history = [{"role": ('model' if m['role'] == 'ai' else 'user'), "parts": [m['content']]} for m in h_data.data]
-            except: pass
+            except Exception as e:
+                print(f"[WARN] Historial chat: {e}")
 
         provider = AIFactory.get_provider(has_multimodal)
         m_parts = []
@@ -155,11 +164,13 @@ def chat_handler():
             try:
                 supabase.table("chats").insert({'user_email': user_email, 'chat_id': cid, 'role': 'user', 'content': raw_msg}).execute()
                 supabase.table("chats").insert({'user_email': user_email, 'chat_id': cid, 'role': 'ai', 'content': respuesta}).execute()
-            except: pass
+            except Exception as e:
+                print(f"[WARN] Guardar chat: {e}")
 
         return jsonify({"respuesta": respuesta, "chat_id": cid})
     except Exception as e:
-        return jsonify({"respuesta": f"Falla: {str(e)}", "chat_id": cid}), 500
+        print(f"[ERROR] Chat handler: {e}")
+        return jsonify({"respuesta": f"Falla: {str(e)}", "chat_id": locals().get('cid', 'error')}), 500
 
 @app.route('/stats')
 def stats_view():
@@ -168,14 +179,16 @@ def stats_view():
         r = supabase.table('chats').select('user_email').execute()
         emails = [x['user_email'] for x in r.data]
         return f"Usuarios: {len(set(emails))} | Mensajes: {len(emails)}"
-    except: return "Mantenimiento"
+    except Exception as e:
+        print(f"[ERROR] Stats: {e}")
+        return "Mantenimiento"
 
 @app.route('/tts', methods=['POST'])
 def tts_handler():
     data = request.get_json()
     txt = data.get('text', '')
-    ckey = os.getenv("CARTESIA_API_KEY", "sk_car_KT8B4SrQ4RH82pbuU2dcHM")
-    vid = os.getenv("CARTESIA_VOICE_ID", "a0e99829-27f8-4071-81cb-ff5421605528")
+    ckey = os.getenv("CARTESIA_API_KEY", "")
+    vid = os.getenv("CARTESIA_VOICE_ID", "")
     try:
         r = requests.post("https://api.cartesia.ai/tts/bytes", 
             headers={"X-API-Key": ckey, "Cartesia-Version": "2024-06-10", "Content-Type": "application/json"},
