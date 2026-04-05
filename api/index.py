@@ -1,5 +1,6 @@
 import os
 import uuid
+import threading
 import base64
 import random
 import string
@@ -10,6 +11,21 @@ from dotenv import load_dotenv
 
 # Cargar variables de entorno
 load_dotenv()
+
+# --- UTILIDADES n8n ---
+def sync_to_n8n(data):
+    """Envía datos a n8n de forma asíncrona sin bloquear la respuesta de Flask."""
+    webhook_url = os.getenv("N8N_WEBHOOK_URL")
+    if not webhook_url:
+        return
+    
+    def send():
+        try:
+            requests.post(webhook_url, json=data, timeout=10)
+        except Exception as e:
+            print(f"[WARN] n8n sync failed: {e}")
+    
+    threading.Thread(target=send).start()
 
 # Configurar Flask
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -103,6 +119,11 @@ def register_handler():
             msg.body = f"Tu código: {code}"
             mail.send(msg)
         
+        # --- SINCRONIZACIÓN CON n8n ---
+        sync_to_n8n({
+            "event": "user_registration_attempt",
+            "email": email
+        })
 
         return jsonify({"message": "Código enviado"}), 200
     except Exception as e:
@@ -120,6 +141,11 @@ def verify_handler():
                 supabase.table("códigos_de_verificación").delete().eq('email', email).eq('code', code).execute()
                 supabase.table("usuarios").upsert({'email': email, 'verified': True}).execute()
                 
+                # --- SINCRONIZACIÓN CON n8n ---
+                sync_to_n8n({
+                    "event": "user_verified",
+                    "email": email
+                })
 
                 return jsonify({"message": "OK"}), 200
         return jsonify({"error": "Inválido"}), 400
@@ -174,6 +200,16 @@ def chat_handler():
             except Exception as e:
                 print(f"[WARN] Guardar chat: {e}")
 
+        # --- SINCRONIZACIÓN CON n8n ---
+        sync_to_n8n({
+            "event": "chat_message",
+            "user_email": user_email,
+            "chat_id": cid,
+            "user_message": raw_msg,
+            "ai_response": respuesta,
+            "has_multimodal": has_multimodal,
+            "is_voice": is_voice
+        })
 
         return jsonify({"respuesta": respuesta, "chat_id": cid})
     except Exception as e:
