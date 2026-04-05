@@ -132,7 +132,10 @@ def chat_handler():
         cid = data.get('chat_id') or str(uuid.uuid4())
         is_voice = data.get('is_voice', False)
         
-        from ai_client import AIFactory
+        try:
+            from api.ai_client import AIFactory
+        except ImportError:
+            from ai_client import AIFactory
         image_data, audio_data = data.get('image_data'), data.get('audio_data')
         has_multimodal = bool(image_data or audio_data)
 
