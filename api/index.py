@@ -1,10 +1,13 @@
 import os
 import uuid
 import base64
+import random
+import string
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from ai_client import AIFactory
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from flask_mail import Mail, Message
 
 # Cargar variables de entorno
 load_dotenv()
@@ -20,6 +23,15 @@ SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# Configurar Flask-Mail
+app.config['MAIL_SERVER'] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
+app.config['MAIL_PORT'] = int(os.getenv("MAIL_PORT", 587))
+app.config['MAIL_USE_TLS'] = os.getenv("MAIL_USE_TLS", "True").lower() == "true"
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER", app.config['MAIL_USERNAME'])
+mail = Mail(app)
+
 # ===========================
 # PERSONALIDAD UNIFICADA (Senior Hacker Mode)
 # ===========================
@@ -34,6 +46,63 @@ PROMPT_IA_CASTILLO = (
     "4. Formato Limpio: Usa negritas en lo importante para que se pueda leer rápido. "
     "5. Cierre Proactivo: Termina siempre con una sola propuesta o pregunta clave para avanzar, sin sonar como un cuestionario."
 )
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({"error": "Email requerido"}), 400
+    
+    # Generar código de verificación
+    code = ''.join(random.choices(string.digits, k=6))
+    
+    # Guardar código en Supabase (asumiendo tabla verification_codes con columnas: email, code, created_at)
+    try:
+        supabase.table('verification_codes').insert({
+            'email': email,
+            'code': code
+        }).execute()
+    except Exception as e:
+        return jsonify({"error": f"Error guardando código: {str(e)}"}), 500
+    
+    # Enviar email
+    try:
+        msg = Message("Código de verificación - IA Castillo", recipients=[email])
+        msg.body = f"Tu código de verificación es: {code}"
+        mail.send(msg)
+        return jsonify({"message": "Código enviado al email"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error enviando email: {str(e)}"}), 500
+
+
+@app.route('/verify', methods=['POST'])
+def verify():
+    data = request.get_json()
+    email = data.get('email')
+    code = data.get('code')
+    
+    if not email or not code:
+        return jsonify({"error": "Email y código requeridos"}), 400
+    
+    # Verificar código en Supabase
+    try:
+        response = supabase.table('verification_codes').select('*').eq('email', email).eq('code', code).execute()
+        if response.data:
+            # Código válido, eliminarlo y marcar usuario como verificado
+            supabase.table('verification_codes').delete().eq('email', email).eq('code', code).execute()
+            # Insertar en tabla users (asumiendo tabla users con columnas email, verified)
+            supabase.table('users').insert({
+                'email': email,
+                'verified': True
+            }).execute()
+            return jsonify({"message": "Usuario verificado"}), 200
+        else:
+            return jsonify({"error": "Código inválido"}), 400
+    except Exception as e:
+        return jsonify({"error": f"Error verificando: {str(e)}"}), 500
 
 
 @app.route('/')
@@ -112,6 +181,15 @@ def chat():
     data = request.get_json()
     user_message = data.get('mensaje', '')
     user_email = data.get('email', 'invitado@iacastillo.com')
+    
+    # Verificar si el usuario está verificado
+    if user_email != 'invitado@iacastillo.com':
+        try:
+            response = supabase.table('users').select('verified').eq('email', user_email).execute()
+            if not response.data or not response.data[0]['verified']:
+                return jsonify({"respuesta": "Por favor, registra y verifica tu email antes de chatear.", "chat_id": ""}), 403
+        except Exception as e:
+            return jsonify({"respuesta": f"Error verificando usuario: {str(e)}", "chat_id": ""}), 500
     
     # Manejo de imagen (Base64)
     image_data = data.get('image_data') 

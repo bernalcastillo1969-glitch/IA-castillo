@@ -126,6 +126,98 @@
             border-color: #4285f4;
             box-shadow: 0 10px 20px -10px rgba(66, 133, 244, 0.3);
         }
+
+        /* --- NUEVOS ESTILOS MODO GEMINI LIVE --- */
+        #voice-overlay {
+            background-color: #0c0c0d;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(66, 133, 244, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(155, 114, 203, 0.05) 0%, transparent 40%);
+        }
+
+        .gemini-face {
+            width: 140px;
+            height: 140px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .gemini-face svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 0 10px rgba(168, 199, 250, 0.3));
+        }
+
+        .face-line {
+            fill: none;
+            stroke: #a8c7fa;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.4s ease;
+        }
+
+        .face-dot {
+            fill: #a8c7fa;
+            transition: all 0.4s ease;
+        }
+
+        @keyframes face-pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .animate-listening .gemini-face { animation: face-pulse 2s infinite ease-in-out; }
+
+        /* Barra de brillo inferior curva */
+        .glow-curve {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 160px;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .curve-svg {
+            position: absolute;
+            bottom: -20px;
+            left: -10%;
+            width: 120%;
+            height: 100px;
+            filter: blur(1px);
+        }
+
+        .curve-line {
+            fill: none;
+            stroke: url(#curve-gradient);
+            stroke-width: 3;
+            stroke-linecap: round;
+            filter: drop-shadow(0 -5px 15px rgba(66, 133, 244, 0.5));
+            animation: curve-wave 4s infinite ease-in-out;
+        }
+
+        @keyframes curve-wave {
+            0%, 100% { transform: translateY(0) scaleX(1); stroke-width: 3; }
+            50% { transform: translateY(-8px) scaleX(1.02); stroke-width: 4; }
+        }
+
+        .voice-pill {
+            background: rgba(30, 31, 32, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            z-index: 10;
+        }
     </style>
 
     <!-- MODAL DE LOGIN PROFESIONAL (Futurista con Elementos Flotantes) -->
@@ -360,22 +452,65 @@
 
     </main>
 
-    <!-- MODO VOZ (Pantalla Completa Estilo Alexa) -->
-    <div id="voice-overlay" class="fixed inset-0 bg-[#0c0c0d]/95 backdrop-blur-xl z-[200] flex-col items-center justify-center gap-6" style="display:none;">
-        <p class="text-gray-400 text-sm tracking-widest uppercase font-bold">Modo Voz · IA Castillo</p>
+    <!-- MODO VOZ (Pantalla Completa Estilo Gemini Live) -->
+    <div id="voice-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700" style="display:none;">
         
-        <!-- Orb Central Animado -->
-        <div id="voice-orb" class="w-36 h-36 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-[0_0_80px_rgba(66,133,244,0.4)] cursor-pointer relative transition-all duration-300">
-            <div id="orb-pulse" class="absolute inset-0 rounded-full bg-blue-500/30 animate-ping" style="display:none;"></div>
-            <i id="voice-orb-icon" class="fa-solid fa-microphone text-white text-5xl"></i>
+        <!-- Botón superior cerrar -->
+        <button id="voice-close-top" class="absolute top-10 left-10 text-gray-400 hover:text-white transition-all">
+            <i class="fa-solid fa-arrow-left text-2xl"></i>
+        </button>
+        
+        <div class="absolute top-10 right-10 flex gap-4">
+            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
+            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
         </div>
 
-        <p id="voice-status" class="text-white text-base font-medium">Toca el orbe para hablar</p>
-        <p id="voice-transcript" class="text-gray-400 text-sm italic max-w-xs text-center min-h-[20px]"></p>
+        <h2 id="voice-status-title" class="text-gray-300 text-3xl font-light mb-24 tracking-tight">Escuchando...</h2>
+        
+        <!-- Cara Gemini Animada -->
+        <div id="voice-orb" class="gemini-face cursor-pointer active:scale-95 transition-transform">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Oreja/Círculo izquierdo parcial -->
+                <path class="face-line" d="M 35 30 A 25 35 0 1 0 35 70" />
+                <!-- Cara Central -->
+                <path class="face-line" d="M 55 45 C 55 45 58 60 48 60 C 45 60 45 52 45 52" /> <!-- Nariz -->
+                <path class="face-line" d="M 52 75 C 60 75 68 70 68 60" /> <!-- Labio bajo -->
+                <circle class="face-dot" cx="50" cy="35" r="2.5" /> <!-- Ojo Izq -->
+                <circle class="face-dot" cx="70" cy="32" r="2.5" /> <!-- Ojo Der -->
+            </svg>
+            <div id="orb-pulse" class="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping hidden"></div>
+        </div>
 
-        <button id="voice-close-btn" class="mt-4 text-gray-500 hover:text-white transition-colors flex items-center gap-2 text-sm">
-            <i class="fa-solid fa-times"></i> Cerrar Modo Voz
-        </button>
+        <div class="mt-24 text-center px-10">
+            <p id="voice-transcript" class="text-gray-400 text-lg font-medium max-w-md italic min-h-[40px]"></p>
+        </div>
+
+        <!-- Barra Inferior de Brillo -->
+        <div class="glow-curve">
+            <svg class="curve-svg" viewBox="0 0 1000 100">
+                <defs>
+                    <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
+                        <stop offset="35%" style="stop-color:#2dd4bf;stop-opacity:1" />
+                        <stop offset="65%" style="stop-color:#9b72cb;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#d96570;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path class="curve-line" d="M 0 80 Q 500 20 1000 80" />
+            </svg>
+        </div>
+
+        <!-- Pill Inferior (Estilo captura) -->
+        <div class="absolute bottom-10 voice-pill">
+            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white">
+                <i class="fa-solid fa-music text-xs animate-pulse"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-bold uppercase tracking-widest">IA Castillo Live</span>
+                <span class="text-gray-500 text-[10px] font-medium">Sintonizando tu voz...</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -799,28 +934,35 @@
         const voiceOverlay = document.getElementById('voice-overlay');
         const voiceOrb = document.getElementById('voice-orb');
         const orbPulse = document.getElementById('orb-pulse');
-        const voiceOrbIcon = document.getElementById('voice-orb-icon');
-        const voiceStatus = document.getElementById('voice-status');
+        const voiceStatusTitle = document.getElementById('voice-status-title');
         const voiceTranscript = document.getElementById('voice-transcript');
 
         document.getElementById('voice-mode-btn').addEventListener('click', () => {
             voiceOverlay.style.display = 'flex';
-        });
-        document.getElementById('voice-close-btn').addEventListener('click', () => {
-            voiceOverlay.style.display = 'none';
-            window.speechSynthesis.cancel();
+            voiceOverlay.classList.remove('opacity-0');
+            voiceStatusTitle.textContent = "Escuchando...";
         });
 
+        const closeVoiceMode = () => {
+            voiceOverlay.classList.add('opacity-0');
+            setTimeout(() => voiceOverlay.style.display = 'none', 500);
+            window.speechSynthesis.cancel();
+            if(recognition) recognition.stop();
+        };
+
+        document.getElementById('voice-close-top').addEventListener('click', closeVoiceMode);
+
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
         
         if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
+            recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
             recognition.interimResults = true;
             recognition.maxAlternatives = 1;
             let isListening = false;
 
-            voiceOrb.addEventListener('click', async () => {
+            voiceOrb.addEventListener('click', () => {
                 if (isListening) { recognition.stop(); return; }
                 window.speechSynthesis.cancel();
                 recognition.start();
@@ -828,11 +970,11 @@
 
             recognition.onstart = () => {
                 isListening = true;
-                voiceOrbIcon.className = 'fa-solid fa-stop text-white text-5xl';
-                orbPulse.style.display = 'block';
-                voiceStatus.textContent = 'Escuchando... Habla ahora 🎙️';
+                voiceOverlay.classList.add('animate-listening');
+                orbPulse.classList.remove('hidden');
+                voiceStatusTitle.textContent = 'Escuchando...';
+                voiceStatusTitle.classList.add('text-blue-400');
                 voiceTranscript.textContent = '';
-                voiceOrb.style.boxShadow = '0 0 120px rgba(239,68,68,0.6)';
             };
 
             recognition.onresult = (e) => {
@@ -842,15 +984,17 @@
 
             recognition.onend = async () => {
                 isListening = false;
-                voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
-                orbPulse.style.display = 'none';
-                voiceOrb.style.boxShadow = '0 0 80px rgba(66,133,244,0.4)';
+                voiceOverlay.classList.remove('animate-listening');
+                orbPulse.classList.add('hidden');
+                voiceStatusTitle.classList.remove('text-blue-400');
                 
                 const textoFinal = voiceTranscript.textContent.trim();
-                if (!textoFinal) { voiceStatus.textContent = 'No te escuché. Toca para intentar de nuevo.'; return; }
+                if (!textoFinal) { 
+                    voiceStatusTitle.textContent = 'Presiona para hablar'; 
+                    return; 
+                }
 
-                voiceStatus.textContent = '🧠 Pensando...';
-                voiceOrbIcon.className = 'fa-solid fa-spinner fa-spin text-white text-5xl';
+                voiceStatusTitle.textContent = 'Pensando...';
 
                 try {
                     if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
@@ -863,41 +1007,33 @@
                     currentChatId = data.chat_id;
                     
                     const respuesta = data.respuesta;
-                    // Limpiar asteriscos y markdown para que la voz sea fluida y el texto limpio
                     const textoLimpio = respuesta.replace(/\*/g, '');
                     
-                    voiceStatus.textContent = '🔊 Respondiendo...';
+                    voiceStatusTitle.textContent = 'IA Castillo Live';
                     voiceTranscript.textContent = textoLimpio.substring(0, 150) + (textoLimpio.length > 150 ? '...' : '');
                     
-                    // Leer respuesta en voz alta (sin asteriscos)
                     const utterance = new SpeechSynthesisUtterance(textoLimpio);
                     utterance.lang = 'es-ES';
                     utterance.rate = 1.0;
                     utterance.onend = () => {
-                        voiceStatus.textContent = 'Toca el orbe para hablar de nuevo';
-                        voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
-                        voiceOrb.style.boxShadow = '0 0 80px rgba(66,133,244,0.4)';
+                        voiceStatusTitle.textContent = 'Presiona para hablar';
                     };
                     speechSynthesis.speak(utterance);
-                    voiceOrbIcon.className = 'fa-solid fa-volume-high text-white text-5xl';
 
-                    // También agregar al chat normal
                     if (isFirstMessage) prepararVentanaParaChat();
                     addMessageBubble(textoFinal, 'user', false);
                     addMessageBubble(respuesta, 'ai', true);
                     cargarHistorialBaseDeDatos();
 
                 } catch(err) {
-                    voiceStatus.textContent = 'Error al conectar. Intenta de nuevo.';
-                    voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
+                    voiceStatusTitle.textContent = 'Error de conexión';
                 }
             };
 
             recognition.onerror = (e) => {
                 isListening = false;
-                orbPulse.style.display = 'none';
-                voiceOrbIcon.className = 'fa-solid fa-microphone text-white text-5xl';
-                voiceStatus.textContent = 'Error de micrófono: ' + e.error;
+                voiceOverlay.classList.remove('animate-listening');
+                voiceStatusTitle.textContent = 'Error: ' + e.error;
             };
         } else {
             document.getElementById('voice-mode-btn').addEventListener('click', () => {
