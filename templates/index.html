@@ -127,42 +127,72 @@
             box-shadow: 0 10px 20px -10px rgba(66, 133, 244, 0.3);
         }
 
-        /* --- NUEVOS ESTILOS MODO GEMINI LIVE --- */
+        /* --- AVATAR HUMANOIDE ANIMADO --- */
         #voice-overlay {
-            background-color: #0c0c0d;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(66, 133, 244, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 20% 80%, rgba(155, 114, 203, 0.05) 0%, transparent 40%);
-        }
-
-        .gemini-face {
-            width: 140px;
-            height: 140px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: radial-gradient(circle at center, #0e1217 0%, #000000 100%);
+            z-index: 200;
         }
         
-        .gemini-face svg {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 10px rgba(168, 199, 250, 0.3));
+        .avatar-eye {
+            width: 32px;
+            height: 4px;
+            background: #22d3ee;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 1);
+            animation: eye-blink 5s infinite;
+        }
+        
+        @keyframes eye-blink {
+            0%, 90%, 100% { height: 4px; opacity: 1; }
+            95% { height: 0px; opacity: 0; }
         }
 
-        .face-line {
-            fill: none;
-            stroke: #a8c7fa;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            transition: all 0.4s ease;
+        .sound-bar {
+            background: linear-gradient(to top, #3b82f6, #22d3ee, #a855f7);
+            border-radius: 10px;
+            width: 6px;
+            transition: height 0.1s ease-out;
+            min-height: 4px;
         }
 
-        .face-dot {
-            fill: #a8c7fa;
-            transition: all 0.4s ease;
+        .avatar-head {
+            background: rgba(30, 31, 32, 0.4);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            box-shadow: 0 0 100px rgba(37, 99, 235, 0.2);
+            border-radius: 110px;
+            width: 210px;
+            height: 280px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 75px;
+            animation: head-float 6s ease-in-out infinite;
+        }
+
+        @keyframes head-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-bounce-custom {
+            animation: bounce-custom 0.8s infinite ease-in-out;
+        }
+        
+        @keyframes bounce-custom {
+            0%, 100% { height: 6px; }
+            50% { height: 28px; }
+        }
+
+        .glow-base {
+            margin-top: 50px;
+            width: 140px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #3b82f6, transparent);
+            box-shadow: 0 0 35px #3b82f6;
+            opacity: 0.6;
+            animation: pulse 3s infinite;
         }
 
         @keyframes face-pulse {
@@ -452,57 +482,72 @@
 
     </main>
 
-    <!-- MODO VOZ (Pantalla Completa Estilo Gemini Live) -->
-    <div id="voice-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-center transition-all duration-700" style="display:none;">
+    <!-- MODO LIVE (HUMANOIDE AVATAR) -->
+    <div id="voice-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-between py-16 px-6 transition-all duration-700 opacity-0" style="display:none;">
         
-        <!-- Botón superior cerrar -->
-        <button id="voice-close-top" class="absolute top-10 left-10 text-gray-400 hover:text-white transition-all">
-            <i class="fa-solid fa-arrow-left text-2xl"></i>
-        </button>
-        
-        <div class="absolute top-10 right-10 flex gap-4">
-            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
-            <div class="w-2 h-2 rounded-full bg-gray-700"></div>
+        <!-- Header -->
+        <div class="w-full flex justify-between items-center z-10 px-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                    <i class="fa-solid fa-sparkles text-blue-400"></i>
+                </div>
+                <h2 id="voice-status-title" class="text-white/80 font-bold text-lg tracking-tight">Escuchando...</h2>
+            </div>
+            <button id="voice-close-top" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
+                <i class="fa-solid fa-arrow-left text-xl"></i>
+            </button>
         </div>
 
-        <h2 id="voice-status-title" class="text-gray-300 text-3xl font-light mb-24 tracking-tight">Escuchando...</h2>
-        
-        <!-- Cara Gemini Animada -->
-        <div id="voice-orb" class="gemini-face cursor-pointer active:scale-95 transition-transform">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <!-- Oreja/Círculo izquierdo parcial -->
-                <path class="face-line" d="M 35 30 A 25 35 0 1 0 35 70" />
-                <!-- Cara Central -->
-                <path class="face-line" d="M 55 45 C 55 45 58 60 48 60 C 45 60 45 52 45 52" /> <!-- Nariz -->
-                <path class="face-line" d="M 52 75 C 60 75 68 70 68 60" /> <!-- Labio bajo -->
-                <circle class="face-dot" cx="50" cy="35" r="2.5" /> <!-- Ojo Izq -->
-                <circle class="face-dot" cx="70" cy="32" r="2.5" /> <!-- Ojo Der -->
-            </svg>
-            <div id="orb-pulse" class="absolute inset-0 rounded-full border-2 border-blue-500/20 animate-ping hidden"></div>
+        <!-- CENTER AVATAR -->
+        <div class="relative flex flex-col items-center justify-center">
+            <!-- Pulsing Rings -->
+            <div class="absolute w-[400px] h-[400px] border border-blue-500/5 rounded-full animate-pulse"></div>
+            
+            <!-- THE PERSONA -->
+            <div id="voice-orb" class="relative z-20 transition-transform active:scale-95 duration-300">
+                <div class="avatar-head flex flex-col items-center">
+                    <!-- Ojos -->
+                    <div class="flex gap-14 mb-16">
+                        <div class="avatar-eye"></div>
+                        <div class="avatar-eye"></div>
+                    </div>
+                    
+                    <!-- Boca (Soundbars Animadas) -->
+                    <div id="orb-pulse" class="hidden flex items-end gap-1.5 h-12">
+                        <div class="sound-bar animate-bounce-custom"></div>
+                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.1s;"></div>
+                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.2s;"></div>
+                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.15s;"></div>
+                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.05s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glow de base -->
+            <div class="glow-base"></div>
         </div>
 
-        <div class="mt-24 text-center px-10">
-            <p id="voice-transcript" class="text-gray-400 text-lg font-medium max-w-md italic min-h-[40px]"></p>
+        <!-- Transcript & Controls -->
+        <div class="w-full max-w-md flex flex-col items-center gap-10 z-10 font-[Google Sans]">
+            <div id="voice-transcript" class="text-white/40 text-center text-xl font-medium tracking-tight px-6 min-h-[60px] line-clamp-3 italic">
+                Presiona el rostro para hablar...
+            </div>
+            
+            <div class="flex items-center gap-10">
+                <button class="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white transition-all">
+                    <i class="fa-solid fa-microphone-slash"></i>
+                </button>
+                <div class="w-24 h-24 rounded-full border-4 border-white/5 p-1">
+                    <button class="w-full h-full rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-blue-500/20 active:scale-90 transition-all">
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+                <button class="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white transition-all">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
         </div>
-
-        <!-- Barra Inferior de Brillo -->
-        <div class="glow-curve">
-            <svg class="curve-svg" viewBox="0 0 1000 100">
-                <defs>
-                    <linearGradient id="curve-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#4285f4;stop-opacity:1" />
-                        <stop offset="35%" style="stop-color:#2dd4bf;stop-opacity:1" />
-                        <stop offset="65%" style="stop-color:#9b72cb;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#d96570;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <path class="curve-line" d="M 0 80 Q 500 20 1000 80" />
-            </svg>
-        </div>
-
-        <!-- Pill Inferior (Estilo captura) -->
-        <div class="absolute bottom-10 voice-pill">
+    </div>
             <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white">
                 <i class="fa-solid fa-music text-xs animate-pulse"></i>
             </div>
@@ -1028,13 +1073,13 @@
                             audio.onplay = () => {
                                 voiceStatusTitle.textContent = 'Hablando...';
                                 orbPulse.classList.remove('hidden');
-                                voiceOverlay.classList.add('animate-listening');
+                                voiceOverlay.classList.add('animate-talking');
                             };
                             
                             audio.onended = () => {
-                                voiceStatusTitle.textContent = 'Presiona para hablar';
+                                voiceStatusTitle.textContent = 'Presiona el rostro';
                                 orbPulse.classList.add('hidden');
-                                voiceOverlay.classList.remove('animate-listening');
+                                voiceOverlay.classList.remove('animate-talking');
                             };
                             
                             audio.play();

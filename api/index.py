@@ -266,20 +266,28 @@ def text_to_speech():
     if not text:
         return jsonify({"error": "No hay texto para procesar"}), 400
 
-    api_key = os.getenv("ELEVENLABS_API_KEY")
-    voice_id = os.getenv("ELEVENLABS_VOICE_ID", "pNInz6ovhh93X5msDxMN") 
+    api_key = os.getenv("CARTESIA_API_KEY")
+    voice_id = os.getenv("CARTESIA_VOICE_ID", "a0e99829-27f8-4071-81cb-ff5421605528") # Voz 'Baron'
 
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    url = "https://api.cartesia.ai/tts/bytes"
     headers = {
-        "xi-api-key": api_key,
+        "X-API-Key": api_key,
+        "Cartesia-Version": "2024-06-10",
         "Content-Type": "application/json"
     }
+    
+    # Configuración sónica para latencia ultra-baja
     payload = {
-        "text": text,
-        "model_id": "eleven_multilingual_v2",
-        "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.75
+        "model_id": "sonic-multilingual",
+        "voice": {
+            "mode": "id",
+            "id": voice_id
+        },
+        "transcript": text,
+        "output_format": {
+            "container": "mp3",
+            "bit_rate": 128000,
+            "sample_rate": 44100
         }
     }
 
@@ -288,7 +296,17 @@ def text_to_speech():
         if response.status_code == 200:
             return response.content, 200, {'Content-Type': 'audio/mpeg'}
         else:
-            return jsonify({"error": f"Error de ElevenLabs: {response.text}"}), response.status_code
+            # Fallback a ElevenLabs si Cartesia falla (Cortesía Bernal)
+            print("Cartesia falló, usando ElevenLabs como respaldo...")
+            api_key_eb = os.getenv("ELEVENLABS_API_KEY")
+            voice_id_eb = os.getenv("ELEVENLABS_VOICE_ID", "pNInz6ovhh93X5msDxMN")
+            eb_url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id_eb}"
+            eb_headers = {"xi-api-key": api_key_eb, "Content-Type": "application/json"}
+            eb_payload = {"text": text, "model_id": "eleven_multilingual_v2"}
+            eb_res = requests.post(eb_url, json=eb_payload, headers=eb_headers)
+            if eb_res.status_code == 200:
+                return eb_res.content, 200, {'Content-Type': 'audio/mpeg'}
+            return jsonify({"error": f"Ambos servicios fallaron. Cartesia: {response.text}"}), response.status_code
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
