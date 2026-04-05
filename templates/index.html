@@ -907,7 +907,8 @@
                         image_data: payload_image_data,
                         image_mime: payload_mime_type,
                         audio_data: payload_audio_data,
-                        audio_mime: payload_audio_mime
+                        audio_mime: payload_audio_mime,
+                        is_voice: false
                     })
                 });
 
@@ -1035,7 +1036,12 @@
                     const res = await fetch('/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mensaje: textoFinal, email: userEmail, chat_id: currentChatId })
+                        body: JSON.stringify({ 
+                            mensaje: textoFinal, 
+                            email: userEmail, 
+                            chat_id: currentChatId,
+                            is_voice: true
+                        })
                     });
                     const data = await res.json();
                     currentChatId = data.chat_id;

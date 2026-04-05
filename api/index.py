@@ -40,11 +40,16 @@ try:
     mail = Mail(app)
 except: pass
 
-# PERSONALIDAD UNIFICADA
-PROMPT_IA_CASTILLO = (
-    "Eres IA Castillo, un asistente de élite diseñado por Bernal. Tu objetivo es ser brillante, eficiente y profesional. "
-    "Misión: Respuestas claras, bien explicadas, sin relleno. Estilo: Moderno y directo. "
-    "Importante: Usa **negritas** para conceptos clave."
+# INTELIGENCIA DUAL (TEXTO vs VOZ)
+PROMPT_TEXTO = (
+    "Eres IA Castillo, un asistente de élite diseñado por Bernal. Inteligente y brillante. "
+    "Misión: Dar respuestas completas, bien explicadas y detalladas. Estilo profesional. "
+    "Formato: Usa **negritas** y listas si es necesario."
+)
+
+PROMPT_VOZ = (
+    "Eres IA Castillo en modo voz. Misión: Brevedad máxima (1-2 frases). "
+    "Ve directo al grano para que la respuesta sea instantánea."
 )
 
 @app.route('/')
@@ -97,14 +102,15 @@ def chat_handler():
         raw_msg = data.get('mensaje') or data.get('prompt') or ''
         user_email = data.get('email', 'invitado@iacastillo.com')
         cid = data.get('chat_id') or str(uuid.uuid4())
+        is_voice = data.get('is_voice', False) # Detectar si viene de modo voz
         
         from ai_client import AIFactory
         image_data, audio_data = data.get('image_data'), data.get('audio_data')
 
-        if not raw_msg and not image_data and not audio_data:
-            return jsonify({"respuesta": "¿Qué quieres saber?", "chat_id": cid}), 400
+        # Seleccionar sistema de instrucción según modo
+        sys_prompt = PROMPT_VOZ if is_voice else PROMPT_TEXTO
 
-        # RECUPERAR HISTORIAL REAL
+        # Recuperar historial
         history = []
         if supabase:
             try:
@@ -117,7 +123,7 @@ def chat_handler():
         if image_data: m_parts.append({"mime_type": data.get('image_mime', 'image/png'), "data": base64.b64decode(image_data)})
         if audio_data: m_parts.append({"mime_type": data.get('audio_mime', 'audio/wav'), "data": base64.b64decode(audio_data)})
 
-        respuesta = provider.get_response(raw_msg, PROMPT_IA_CASTILLO, history, m_parts)
+        respuesta = provider.get_response(raw_msg, sys_prompt, history, m_parts)
 
         if supabase:
             try:
@@ -127,30 +133,48 @@ def chat_handler():
 
         return jsonify({"respuesta": respuesta, "chat_id": cid})
     except Exception as e:
-        return jsonify({"respuesta": f"Reintentando: {str(e)}", "chat_id": cid}), 500
+        return jsonify({"respuesta": f"Falla: {str(e)}", "chat_id": cid}), 500
 
 @app.route('/stats')
 def stats_view():
     try:
-        if not supabase: return "Servicio base no disponible"
+        if not supabase: return "Consola Offline"
         r = supabase.table('chats').select('user_email').execute()
         emails = [x['user_email'] for x in r.data]
-        return f"Usuarios: {len(set(emails))} | Mensajes: {len(emails)}"
-    except: return "Panel en mantenimiento"
+        unique = len(set(emails))
+        total = len(emails)
+        return f"""
+        <html>
+            <head><script src="https://cdn.tailwindcss.com"></script></head>
+            <body class="bg-black text-white flex items-center justify-center h-screen font-sans">
+                <div class="bg-gray-900 p-12 rounded-[50px] border border-blue-500/20 shadow-2xl text-center">
+                    <h1 class="text-4xl font-black mb-8 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent italic tracking-tighter">IA CASTILLO CORE</h1>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="p-6 bg-black rounded-3xl border border-gray-800"><p class="text-xs text-gray-500 uppercase font-black mb-1">Usuarios</p><p class="text-5xl font-bold">{unique}</p></div>
+                        <div class="p-6 bg-black rounded-3xl border border-gray-800"><p class="text-xs text-gray-500 uppercase font-black mb-1">Mensajes</p><p class="text-5xl font-bold">{total}</p></div>
+                    </div>
+                </div>
+            </body>
+        </html>
+        """
+    except: return "Mantenimiento"
 
 @app.route('/tts', methods=['POST'])
 def tts_handler():
     data = request.get_json()
     txt = data.get('text', '')
     ckey = os.getenv("CARTESIA_API_KEY", "sk_car_KT8B4SrQ4RH82pbuU2dcHM")
+    vid = os.getenv("CARTESIA_VOICE_ID", "a0e99829-27f8-4071-81cb-ff5421605528")
     try:
         r = requests.post("https://api.cartesia.ai/tts/bytes", 
             headers={"X-API-Key": ckey, "Cartesia-Version": "2024-06-10", "Content-Type": "application/json"},
-            json={"model_id": "sonic-multilingual", "transcript": txt, "voice": {"mode": "id", "id": os.getenv("CARTESIA_VOICE_ID", "a0e99829-27f8-4071-81cb-ff5421605528")}, "output_format": {"container": "mp3", "encoding": "pcm_f32_le", "sample_rate": 44100}},
+            json={"model_id": "sonic-multilingual", "transcript": txt, "voice": {"mode": "id", "id": vid}, "output_format": {"container": "mp3"}},
             timeout=15
         )
-        return (r.content, 200, {'Content-Type': 'audio/mpeg'})
-    except: return jsonify({"error": "TTS Down"}), 500
+        if r.status_code == 200:
+            return (r.content, 200, {'Content-Type': 'audio/mpeg'})
+        return jsonify({"error": f"Error API Voice: {r.text}"}), r.status_code
+    except Exception as e: return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
