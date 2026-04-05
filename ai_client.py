@@ -10,7 +10,7 @@ class AIProvider(ABC):
         pass
 
 class GeminiProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "gemini-pro-latest"):
+    def __init__(self, api_key: str, model_name: str = "gemini-flash-latest"):
         genai.configure(api_key=api_key)
         self.model_name = model_name
 
