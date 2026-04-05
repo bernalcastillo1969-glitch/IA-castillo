@@ -1012,13 +1012,45 @@
                     voiceStatusTitle.textContent = 'IA Castillo Live';
                     voiceTranscript.textContent = textoLimpio.substring(0, 150) + (textoLimpio.length > 150 ? '...' : '');
                     
-                    const utterance = new SpeechSynthesisUtterance(textoLimpio);
-                    utterance.lang = 'es-ES';
-                    utterance.rate = 1.0;
-                    utterance.onend = () => {
-                        voiceStatusTitle.textContent = 'Presiona para hablar';
-                    };
-                    speechSynthesis.speak(utterance);
+                    // --- ELEVENLABS PREMIUM VOICE ---
+                    try {
+                        const ttsRes = await fetch('/tts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ text: textoLimpio })
+                        });
+                        
+                        if (ttsRes.ok) {
+                            const audioBlob = await ttsRes.blob();
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            const audio = new Audio(audioUrl);
+                            
+                            audio.onplay = () => {
+                                voiceStatusTitle.textContent = 'Hablando...';
+                                orbPulse.classList.remove('hidden');
+                                voiceOverlay.classList.add('animate-listening');
+                            };
+                            
+                            audio.onended = () => {
+                                voiceStatusTitle.textContent = 'Presiona para hablar';
+                                orbPulse.classList.add('hidden');
+                                voiceOverlay.classList.remove('animate-listening');
+                            };
+                            
+                            audio.play();
+                        } else {
+                            throw new Error("ElevenLabs Error");
+                        }
+                    } catch (ttsErr) {
+                        console.error("Error TTS ElevenLabs, usando fallback nativo:", ttsErr);
+                        const utterance = new SpeechSynthesisUtterance(textoLimpio);
+                        utterance.lang = 'es-ES';
+                        utterance.onend = () => {
+                            voiceStatusTitle.textContent = 'Presiona para hablar';
+                        };
+                        speechSynthesis.speak(utterance);
+                    }
+                    // ---------------------------------
 
                     if (isFirstMessage) prepararVentanaParaChat();
                     addMessageBubble(textoFinal, 'user', false);

@@ -3,6 +3,7 @@ import uuid
 import base64
 import random
 import string
+import requests
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from ai_client import AIFactory
 from dotenv import load_dotenv
@@ -258,4 +259,38 @@ def chat():
     except Exception as e:
         return jsonify({"respuesta": f"Lo siento, ocurrió un error analizando la información: {str(e)}", "chat_id": chat_id}), 500
 
-# Vercel no necesita app.run() si se usa en la carpeta api/
+@app.route('/tts', methods=['POST'])
+def text_to_speech():
+    data = request.get_json()
+    text = data.get('text', '')
+    if not text:
+        return jsonify({"error": "No hay texto para procesar"}), 400
+
+    api_key = os.getenv("ELEVENLABS_API_KEY")
+    voice_id = os.getenv("ELEVENLABS_VOICE_ID", "pNInz6ovhh93X5msDxMN") 
+
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "xi-api-key": api_key,
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "text": text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.75
+        }
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            return response.content, 200, {'Content-Type': 'audio/mpeg'}
+        else:
+            return jsonify({"error": f"Error de ElevenLabs: {response.text}"}), response.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
