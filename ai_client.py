@@ -11,7 +11,7 @@ class AIProvider(ABC):
         pass
 
 class GeminiProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "gemini-1.5-flash-latest"):
+    def __init__(self, api_key: str, model_name: str = "gemini-pro"):
         genai.configure(api_key=api_key)
         self.model_name = model_name
 
@@ -84,6 +84,6 @@ class AIFactory:
     @staticmethod
     def get_provider(has_multimodal: bool) -> AIProvider:
         if has_multimodal:
-            return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-1.5-flash-latest")
+            return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-pro")
         else:
             return GroqProvider(os.getenv("GROQ_API_KEY"), "llama-3.3-70b-versatile")
