@@ -11,7 +11,7 @@ class AIProvider(ABC):
         pass
 
 class GeminiProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "gemini-pro"):
+    def __init__(self, api_key: str, model_name: str = "gemini-pro-latest"):
         genai.configure(api_key=api_key)
         self.model_name = model_name
 
@@ -85,4 +85,4 @@ class AIFactory:
     def get_provider(has_multimodal: bool) -> AIProvider:
         # Forzado a Gemini temporalmente porque la clave de Groq es inválida (Error 401)
         # Esto asegura que la app funcione mientras el usuario actualiza su .env
-        return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-pro")
+        return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-pro-latest")
