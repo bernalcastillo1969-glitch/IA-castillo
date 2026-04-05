@@ -947,19 +947,19 @@
             if (role === 'user') {
                 wrapper.classList.add('justify-end');
                 wrapper.innerHTML = `
-                    <div class="bg-[#005c4b] text-[#e3e3e3] px-4 py-3 rounded-2xl rounded-tr-sm max-w-[85%] md:max-w-[70%] shadow-md border border-[#006b58]/50">
+                    <div class="bg-[#005c4b] text-[#e3e3e3] px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] md:max-w-[70%] shadow-md border border-[#006b58]/50">
                         ${photoHtml}${audioHtml}
-                        <div class="text-[15px] leading-snug">${text}</div>
+                        <div class="text-[15px] leading-tight block break-words">${text}</div>
                     </div>
                 `;
             } else {
                 wrapper.classList.add('justify-start');
                 wrapper.innerHTML = `
-                    <div class="bg-[#1e1f20] text-[#e3e3e3] px-4 py-3.5 rounded-2xl rounded-tl-sm max-w-[85%] md:max-w-[80%] shadow-md border border-gray-700 relative">
+                    <div class="bg-[#1e1f20] text-[#e3e3e3] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] md:max-w-[80%] shadow-md border border-gray-700 relative">
                         <div class="absolute -left-3 -top-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 border-2 border-[#131314]">
                             <i class="fa-solid fa-sparkles text-white text-[10px]"></i>
                         </div>
-                        <div class="font-normal markdown-body pt-1 leading-normal">${formatText(text)}</div>
+                        <div class="font-normal markdown-body pt-1 leading-normal block overflow-hidden">${formatText(text)}</div>
                     </div>
                 `;
             }
