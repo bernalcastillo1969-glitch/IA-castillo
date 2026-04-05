@@ -83,7 +83,6 @@ class GroqProvider(AIProvider):
 class AIFactory:
     @staticmethod
     def get_provider(has_multimodal: bool) -> AIProvider:
-        if has_multimodal:
-            return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-pro")
-        else:
-            return GroqProvider(os.getenv("GROQ_API_KEY"), "llama-3.3-70b-versatile")
+        # Forzado a Gemini temporalmente porque la clave de Groq es inválida (Error 401)
+        # Esto asegura que la app funcione mientras el usuario actualiza su .env
+        return GeminiProvider(os.getenv("GEMINI_API_KEY"), "gemini-pro")
