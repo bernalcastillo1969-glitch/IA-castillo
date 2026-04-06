@@ -6,7 +6,7 @@ import random
 import string
 import requests
 import json
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, render_template_string
 from dotenv import load_dotenv
 
 # Cargar variables de entorno (Ruta explícita para evitar fallos locales)
@@ -269,6 +269,70 @@ def tts_handler():
             return (r.content, 200, {'Content-Type': 'audio/mpeg'})
         return jsonify({"error": f"Error API Voice: {r.text}"}), r.status_code
     except Exception as e: return jsonify({"error": str(e)}), 500
+
+@app.route('/admin/castillo/stats')
+def ver_stats_secretas():
+    try:
+        # Consultar los últimos 50 registros de Supabase
+        if not supabase: return "Supabase no está configurado.", 500
+        respuesta = supabase.table("logs_acceso").select("*").order("created_at", desc=True).limit(50).execute()
+        logs = respuesta.data
+
+        # Una plantilla HTML simple para mostrar los datos en una tabla profesional
+        html_template = """
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>Panel de Control - IA Castillo</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0c0c0d; color: #e3e3e3; padding: 40px; margin: 0; }
+                .container { max-width: 1200px; margin: auto; }
+                h1 { color: #4285f4; text-align: center; font-size: 2.5rem; margin-bottom: 30px; letter-spacing: -1px; }
+                .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+                table { width: 100%; border-collapse: collapse; background: #1e1f20; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+                th, td { padding: 15px; border-bottom: 1px solid #333; text-align: left; }
+                th { background: #252628; color: #00ffcc; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+                tr:hover { background: #2a2c2e; }
+                .ip-tag { background: #3b82f6; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-family: monospace; }
+                .route-tag { background: #444; padding: 4px 8px; border-radius: 4px; font-family: monospace; color: #ddd; }
+                small { color: #888; }
+                .total { background: #333; padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>📊 Monitor Bernal - IA Castillo</h1>
+                    <span class="total">Total registros: {{ logs|length }}</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>IP del Usuario (Real)</th>
+                            <th>Ruta Visitada</th>
+                            <th>Información Dispositivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td><small>{{ log.created_at }}</small></td>
+                            <td><span class="ip-tag">{{ log.ip_usuario }}</span></td>
+                            <td><span class="route-tag">{{ log.ruta_visitada }}</span></td>
+                            <td><small title="{{ log.dispositivo }}">{{ log.dispositivo[:70] }}{% if log.dispositivo|length > 70 %}...{% endif %}</small></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </body>
+        </html>
+        """
+        return render_template_string(html_template, logs=logs)
+    except Exception as e:
+        return f"Error al cargar logs: {str(e)}", 500
 
 # --- PROTOCOLO FINAL IA CASTILLO BERNAL (PRODUCCIÓN VERCEL) ---
 # Se exporta la instancia 'app' para que Vercel la gestione de forma nativa.
