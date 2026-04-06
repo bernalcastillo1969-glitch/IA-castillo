@@ -9,23 +9,40 @@ import json
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
+# Cargar variables de entorno (Ruta explícita para evitar fallos locales)
+env_path = os.path.join(os.path.dirname(__file__), '../.env')
+load_dotenv(env_path)
+if not os.path.exists(env_path):
+    # Intentar carga normal si la explícita falla (Fallback Vercel)
+    load_dotenv()
 
-# --- UTILIDADES n8n ---
-def sync_to_n8n(data):
-    """Envía datos a n8n de forma asíncrona sin bloquear la respuesta de Flask."""
-    webhook_url = os.getenv("N8N_WEBHOOK_URL")
-    if not webhook_url:
-        return
+# --- SISTEMA DE BIENVENIDA NATIVO (IA CASTILLO BY BERNAL) ---
+def enviar_bienvenida_nativa(email):
+    """Envía un correo de bienvenida premium usando Flask-Mail."""
+    if not mail:
+        print("[WARN] Sistema de correo no configurado. Saltando bienvenida.")
+        return False
     
-    def send():
-        try:
-            requests.post(webhook_url, json=data, timeout=10)
-        except Exception as e:
-            print(f"[WARN] n8n sync failed: {e}")
-    
-    threading.Thread(target=send).start()
+    try:
+        msg = Message("¡Bienvenido a la Élite de IA Castillo!", recipients=[email])
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; padding: 40px; border-radius: 15px; border: 1px solid #333;">
+            <h1 style="color: #00ffcc; text-align: center;">IA CASTILLO</h1>
+            <p style="font-size: 18px; text-align: center;">Hola de parte de <strong>Bernal</strong>.</p>
+            <hr style="border: 0; border-top: 1px solid #444; margin: 20px 0;">
+            <p style="line-height: 1.6;">Bienvenido al sistema de inteligencia más avanzado. Has sido verificado con éxito y ya tienes acceso total a las capacidades de IA Castillo.</p>
+            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <p style="margin: 0;"><strong>Tu Misión:</strong> Explora, crea y domina con IA Castillo.</p>
+            </div>
+            <p style="text-align: center; color: #888; font-size: 12px;">© 2026 IA Castillo - Tecnología Bernal.</p>
+        </div>
+        """
+        mail.send(msg)
+        print(f"[SUCCESS] Bienvenida enviada a: {email}")
+        return True
+    except Exception as e:
+        print(f"[ERROR] Falló envío de bienvenida: {e}")
+        return False
 
 # Configurar Flask
 app = Flask(__name__, template_folder='../templates', static_folder='../static')
@@ -42,21 +59,45 @@ if SUPABASE_URL and SUPABASE_KEY:
     except Exception as e:
         print(f"[WARN] Supabase no disponible: {e}")
 
-# Configurar Mail
+# Configurar Mail (Protocolo IA Castillo 2026)
 from flask_mail import Mail, Message
 mail = None
 try:
     app.config.update(
         MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.gmail.com"),
         MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
-        MAIL_USE_TLS=os.getenv("MAIL_USE_TLS", "True").lower() == "true",
+        MAIL_USE_TLS=True,
         MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
         MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
         MAIL_DEFAULT_SENDER=os.getenv("MAIL_USERNAME")
     )
     mail = Mail(app)
+    print(f"[INFO] Mail configurado para: {os.getenv('MAIL_USERNAME')}")
 except Exception as e:
-    print(f"[WARN] Flask-Mail no disponible: {e}")
+    print(f"[ERROR] Falló inicialización de Mail: {e}")
+
+# --- SISTEMA DE MONITOREO BERNAL (PRODUCCIÓN VERCEL) ---
+@app.before_request
+def registrar_en_supabase():
+    # Ignorar peticiones a archivos estáticos o iconos para no saturar logs
+    if request.path.startswith('/static') or request.path == '/favicon.ico' or request.path == '/sw.js':
+        return
+
+    if not supabase: return
+
+    # Capturar IP real (Proxy Pass-through Vercel/Cloudflare)
+    ip = request.headers.get('x-forwarded-for', request.remote_addr).split(',')[0]
+    
+    try:
+        # Registro silencioso en Supabase para analítica
+        data = {
+            "ip_usuario": ip,
+            "ruta_visitada": request.path,
+            "dispositivo": request.user_agent.string
+        }
+        supabase.table("logs_acceso").insert(data).execute()
+    except Exception as e:
+        print(f"[WARN] No se pudo guardar el log de acceso: {e}")
 
 # --- SISTEMAS DE INTELIGENCIA (BEYOND ELITE 2026) ---
 
@@ -119,12 +160,6 @@ def register_handler():
             msg.body = f"Tu código: {code}"
             mail.send(msg)
         
-        # --- SINCRONIZACIÓN CON n8n ---
-        sync_to_n8n({
-            "event": "user_registration_attempt",
-            "email": email
-        })
-
         return jsonify({"message": "Código enviado"}), 200
     except Exception as e:
         print(f"[ERROR] Registro: {e}")
@@ -141,11 +176,8 @@ def verify_handler():
                 supabase.table("códigos_de_verificación").delete().eq('email', email).eq('code', code).execute()
                 supabase.table("usuarios").upsert({'email': email, 'verified': True}).execute()
                 
-                # --- SINCRONIZACIÓN CON n8n ---
-                sync_to_n8n({
-                    "event": "user_verified",
-                    "email": email
-                })
+                # BIENVENIDA NATIVA BERNAL
+                enviar_bienvenida_nativa(email)
 
                 return jsonify({"message": "OK"}), 200
         return jsonify({"error": "Inválido"}), 400
@@ -200,17 +232,6 @@ def chat_handler():
             except Exception as e:
                 print(f"[WARN] Guardar chat: {e}")
 
-        # --- SINCRONIZACIÓN CON n8n ---
-        sync_to_n8n({
-            "chatInput": raw_msg,
-            "sessionId": cid,
-            "user_email": user_email,
-            "ai_response": respuesta,
-            "event": "chat_message",
-            "has_multimodal": has_multimodal,
-            "is_voice": is_voice
-        })
-
         return jsonify({"respuesta": respuesta, "chat_id": cid})
     except Exception as e:
         print(f"[ERROR] Chat handler: {e}")
@@ -244,5 +265,6 @@ def tts_handler():
         return jsonify({"error": f"Error API Voice: {r.text}"}), r.status_code
     except Exception as e: return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# --- PROTOCOLO FINAL IA CASTILLO BERNAL (PRODUCCIÓN VERCEL) ---
+# Se exporta la instancia 'app' para que Vercel la gestione de forma nativa.
+app = app

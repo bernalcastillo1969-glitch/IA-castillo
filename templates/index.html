@@ -370,19 +370,35 @@
                     <div class="flex-1 h-[1px] bg-gray-700"></div>
                 </div>
                 
-                <!-- Email Input Simple pero Validado -->
-                <div class="space-y-4">
-                    <div class="relative group">
-                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
-                        <input type="email" id="auth-email-simple" placeholder="nombre@gmail.com" 
-                               class="w-full bg-[#131314] text-white py-4 pl-12 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm font-medium">
+                    <!-- Pantalla 1: Ingreso de Email -->
+                    <div id="auth-step-email" class="space-y-4">
+                        <div class="relative group">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors"></i>
+                            <input type="email" id="auth-email-simple" placeholder="nombre@gmail.com" 
+                                   class="w-full bg-[#131314] text-white py-4 pl-12 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all text-sm font-medium">
+                        </div>
+                        <button id="auth-enter-btn" 
+                                class="w-full bg-white hover:bg-gray-100 text-black font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-xl shadow-white/5">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Enviar Código</span>
+                        </button>
                     </div>
-                    
-                    <button id="auth-enter-btn" 
-                            class="w-full bg-white hover:bg-gray-100 text-black font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-xl shadow-white/5">
-                        <i class="fa-solid fa-arrow-right"></i>
-                        <span>Entrar ahora</span>
-                    </button>
+
+                    <!-- Pantalla 2: Ingreso de Código (Oculta por defecto) -->
+                    <div id="auth-step-code" class="space-y-4 hidden">
+                        <div class="relative group">
+                            <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors"></i>
+                            <input type="text" id="auth-code-input" placeholder="Introduce el código de 6 dígitos" 
+                                   maxlength="6"
+                                   class="w-full bg-[#131314] text-white py-4 pl-12 pr-4 rounded-2xl border border-gray-700 outline-none focus:border-green-500 focus:ring-4 focus:ring-green-500/10 transition-all text-sm font-medium text-center tracking-[1em]">
+                        </div>
+                        <button id="auth-verify-btn" 
+                                class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-2xl transition-all active:scale-95 flex items-center justify-center gap-2 text-sm shadow-xl">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Verificar y Entrar</span>
+                        </button>
+                        <p class="text-center text-[11px] text-gray-500 cursor-pointer hover:text-white" onclick="location.reload()">¿Te equivocaste de correo? Volver</p>
+                    </div>
                     
                     <p id="auth-error-msg" class="text-center text-[11px] mt-4 text-red-400 hidden font-medium"></p>
                     
@@ -772,7 +788,6 @@
 
 
         /* === AUTH LOGIC (REINTENTO FIABLE) === */
-        const _supabase = supabase.createClient("https://wvwqqtfxfycvmkrvzdzf.supabase.co", "sb_publishable_V8sjG9-KSoEiELAIOiYwQg_HtdGMRHJ");
         const loginModal = document.getElementById('login-modal');
 
         function iniciarSesionUI(email) {
@@ -792,25 +807,82 @@
         async function handleSimpleEnter() {
             const emailInput = document.getElementById('auth-email-simple');
             const errorMsg = document.getElementById('auth-error-msg');
+            const enterBtn = document.getElementById('auth-enter-btn');
             const email = emailInput.value.trim().toLowerCase();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-            if (!email) {
-                errorMsg.textContent = "⚠️ Por favor escribe tu correo.";
-                errorMsg.classList.remove('hidden');
-                return;
+            if (!email || !emailRegex.test(email)) {
+                errorMsg.textContent = "❌ Escribe un correo válido.";
+                errorMsg.classList.remove('hidden'); return;
             }
-            if (!emailRegex.test(email)) {
-                errorMsg.textContent = "❌ Correo inválido. Ejemplo: nombre@gmail.com";
-                errorMsg.classList.remove('hidden');
-                return;
-            }
+
             errorMsg.classList.add('hidden');
-            iniciarSesionUI(email);
+            enterBtn.disabled = true;
+            enterBtn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Enviando...';
+
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                if (res.ok) {
+                    document.getElementById('auth-step-email').classList.add('hidden');
+                    document.getElementById('auth-step-code').classList.remove('hidden');
+                    showToast("📧 Código enviado a tu correo");
+                } else {
+                    throw new Error("Fallo al enviar correo");
+                }
+            } catch (e) {
+                errorMsg.textContent = "⚠️ Error al conectar. Verifica tus datos de Mail.";
+                errorMsg.classList.remove('hidden');
+                enterBtn.disabled = false;
+                enterBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Código';
+            }
+        }
+
+        async function handleVerifyCode() {
+            const email = document.getElementById('auth-email-simple').value.trim().toLowerCase();
+            const code = document.getElementById('auth-code-input').value.trim();
+            const errorMsg = document.getElementById('auth-error-msg');
+            const verifyBtn = document.getElementById('auth-verify-btn');
+
+            if (code.length < 6) {
+                errorMsg.textContent = "❌ El código debe tener 6 dígitos.";
+                errorMsg.classList.remove('hidden'); return;
+            }
+
+            errorMsg.classList.add('hidden');
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> Verificando...';
+
+            try {
+                const res = await fetch('/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, code })
+                });
+                
+                if (res.ok) {
+                    iniciarSesionUI(email);
+                } else {
+                    errorMsg.textContent = "❌ Código incorrecto. Revisa tu correo.";
+                    errorMsg.classList.remove('hidden');
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Verificar y Entrar';
+                }
+            } catch (e) {
+                errorMsg.textContent = "⚠️ Error de conexión.";
+                errorMsg.classList.remove('hidden');
+                verifyBtn.disabled = false;
+            }
         }
 
         document.getElementById('auth-enter-btn').addEventListener('click', handleSimpleEnter);
+        document.getElementById('auth-verify-btn').addEventListener('click', handleVerifyCode);
         document.getElementById('auth-email-simple').addEventListener('keydown', (e) => { if(e.key === 'Enter') handleSimpleEnter(); });
+        document.getElementById('auth-code-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') handleVerifyCode(); });
 
         /* === GOOGLE AUTH (GSI NATIVO) === */
         window.handleGoogleLogin = (response) => {
