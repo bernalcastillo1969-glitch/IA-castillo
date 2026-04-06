@@ -85,8 +85,13 @@ def registrar_en_supabase():
 
     if not supabase: return
 
-    # Capturar IP real (Proxy Pass-through Vercel/Cloudflare)
-    ip = request.headers.get('x-forwarded-for', request.remote_addr).split(',')[0]
+    # Capturar IP real (Prioridad absoluta a Vercel/Cloudflare Headers)
+    ip = request.headers.get('x-real-ip') or \
+         request.headers.get('x-forwarded-for', '').split(',')[0] or \
+         request.remote_addr
+    
+    # Limpieza final: Si es local, lo marcamos como Cloud-Visitor para no ensuciar con 127.0.0.1
+    if ip == '127.0.0.1': ip = "Cloud-Visitor"
     
     try:
         # Registro silencioso en Supabase para analítica
