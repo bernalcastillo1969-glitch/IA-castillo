@@ -8,6 +8,8 @@
   "routes": [
     { "src": "/manifest.json", "dest": "/static/manifest.json" },
     { "src": "/sw.js", "dest": "/static/sw.js" },
+    { "src": "/favicon.ico", "dest": "/static/favicon.png" },
+    { "src": "/favicon.png", "dest": "/static/favicon.png" },
     { "src": "/static/(.*)", "dest": "/static/$1" },
     { "src": "/(.*)", "dest": "/api/index.py" }
   ]
