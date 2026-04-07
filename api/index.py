@@ -24,21 +24,22 @@ def enviar_bienvenida_nativa(email):
         return False
     
     try:
-        msg = Message("¡Bienvenido a la Élite de IA Castillo!", recipients=[email])
-        msg.html = f"""
-        <div style="font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; padding: 40px; border-radius: 15px; border: 1px solid #333;">
-            <h1 style="color: #00ffcc; text-align: center;">IA CASTILLO</h1>
-            <p style="font-size: 18px; text-align: center;">Hola de parte de <strong>Bernal</strong>.</p>
-            <hr style="border: 0; border-top: 1px solid #444; margin: 20px 0;">
-            <p style="line-height: 1.6;">Bienvenido al sistema de inteligencia más avanzado. Has sido verificado con éxito y ya tienes acceso total a las capacidades de IA Castillo.</p>
-            <div style="background: #1a1a1a; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                <p style="margin: 0;"><strong>Tu Misión:</strong> Explora, crea y domina con IA Castillo.</p>
+        html_content = f"""
+        <div style="background: #000000; color: #ffffff; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; padding: 40px; border-radius: 20px; text-align: center; max-width: 600px; margin: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #333;">
+            <div style="font-size: 50px; margin-bottom: 20px;">🎖️</div>
+            <h1 style="background: linear-gradient(to right, #9333ea, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 30px; font-weight: 900;">¡Bienvenido a la Élite!</h1>
+            <p style="font-size: 16px; line-height: 1.6; color: #ccc;">Hola de nuevo. Es un honor tenerte en nuestro ecosistema de Inteligencia Artificial.</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; margin: 30px 0; border: 1px solid rgba(255,255,255,0.1);">
+                <p style="margin: 0; font-size: 18px; font-weight: bold; color: #fff;">IA Castillo ha sido desbloqueada</p>
+                <p style="margin: 10px 0 0; font-size: 14px; color: #888;">Protocolo de acceso: <b>Verificado con Éxito</b></p>
             </div>
-            <p style="text-align: center; color: #888; font-size: 12px;">© 2026 IA Castillo - Tecnología Bernal.</p>
+            <p style="font-size: 14px; color: #888; margin-top: 20px;">Tu viaje hacia el aprendizaje inteligente comienza ahora.</p>
+            <p style="margin-top: 40px; font-size: 13px; color: #9333ea; font-weight: bold; text-transform: uppercase;">Administración Bernal Castillo &copy; 2026</p>
         </div>
         """
+        msg = Message("¡Bienvenido a la Élite de IA Castillo!", recipients=[email], html=html_content)
         mail.send(msg)
-        print(f"[SUCCESS] Bienvenida enviada a: {email}")
+        print(f"[OK] Bienvenida enviada a {email}")
         return True
     except Exception as e:
         print(f"[ERROR] Falló envío de bienvenida: {e}")
@@ -162,8 +163,20 @@ def register_handler():
     try:
         if supabase: supabase.table("codes").insert({'email': email, 'code': code}).execute()
         if mail:
-            msg = Message("Código IA Castillo", recipients=[email])
-            msg.body = f"Tu código: {code}"
+            html_content = f"""
+            <div style="background: #09090b; color: #ffffff; font-family: sans-serif; padding: 40px; border-radius: 20px; border: 1px solid #27272a; max-width: 500px; margin: auto; text-align: center;">
+                <div style="background: linear-gradient(135deg, #9333ea, #3b82f6); width: 60px; height: 60px; border-radius: 15px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 30px;">🎓</div>
+                <h1 style="font-size: 24px; margin-bottom: 10px; font-weight: 800; letter-spacing: -1px;">Código de Acceso</h1>
+                <p style="color: #a1a1aa; font-size: 14px; margin-bottom: 30px;">Estás intentando ingresar a la red de <b>IA Castillo</b>. Utiliza el siguiente código para autenticar tu sesión.</p>
+                <div style="background: #18181b; border: 1px solid #3f3f46; padding: 20px; border-radius: 12px; font-size: 36px; font-weight: 900; letter-spacing: 12px; color: #ffffff; margin-bottom: 30px;">
+                    {code}
+                </div>
+                <p style="color: #71717a; font-size: 11px;">Este código expirará pronto. Si no solicitaste este acceso, ignora este correo electrónico.</p>
+                <hr style="border: 0; border-top: 1px solid #27272a; margin: 30px 0;">
+                <p style="color: #9333ea; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Powered by Bernal Castillo</p>
+            </div>
+            """
+            msg = Message("Acceso de Seguridad - IA Castillo", recipients=[email], html=html_content)
             mail.send(msg)
         
         return jsonify({"message": "Código enviado"}), 200
@@ -187,7 +200,7 @@ def verify_handler():
                 enviar_bienvenida_nativa(email)
 
                 return jsonify({"message": "OK"}), 200
-        return jsonify({"error": "Código inválido o no encontrado en la base de datos", "details": "No data returned from códigos_de_verificación table"}), 400
+        return jsonify({"error": "Código inválido o no encontrado en la base de datos", "details": "No data returned from codes table"}), 400
     except Exception as e:
         error_msg = str(e)
         print(f"[ERROR] Verificación: {error_msg}")
