@@ -832,10 +832,11 @@
                     document.getElementById('auth-step-code').classList.remove('hidden');
                     showToast("📧 Código enviado a tu correo");
                 } else {
-                    throw new Error("Fallo al enviar correo");
+                    const errorData = await res.json();
+                    throw new Error(errorData.details || "Fallo al enviar correo");
                 }
             } catch (e) {
-                errorMsg.textContent = "⚠️ Error al conectar. Verifica tus datos de Mail.";
+                errorMsg.innerHTML = `<div style="background:rgba(147,51,234,0.2); border:1px solid #9333ea; padding:10px; border-radius:8px; margin-top:10px; color:#c084fc;">🟣 ERROR DETECTADO: ${e.message}</div>`;
                 errorMsg.classList.remove('hidden');
                 enterBtn.disabled = false;
                 enterBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Código';
