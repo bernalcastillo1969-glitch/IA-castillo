@@ -101,7 +101,7 @@ def registrar_en_supabase():
             "ruta_visitada": request.path,
             "dispositivo": request.user_agent.string
         }
-        supabase.table("acceso_registros").insert(data).execute()
+        supabase.table("logs_acceso").insert(data).execute()
     except Exception as e:
         print(f"[WARN] No se pudo guardar el log de acceso: {e}")
 
@@ -147,7 +147,7 @@ def history_handler():
     email = data.get('email')
     if not email or not supabase: return jsonify([])
     try:
-        resp = supabase.table("chats").select('*').eq('user_email', email).order('creado_en').execute()
+        resp = supabase.table("chats").select('*').eq('user_email', email).order('created_at').execute()
         return jsonify(resp.data)
     except Exception as e:
         print(f"[ERROR] Historial: {e}")
