@@ -187,10 +187,11 @@ def verify_handler():
                 enviar_bienvenida_nativa(email)
 
                 return jsonify({"message": "OK"}), 200
-        return jsonify({"error": "Inválido"}), 400
+        return jsonify({"error": "Código inválido o no encontrado en la base de datos", "details": "No data returned from verification_codes table"}), 400
     except Exception as e:
-        print(f"[ERROR] Verificación: {e}")
-        return jsonify({"error": "Error"}), 500
+        error_msg = str(e)
+        print(f"[ERROR] Verificación: {error_msg}")
+        return jsonify({"error": "Error interno al verificar", "details": error_msg}), 500
 
 @app.route('/chat', methods=['POST'])
 def chat_handler():
