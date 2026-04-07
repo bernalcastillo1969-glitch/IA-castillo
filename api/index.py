@@ -160,7 +160,7 @@ def register_handler():
     if not email: return jsonify({"error": "Falta email"}), 400
     code = ''.join(random.choices(string.digits, k=6))
     try:
-        if supabase: supabase.table("códigos_de_verificación").insert({'email': email, 'code': code}).execute()
+        if supabase: supabase.table("verification_codes").insert({'email': email, 'code': code}).execute()
         if mail:
             msg = Message("Código IA Castillo", recipients=[email])
             msg.body = f"Tu código: {code}"
@@ -178,10 +178,10 @@ def verify_handler():
     email, code = data.get('email'), data.get('code')
     try:
         if supabase:
-            resp = supabase.table("códigos_de_verificación").select('*').eq('email', email).eq('code', code).execute()
+            resp = supabase.table("verification_codes").select('*').eq('email', email).eq('code', code).execute()
             if resp.data:
-                supabase.table("códigos_de_verificación").delete().eq('email', email).eq('code', code).execute()
-                supabase.table("usuarios").upsert({'email': email, 'verified': True}).execute()
+                supabase.table("verification_codes").delete().eq('email', email).eq('code', code).execute()
+                supabase.table("users").upsert({'email': email, 'verified': True}).execute()
                 
                 # BIENVENIDA NATIVA BERNAL
                 enviar_bienvenida_nativa(email)
