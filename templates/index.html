@@ -868,15 +868,14 @@
                 if (res.ok) {
                     iniciarSesionUI(email);
                 } else {
-                    errorMsg.textContent = "❌ Código incorrecto. Revisa tu correo.";
-                    errorMsg.classList.remove('hidden');
-                    verifyBtn.disabled = false;
-                    verifyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Verificar y Entrar';
+                    const errorData = await res.json();
+                    throw new Error(errorData.details || errorData.error || "Código incorrecto");
                 }
             } catch (e) {
-                errorMsg.textContent = "⚠️ Error de conexión.";
+                errorMsg.innerHTML = `<div style="background:rgba(147,51,234,0.2); border:1px solid #9333ea; padding:10px; border-radius:8px; margin-top:10px; color:#c084fc;">🟣 ERROR DETECTADO: ${e.message}</div>`;
                 errorMsg.classList.remove('hidden');
                 verifyBtn.disabled = false;
+                verifyBtn.innerHTML = '<i class="fa-solid fa-check"></i> ENTRAR AHORA';
             }
         }
 
