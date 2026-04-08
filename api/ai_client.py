@@ -112,4 +112,4 @@ class AIFactory:
         if has_multimodal:
             return GeminiProvider(os.getenv("GEMINI_API_KEY"))
         else:
-            return DeepSeekProvider(os.getenv("DEEPSEEK_API_KEY"))
+            return GroqProvider(os.getenv("GROQ_API_KEY"))
