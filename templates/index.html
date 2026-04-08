@@ -1051,6 +1051,9 @@
             limpiarFoto(); 
             limpiarAudio();
 
+            const typingId = 'typing-' + Date.now();
+            addTypingIndicator(typingId);
+
             try {
                 if (!currentChatId) { currentChatId = 'chat-' + Math.random().toString(36).substr(2, 9); }
 
@@ -1072,9 +1075,11 @@
                 const data = await response.json();
                 currentChatId = data.chat_id;
                 
+                removeTypingIndicator(typingId);
                 addMessageBubble(data.respuesta, 'ai');
                 cargarHistorialBaseDeDatos(); 
             } catch (err) {
+                removeTypingIndicator(typingId);
                 addMessageBubble('Error al conectar con los servidores de IA Castillo. Reintentar.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden'); loader.classList.add('hidden');
@@ -1127,6 +1132,31 @@
 
             messagesArea.appendChild(wrapper);
             if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100); }
+        }
+
+        function addTypingIndicator(id) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'w-full flex mb-5 font-sans bubble-appear justify-start';
+            wrapper.id = id;
+            wrapper.innerHTML = `
+                <div class="bg-[#1e1f20] px-5 py-4 rounded-2xl rounded-tl-sm max-w-[85%] md:max-w-[80%] shadow-md border border-gray-700 relative">
+                    <div class="absolute -left-3 -top-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 border-2 border-[#131314]">
+                        <i class="fa-solid fa-sparkles text-white text-[10px]"></i>
+                    </div>
+                    <div class="flex gap-1.5 items-center mt-0.5">
+                        <div class="loader-dot dot1 h-2 w-2 bg-blue-400"></div>
+                        <div class="loader-dot dot2 h-2 w-2 bg-purple-400"></div>
+                        <div class="loader-dot h-2 w-2 bg-pink-400"></div>
+                    </div>
+                </div>
+            `;
+            messagesArea.appendChild(wrapper);
+            setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100);
+        }
+
+        function removeTypingIndicator(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
         }
 
         /* === ACCIONES DE MENSAJE (Copiar, Like, Dislike) === */
