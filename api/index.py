@@ -6,7 +6,7 @@ import random
 import string
 import requests
 import json
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session, render_template_string
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, render_template_string, send_from_directory
 from dotenv import load_dotenv
 
 # Cargar variables de entorno (Ruta explícita para evitar fallos locales)
@@ -225,6 +225,19 @@ def google_login_handler():
     except Exception as e:
         print(f"[ERROR] Google Login: {e}")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/favicon.ico')
+@app.route('/favicon.png')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.png', mimetype='image/png')
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json')
+
+@app.route('/sw.js')
+def sw():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js')
 
 @app.route('/chat', methods=['POST'])
 def chat_handler():
