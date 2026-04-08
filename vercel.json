@@ -6,7 +6,10 @@
     }
   ],
   "routes": [
-    { "src": "/(favicon.ico|favicon.png|manifest.json|sw.js)", "continue": true },
+    { "src": "/favicon.ico", "dest": "/public/favicon.ico" },
+    { "src": "/favicon.png", "dest": "/public/favicon.png" },
+    { "src": "/manifest.json", "dest": "/public/manifest.json" },
+    { "src": "/sw.js", "dest": "/public/sw.js" },
     { "src": "/static/(.*)", "dest": "/api/static/$1" },
     { "src": "/(.*)", "dest": "/api/index.py" }
   ]
