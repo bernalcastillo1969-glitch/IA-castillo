@@ -53,7 +53,7 @@ class GeminiProvider(AIProvider):
             return f"⚠️ Mi motor Gemini tuvo un percance técnico: {str(e)}. Pero no te preocupes, ¡vuelve a escribirme pronto!"
 
 class GroqProvider(AIProvider):
-    def __init__(self, api_key: str, model_name: str = "deepseek-r1-distill-llama-70b"):
+    def __init__(self, api_key: str, model_name: str = "llama-3.3-70b-versatile"):
         self.client = Groq(api_key=api_key)
         self.model_name = model_name
 
