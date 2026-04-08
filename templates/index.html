@@ -7,8 +7,8 @@
     
     <!-- PWA Manifest & Icons -->
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="/static/favicon.png">
-    <link rel="apple-touch-icon" href="/static/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/favicon.png">
     <meta name="theme-color" content="#131314">
     
     <!-- SEO y Google Meta Tags -->
@@ -21,7 +21,7 @@
     <!-- Open Graph (Para cuando envíen tu link por WhatsApp/Facebook/Twitter) -->
     <meta property="og:title" content="IA Castillo | Asistente Inteligente" />
     <meta property="og:description" content="Tu revolucionario asistente de inteligencia artificial educativo." />
-    <meta property="og:image" content="https://ia-castillo.vercel.app/static/favicon.png" />
+    <meta property="og:image" content="https://ia-castillo.vercel.app/favicon.png" />
     <meta property="og:url" content="https://ia-castillo.vercel.app/" />
     <meta property="og:type" content="website" />
     
@@ -319,6 +319,11 @@
 
     <!-- MODAL DE LOGIN PROFESIONAL (Futurista con Elementos Flotantes) -->
     <div id="login-modal" class="fixed inset-0 bg-[#0c0c0d] z-[100] flex items-center justify-center p-4 md:p-10 transition-all duration-500 overflow-y-auto overflow-hidden">
+        <script>
+            if (localStorage.getItem('userEmail')) {
+                document.getElementById('login-modal').classList.add('hidden', 'opacity-0', 'pointer-events-none');
+            }
+        </script>
         
         <!-- Partículas e Íconos Flotantes de IA -->
         <div class="absolute inset-0 z-0 select-none pointer-events-none opacity-60">
