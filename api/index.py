@@ -46,7 +46,7 @@ def enviar_bienvenida_nativa(email):
         return False
 
 # Configurar Flask
-app = Flask(__name__, template_folder='../templates', static_folder='../static')
+app = Flask(__name__, template_folder='../templates', static_folder='static')
 app.secret_key = os.getenv("SECRET_KEY", "super_ia_castillo_key")
 
 # Configurar Supabase con protección total
@@ -229,15 +229,15 @@ def google_login_handler():
 @app.route('/favicon.ico')
 @app.route('/favicon.png')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'favicon.png', mimetype='image/png')
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), 'favicon.png', mimetype='image/png')
 
 @app.route('/manifest.json')
 def manifest():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'manifest.json')
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), 'manifest.json')
 
 @app.route('/sw.js')
 def sw():
-    return send_from_directory(os.path.join(app.root_path, 'static'), 'sw.js')
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), 'sw.js')
 
 @app.route('/chat', methods=['POST'])
 def chat_handler():
