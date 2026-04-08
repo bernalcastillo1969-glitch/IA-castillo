@@ -206,6 +206,26 @@ def verify_handler():
         print(f"[ERROR] Verificación: {error_msg}")
         return jsonify({"error": "Error interno al verificar", "details": error_msg}), 500
 
+@app.route('/google-login', methods=['POST'])
+def google_login_handler():
+    data = request.get_json()
+    email = data.get('email')
+    if not email or not supabase: return jsonify({"error": "No email"}), 400
+    try:
+        # Verificamos si ya existe para enviarle la bienvenida solo la primera vez
+        check = supabase.table("users").select('*').eq('email', email).execute()
+        if not check.data:
+            supabase.table("users").insert({'email': email, 'verified': True}).execute()
+            enviar_bienvenida_nativa(email)
+        else:
+            # Si ya existía, nos aseguramos que esté como verificado
+            supabase.table("users").update({'verified': True}).eq('email', email).execute()
+        
+        return jsonify({"message": "Google Login OK"}), 200
+    except Exception as e:
+        print(f"[ERROR] Google Login: {e}")
+        return jsonify({"error": str(e)}), 500
+
 @app.route('/chat', methods=['POST'])
 def chat_handler():
     try:

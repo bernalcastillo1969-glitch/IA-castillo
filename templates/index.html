@@ -891,10 +891,22 @@
         document.getElementById('auth-code-input').addEventListener('keydown', (e) => { if(e.key === 'Enter') handleVerifyCode(); });
 
         /* === GOOGLE AUTH (GSI NATIVO) === */
-        window.handleGoogleLogin = (response) => {
+        window.handleGoogleLogin = async (response) => {
             const payload = jwt_decode(response.credential);
             if (payload && payload.email) {
-                iniciarSesionUI(payload.email);
+                const email = payload.email.toLowerCase();
+                try {
+                    // Avisamos al servidor para que registre y mande la bienvenida
+                    await fetch('/google-login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    iniciarSesionUI(email);
+                } catch (err) {
+                    console.error("Error en Google Sync:", err);
+                    iniciarSesionUI(email); // Entramos de todos modos aunque falle el correo
+                }
             }
         };
 
