@@ -36,6 +36,21 @@
             opacity: 0.15;
             z-index: -1;
             pointer-events: none;
+            animation: float-3d 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes float-3d {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 80px) scale(1.2); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s ease forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .glass {
@@ -44,6 +59,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
+            transition: all 0.4s ease;
         }
 
         .hero-title {
@@ -52,7 +68,16 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 900;
-            letter-spacing: -2px;
+            letter-spacing: -4px;
+            line-height: 0.9;
+        }
+
+        .italic-text {
+            font-style: italic;
+            background: linear-gradient(90deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .btn-premium {
@@ -67,22 +92,23 @@
         }
 
         .ia-core-container {
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
             margin: 0 auto;
             position: relative;
+            animation: breathe 5s infinite ease-in-out;
         }
         .ia-core-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
-            animation: breathe 5s infinite ease-in-out;
             box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
+            border: 4px solid rgba(255,255,255,0.05);
         }
         @keyframes breathe {
             0%, 100% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.05); filter: brightness(1.2); }
+            50% { transform: scale(1.08); filter: brightness(1.2); }
         }
 
         .card-feature {
@@ -124,48 +150,48 @@
 <body class="relative">
 
     <!-- Back Orbs -->
-    <div class="orb-3d w-[600px] h-[600px] top-[-10%] left-[-10%]"></div>
-    <div class="orb-3d w-[500px] h-[500px] bottom-[10%] right-[-5%] bg-indigo-900/10"></div>
+    <div class="orb-3d w-[700px] h-[700px] top-[-15%] left-[-15%]"></div>
+    <div class="orb-3d w-[600px] h-[600px] bottom-[10%] right-[-5%] bg-indigo-900/10" style="animation-delay: -5s;"></div>
 
     <!-- Navigation -->
-    <nav class="container mx-auto px-6 py-8 flex items-center justify-between relative z-50">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
-                <i class="fa-solid fa-graduation-cap text-white"></i>
+    <nav class="container mx-auto px-6 py-10 flex items-center justify-between relative z-50 reveal">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-indigo-600/30 shadow-2xl">
+                <i class="fa-solid fa-graduation-cap text-white text-2xl"></i>
             </div>
-            <span class="text-xl font-black font-outfit uppercase italic">IA Castillo</span>
+            <span class="text-3xl font-black font-outfit uppercase italic tracking-tighter">IA Castillo</span>
         </div>
-        <div class="hidden md:flex items-center gap-10">
+        <div class="hidden md:flex items-center gap-14">
             <a href="#features" class="nav-link">Capacidades</a>
             <a href="#safe" class="nav-link">Seguridad</a>
             <a href="#dev" class="nav-link">Nosotros</a>
-            <a href="/chat" class="btn-premium px-8 py-2.5 rounded-xl font-bold text-sm">INGRESAR</a>
+            <a href="/chat" class="btn-premium px-10 py-3.5 rounded-2xl font-black text-sm tracking-widest">INGRESAR</a>
         </div>
     </nav>
 
     <!-- Hero -->
-    <header class="container mx-auto px-6 pt-12 pb-32 text-center relative z-10">
-        <div class="ia-core-container mb-12">
-            <div class="absolute inset-0 bg-indigo-500/10 blur-3xl rounded-full"></div>
+    <header class="container mx-auto px-6 pt-16 pb-40 text-center relative z-10">
+        <div class="ia-core-container mb-16 reveal" style="animation-delay: 0.2s;">
+            <div class="absolute inset-0 bg-indigo-500/15 blur-[100px] rounded-full"></div>
             <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2000" class="ia-core-image" alt="Holographic IA Core">
         </div>
 
-        <div class="inline-flex items-center glass px-4 py-2 rounded-full mb-8 border border-white/5">
+        <div class="inline-flex items-center glass px-6 py-3 rounded-full mb-12 border border-white/10 shadow-2xl reveal" style="animation-delay: 0.4s;">
             <span class="pulse-orb"></span>
-            <span class="text-[10px] font-black uppercase tracking-widest text-indigo-400">Sistema Activo | Élite v2.1</span>
+            <span class="text-[11px] font-black uppercase tracking-[5px] text-indigo-400">Protocolo Bernal Castillo v2.2</span>
         </div>
 
-        <h1 class="hero-title text-5xl md:text-8xl mb-6">
-            LA NUEVA ERA <br> DE LA <span class="text-indigo-500 italic">INTELIGENCIA</span>
+        <h1 class="hero-title text-6xl md:text-9xl mb-10 reveal" style="animation-delay: 0.6s;">
+            LA NUEVA ERA <br> DE LA <span class="italic-text">INTELIGENCIA</span>
         </h1>
         
-        <p class="max-w-xl mx-auto text-gray-400 text-lg md:text-xl font-medium mb-12 leading-relaxed">
+        <p class="max-w-2xl mx-auto text-gray-400 text-xl md:text-3xl font-medium mb-16 leading-tight reveal" style="animation-delay: 0.8s;">
             Un entorno de estudio diseñado por Bernal Castillo para quienes exigen potencia, visión y velocidad suprema.
         </p>
 
-        <div class="flex flex-col md:flex-row gap-6 justify-center">
-            <a href="/chat" class="btn-premium px-12 py-5 rounded-2xl text-lg font-black tracking-wide">COMENZAR VIAJE</a>
-            <a href="#features" class="glass px-12 py-5 rounded-2xl text-lg font-black border-white/5 hover:bg-white/5">VER CAPACIDADES</a>
+        <div class="flex flex-col md:flex-row gap-8 justify-center items-center reveal" style="animation-delay: 1s;">
+            <a href="/chat" class="btn-premium px-16 py-7 rounded-3xl text-2xl font-black tracking-wide shadow-2xl">COMENZAR VIAJE</a>
+            <a href="#features" class="glass px-16 py-7 rounded-3xl text-2xl font-black border-white/10 hover:bg-white/5 transition-all">VER CAPACIDADES</a>
         </div>
     </header>
 
