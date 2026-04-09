@@ -140,7 +140,8 @@ PROMPT_VOZ = (
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    """Ruta principal: Muestra la 'Recopción' elegante (Landing Page)."""
+    return render_template('landing.html')
 
 @app.route('/history', methods=['POST'])
 def history_handler():
@@ -239,8 +240,12 @@ def manifest():
 def sw():
     return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), 'sw.js')
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['GET', 'POST'])
 def chat_handler():
+    """Ruta del Asistente: GET para interfaz, POST para procesamiento."""
+    if request.method == 'GET':
+        return render_template('index.html')
+
     try:
         data = request.get_json()
         raw_msg = data.get('mensaje') or data.get('prompt') or ''
