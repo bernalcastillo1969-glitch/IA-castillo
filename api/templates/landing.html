@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Castillo | Arquitectura de Inteligencia de Élite</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <!-- Build v2.2.1 - Visual Intensity Boost -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg: #030712;
+            --card-bg: rgba(30,31,32,0.85);
+        }
+
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        h1, h2, h3, .font-outfit { font-family: 'Outfit', sans-serif; }
+
+        .orb-3d {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(80px);
+            opacity: 0.25;
+            z-index: -1;
+            pointer-events: none;
+            animation: float-3d 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes float-3d {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            100% { transform: translate(150px, 100px) scale(1.3) rotate(10deg); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hero-title {
+            background: linear-gradient(135deg, #fff 20%, #818cf8 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        .italic-text {
+            font-style: italic;
+            background: linear-gradient(90deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
+        }
+        .btn-premium:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.7);
+        }
+
+        .ia-core-container {
+            width: 350px;
+            height: 350px;
+            margin: 0 auto;
+            position: relative;
+            animation: breathe 4s infinite ease-in-out;
+        }
+        .ia-core-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 0 70px rgba(99, 102, 241, 0.5);
+            border: 5px solid rgba(255,255,255,0.1);
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+            50% { transform: scale(1.1) rotate(2deg); filter: brightness(1.3); }
+        }
+
+        .card-feature {
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+        .card-feature:hover {
+            transform: translateY(-15px);
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(45, 46, 47, 0.9);
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .nav-link:hover { color: #fff; }
+
+        .pulse-orb {
+            width: 10px; height: 10px;
+            background: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 12px;
+            box-shadow: 0 0 15px #22c55e;
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.9); opacity: 0.4; }
+            70% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.4; }
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Back Orbs -->
+    <div class="orb-3d w-[800px] h-[800px] top-[-15%] left-[-15%]"></div>
+    <div class="orb-3d w-[700px] h-[700px] bottom-[5%] right-[-5%] bg-indigo-900/15" style="animation-delay: -5s;"></div>
+
+    <!-- Navigation -->
+    <nav class="container mx-auto px-6 py-10 flex items-center justify-between relative z-50 reveal">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-indigo-600/30 shadow-2xl">
+                <i class="fa-solid fa-graduation-cap text-white text-2xl"></i>
+            </div>
+            <span class="text-3xl font-black font-outfit uppercase italic tracking-tighter">IA Castillo</span>
+        </div>
+        <div class="hidden md:flex items-center gap-14">
+            <a href="#features" class="nav-link">Capacidades</a>
+            <a href="#safe" class="nav-link">Seguridad</a>
+            <a href="#dev" class="nav-link">Nosotros</a>
+            <a href="/chat" class="btn-premium px-10 py-3.5 rounded-2xl font-black text-sm tracking-widest">INGRESAR</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="container mx-auto px-6 pt-16 pb-40 text-center relative z-10">
+        <div class="ia-core-container mb-16 reveal" style="animation-delay: 0.2s;">
+            <div class="absolute inset-0 bg-indigo-500/20 blur-[120px] rounded-full"></div>
+            <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2000" class="ia-core-image" alt="Holographic IA Core">
+        </div>
+
+        <div class="inline-flex items-center glass px-6 py-3 rounded-full mb-12 border border-white/10 shadow-2xl reveal" style="animation-delay: 0.4s;">
+            <span class="pulse-orb"></span>
+            <span class="text-[11px] font-black uppercase tracking-[5px] text-indigo-400">Protocolo Bernal Castillo v2.3</span>
+        </div>
+
+        <h1 class="hero-title text-6xl md:text-9xl mb-12 reveal" style="animation-delay: 0.6s;">
+            LA NUEVA ERA <br> DE LA <span class="italic-text">INTELIGENCIA</span>
+        </h1>
+        
+        <p class="max-w-3xl mx-auto text-gray-400 text-xl md:text-3xl font-medium mb-16 leading-tight reveal" style="animation-delay: 0.8s;">
+            Un entorno de estudio diseñado por Bernal Castillo para quienes exigen potencia, visión y velocidad suprema.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-8 justify-center items-center reveal" style="animation-delay: 1s;">
+            <a href="/chat" class="btn-premium px-16 py-7 rounded-3xl text-2xl font-black tracking-wide shadow-2xl">COMENZAR VIAJE</a>
+            <a href="#features" class="glass px-16 py-7 rounded-3xl text-2xl font-black border-white/10 hover:bg-white/5 transition-all">VER CAPACIDADES</a>
+        </div>
+    </header>
+
+    <!-- Features -->
+    <section id="features" class="container mx-auto px-6 py-24 relative z-10">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-7xl font-black outfit mb-6 uppercase italic text-indigo-500">Capacidades</h2>
+            <div class="h-2 w-24 bg-white/10 mx-auto rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="card-feature glass">
+                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800" class="w-full h-44 object-cover opacity-80" alt="Vision">
+                <div class="p-10">
+                    <h3 class="text-2xl font-black outfit uppercase mb-4 text-indigo-400">Visión 8K</h3>
+                    <p class="text-gray-400 text-lg leading-relaxed">Sube fotos de tus notas o ejercicios. La IA analiza cada detalle al instante.</p>
+                </div>
+            </div>
+            <div class="card-feature glass">
+                <img src="https://images.unsplash.com/photo-1589254065878-42c9da997008?auto=format&fit=crop&q=80&w=800" class="w-full h-44 object-cover opacity-80" alt="Voice">
+                <div class="p-10">
+                    <h3 class="text-2xl font-black outfit uppercase mb-4 text-purple-400">Voz Real</h3>
+                    <p class="text-gray-400 text-lg leading-relaxed">Conversa libremente con una IA que suena humana. Olvida los textos aburridos.</p>
+                </div>
+            </div>
+            <div class="card-feature glass">
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800" class="w-full h-44 object-cover opacity-80" alt="Speed">
+                <div class="p-10">
+                    <h3 class="text-2xl font-black outfit uppercase mb-4 text-pink-400">Latencia Cero</h3>
+                    <p class="text-gray-400 text-lg leading-relaxed">Impulsado por Groq LPU, obteniendo respuestas en milisegundos reales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="safe" class="container mx-auto px-6 py-24 relative z-10">
+        <div class="glass flex flex-col md:flex-row overflow-hidden border-white/10 items-stretch">
+            <div class="md:w-1/2 relative bg-indigo-950/20 group h-72 md:h-auto">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1200" class="absolute inset-0 w-full h-full object-cover opacity-70 grayscale group-hover:grayscale-0 transition-all duration-1000" alt="Server">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-[130px] text-green-500 animate-pulse"></i>
+                </div>
+            </div>
+            <div class="md:w-1/2 p-16 md:p-24 flex flex-col justify-center bg-[#050914]/80 backdrop-blur-3xl">
+                <h2 class="text-5xl md:text-8xl font-black outfit mb-8 uppercase leading-none">Blindado</h2>
+                <p class="text-gray-400 text-2xl leading-relaxed mb-12">Toda tu información está protegida por protocolos de aislamiento vía Supabase RLS. Privacidad nivel militar.</p>
+                <a href="/chat" class="btn-premium px-12 py-5 rounded-2xl font-bold inline-block text-center w-full md:w-auto">INGRESAR SEGURO</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dev Card -->
+    <section id="dev" class="container mx-auto px-6 py-24 text-center relative z-10">
+        <div class="max-w-2xl mx-auto glass p-16 md:p-24 border-t-4 border-indigo-600">
+            <div class="w-32 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full mx-auto mb-10 flex items-center justify-center text-5xl font-black shadow-2xl">B</div>
+            <h2 class="text-4xl font-black outfit mb-6 uppercase">Bernal Castillo</h2>
+            <p class="text-indigo-400 font-bold tracking-[8px] uppercase text-sm mb-8">Arquitecto Jefe de IA</p>
+            <p class="text-gray-400 text-2xl leading-relaxed italic">"Construyendo el futuro de la educación con inteligencia y pasión."</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-24 text-center border-t border-white/5 bg-black/40 relative z-10">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-center gap-6 mb-12">
+                <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-white text-2xl"></i>
+                </div>
+                <span class="text-4xl font-black font-outfit uppercase italic">IA Castillo</span>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-10 text-[11px] font-black uppercase tracking-[5px] text-gray-700">
+                <span>© 2026 Admin Bernal Castillo</span>
+                <span class="text-indigo-600">Hecho con Pasión y Élite Code</span>
+                <span>Vercel Certified Project</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

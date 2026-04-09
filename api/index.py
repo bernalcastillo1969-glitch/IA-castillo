@@ -46,7 +46,7 @@ def enviar_bienvenida_nativa(email):
         return False
 
 # Configurar Flask
-app = Flask(__name__, template_folder='../templates', static_folder='static')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = os.getenv("SECRET_KEY", "super_ia_castillo_key")
 
 # Configurar Supabase con protección total
@@ -140,8 +140,8 @@ PROMPT_VOZ = (
 
 @app.route('/')
 def home():
-    """Ruta principal: Muestra la 'Recopción' elegante (Landing Page)."""
-    return render_template('landing.html')
+    """Ruta principal: Muestra el Chat de IA directamente."""
+    return render_template('index.html')
 
 @app.route('/history', methods=['POST'])
 def history_handler():
