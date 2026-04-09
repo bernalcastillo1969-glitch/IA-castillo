@@ -227,6 +227,10 @@ def google_login_handler():
         print(f"[ERROR] Google Login: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory(os.path.join(os.path.dirname(__file__), 'static'), filename)
+
 @app.route('/favicon.ico')
 @app.route('/favicon.png')
 def favicon():
