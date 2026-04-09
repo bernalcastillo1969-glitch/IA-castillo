@@ -1054,7 +1054,7 @@
 
             if (isFirstMessage) prepararVentanaParaChat();
 
-            // Pintar burbuja local
+            // Mensaje del usuario (Instantáneo)
             const imgDataURL = currentImageBase64 ? imageThumbnail.src : null;
             addMessageBubble(message, 'user', true, imgDataURL, currentAudioBase64 != null);
             
@@ -1066,7 +1066,6 @@
 
             const payload_image_data = currentImageBase64;
             const payload_mime_type = currentImageMimeType;
-            
             const payload_audio_data = currentAudioBase64;
             const payload_audio_mime = currentAudioMimeType;
             
@@ -1098,62 +1097,86 @@
                 currentChatId = data.chat_id;
                 
                 removeTypingIndicator(typingId);
-                addMessageBubble(data.respuesta, 'ai');
+                
+                // EFECTO TYPEWRITER (Sello ChatGPT)
+                addMessageBubble("", 'ai', true, null, false, true, data.respuesta);
+                
                 cargarHistorialBaseDeDatos(); 
             } catch (err) {
                 removeTypingIndicator(typingId);
-                addMessageBubble('Error al conectar con los servidores de IA Castillo. Reintentar.', 'ai');
+                addMessageBubble('Error al conectar con los servidores de IA Castillo.', 'ai');
             } finally {
                 sendIcon.classList.remove('hidden'); loader.classList.add('hidden');
                 sendBtn.disabled = false;
-                chatContainer.scrollTop = chatContainer.scrollHeight;
                 userInput.focus();
             }
         }
 
         let _msgCounter = 0;
 
-        function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false) {
+        function addMessageBubble(text, role, scroll = true, imageDataURL = null, hasAudio = false, animate = false, fullText = "") {
             const wrapper = document.createElement('div');
             wrapper.className = 'w-full flex mb-5 font-sans bubble-appear';
             const msgId = 'msg-' + (++_msgCounter);
 
-            const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-500"/>` : '';
-            const audioHtml = hasAudio ? `<div class="bg-black/20 text-white px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2"><i class="fa-solid fa-microphone-lines text-blue-300"></i><span class="text-sm font-medium">Nota de Voz Enviada</span></div>` : '';
+            const photoHtml = imageDataURL ? `<img src="${imageDataURL}" class="rounded-xl w-64 max-w-full mb-3 object-contain border border-gray-500 shadow-lg"/>` : '';
+            const audioHtml = hasAudio ? `<div class="bg-indigo-600/20 text-indigo-100 px-3 py-2 rounded-lg inline-flex items-center gap-2 mb-2 border border-indigo-500/30"><i class="fa-solid fa-microphone-lines"></i><span class="text-xs font-bold uppercase tracking-tighter">Nota de Voz Analizada</span></div>` : '';
 
             if (role === 'user') {
                 wrapper.classList.add('justify-end');
                 wrapper.innerHTML = `
-                    <div class="bg-[#005c4b] text-[#e3e3e3] px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[85%] md:max-w-[70%] shadow-md border border-[#006b58]/50">
+                    <div class="bg-[#2f2f2f] text-[#ececec] px-4 py-3 rounded-2xl rounded-tr-sm max-w-[85%] md:max-w-[70%] shadow-md border border-white/5">
                         ${photoHtml}${audioHtml}
-                        <div class="text-[15px] leading-tight block break-words">${text}</div>
+                        <div class="text-[15.5px] leading-relaxed block break-words whitespace-pre-wrap">${text}</div>
                     </div>
                 `;
             } else {
                 wrapper.classList.add('justify-start');
                 wrapper.innerHTML = `
-                    <div class="bg-[#1e1f20] text-[#e3e3e3] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[85%] md:max-w-[80%] shadow-md border border-gray-700 relative">
-                        <div class="absolute -left-3 -top-3 w-7 h-7 rounded-full bg-gradient-to-br from-[#4285f4] to-[#9b72cb] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30 border-2 border-[#131314]">
-                            <i class="fa-solid fa-sparkles text-white text-[10px]"></i>
+                    <div class="bg-transparent text-[#ececec] px-1 py-1 rounded-2xl max-w-[95%] md:max-w-[85%] relative flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg border border-white/10 mt-1">
+                            <i class="fa-solid fa-sparkles text-white text-[12px]"></i>
                         </div>
-                        <div class="font-normal markdown-body pt-1 leading-normal block overflow-hidden" id="${msgId}">${formatText(text)}</div>
-                        <div class="msg-actions">
-                            <button class="msg-action-btn" onclick="copyMessage('${msgId}')" title="Copiar respuesta">
-                                <i class="fa-regular fa-copy"></i> Copiar
-                            </button>
-                            <button class="msg-action-btn" onclick="likeMessage(this)" title="Me gusta">
-                                <i class="fa-regular fa-thumbs-up"></i> Me gusta
-                            </button>
-                            <button class="msg-action-btn" onclick="dislikeMessage(this)" title="No me gusta">
-                                <i class="fa-regular fa-thumbs-down"></i>
-                            </button>
+                        <div class="flex-1">
+                            <div class="font-normal markdown-body leading-relaxed block overflow-hidden" id="${msgId}">${animate ? "" : formatText(text)}</div>
+                            <div class="msg-actions mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="msg-action-btn" onclick="copyMessage('${msgId}')">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                                <button class="msg-action-btn" onclick="likeMessage(this)">
+                                    <i class="fa-regular fa-thumbs-up"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
+                
+                if (animate && fullText) {
+                    setTimeout(() => startTypewriter(msgId, fullText), 50);
+                }
             }
 
             messagesArea.appendChild(wrapper);
-            if(scroll) { setTimeout(() => chatContainer.scrollTop = chatContainer.scrollHeight, 100); }
+            if(scroll && !animate) { chatContainer.scrollTop = chatContainer.scrollHeight; }
+        }
+
+        function startTypewriter(id, text) {
+            const el = document.getElementById(id);
+            let i = 0;
+            const rawText = text;
+            
+            function type() {
+                if (i <= rawText.length) {
+                    el.innerHTML = formatText(rawText.substring(0, i) + (i < rawText.length ? "▊" : ""));
+                    i += 3;
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                    setTimeout(type, 15);
+                } else {
+                    el.innerHTML = formatText(rawText);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            }
+            type();
         }
 
         function addTypingIndicator(id) {
