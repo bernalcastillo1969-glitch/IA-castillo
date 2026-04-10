@@ -12,6 +12,7 @@ import {
   Cpu,
   User,
   Send,
+  Database,
   Image as ImageIcon
 } from "lucide-react";
 
@@ -299,16 +300,16 @@ const CHAT_IMAGE = "https://images.unsplash.com/photo-1655720035861-ba4fd21a598d
 const VOICE_IMAGE = "https://images.unsplash.com/photo-1589254065878-42c9da997008?w=800&q=80";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 50 },
+  hidden: { opacity: 0, y: 60 },
   visible: (i: number = 0) => ({
     opacity: 1, y: 0,
-    transition: { duration: 0.7, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
+    transition: { type: "spring", stiffness: 60, damping: 15, delay: i * 0.12 },
   }),
 };
 
 const scaleIn = {
   hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 70, damping: 14 } },
 };
 
 export default function Index() {
@@ -419,9 +420,12 @@ export default function Index() {
 
               <div className="grid md:grid-cols-3 gap-8">
                   {[
-                      { title: "Gemini Flash 1.5", sub: "Cerebro Multimodal", desc: "Analiza imágenes en 8K, audios y documentos con precisión absoluta.", icon: <Eye />, color: "border-purple-500/20" },
-                      { title: "Groq LPU", sub: "Velocidad Supersónica", desc: "Respuestas en menos de 100ms para diálogos fluidos e instantáneos.", icon: <Zap />, color: "border-cyan-500/20" },
-                      { title: "Monitor Bernal", sub: "Seguridad Elite", desc: "Protocolos de acceso blindados con Supabase y monitorización real.", icon: <Shield />, color: "border-violet-500/20" }
+                      { title: "Gemini Flash 1.5", sub: "Cerebro Multimodal", desc: "Visión 8K superior y control de audio en tiempo real.", icon: <Eye />, color: "border-purple-500/20" },
+                      { title: "Groq LPU", sub: "Velocidad Supersónica", desc: "Respuestas ultra rápidas (< 100ms) más veloces que la lectura humana.", icon: <Zap />, color: "border-cyan-500/20" },
+                      { title: "Seguridad Bernal", sub: "Control Total", desc: "Google Login, OTP vía correo nativo y base en Supabase PostgreSQL.", icon: <Shield />, color: "border-violet-500/20" },
+                      { title: "PWA Nativa", sub: "Multiplataforma", desc: "Instalable en cualquier dispositivo Android, iPhone o Windows.", icon: <Smartphone />, color: "border-emerald-500/20" },
+                      { title: "Audio Pro", sub: "Modo Voz", desc: "Avatar inteligente estilo Alexa con procesamiento de voz nativo.", icon: <Mic />, color: "border-pink-500/20" },
+                      { title: "Historial Mágico", sub: "Sincronización", desc: "Base de datos persistente; tus conversaciones están en todos lados.", icon: <Database />, color: "border-amber-500/20" }
                   ].map((item, i) => (
                       <Card3D key={i} className={`p-8 rounded-3xl border ${item.color} bg-white/[0.03] backdrop-blur-xl`}>
                           <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-purple-400 mb-6">{item.icon}</div>
