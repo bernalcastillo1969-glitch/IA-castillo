@@ -126,15 +126,14 @@ export default function Index() {
             Versión 2.2.1 · Elite Edition · 100% Operativo
           </motion.div>
 
-          {/* Headline */}
           <motion.h1 initial="hidden" animate="visible" variants={fadeUp} custom={1}
             className="text-5xl md:text-7xl lg:text-[88px] font-black leading-[1.05] tracking-tighter mb-7 max-w-5xl"
           >
-            El asistente IA<br />
+            Bienvenido al <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400">
-              más inteligente
+              Mundo de la
             </span>
-            <br />de 2026
+            <br />Inteligencia Artificial
           </motion.h1>
 
           <motion.p initial="hidden" animate="visible" variants={fadeUp} custom={2}
