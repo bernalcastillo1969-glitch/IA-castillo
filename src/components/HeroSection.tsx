@@ -60,7 +60,7 @@ const HeroSection = () => {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://ia-castillo.vercel.app/"
+                href="/chat"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-primary to-secondary text-primary-foreground font-heading font-bold hover:opacity-90 transition-opacity glow-primary"
