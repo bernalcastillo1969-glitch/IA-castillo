@@ -1,29 +1,18 @@
-"use client";
-
-import { motion, useScroll, useTransform, AnimatePresence, useInView } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import {
   Eye,
   Smartphone,
-  Lock,
   Sparkles,
   Zap,
   Brain,
   Shield,
-  Star,
-  ChevronDown,
-  Globe,
-  MessageSquare,
-  Volume2,
   Mic,
-  Database,
-  Code2,
   CheckCircle2,
-  Server,
   Cpu,
-  Radio,
   User,
-  Send
+  Send,
+  Image as ImageIcon
 } from "lucide-react";
 
 /* ─────────────────────────────────────────
@@ -156,7 +145,7 @@ function ChatMockup() {
         </div>
         <div className="flex gap-2">
             <Mic size={12} className="text-white/30" />
-            <Image size={12} className="text-white/30" />
+            <ImageIcon size={12} className="text-white/30" />
         </div>
       </div>
 
