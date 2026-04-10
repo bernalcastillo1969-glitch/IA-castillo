@@ -140,8 +140,8 @@ PROMPT_VOZ = (
 
 @app.route('/')
 def home():
-    """Ruta principal: Muestra el Chat de IA directamente."""
-    return render_template('index.html')
+    """Ruta principal: Muestra la Landing Page."""
+    return render_template('landing.html')
 
 @app.route('/history', methods=['POST'])
 def history_handler():
