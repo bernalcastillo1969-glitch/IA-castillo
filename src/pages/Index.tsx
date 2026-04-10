@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
 import type { Variants } from "framer-motion";
 import {
   Eye,
@@ -22,6 +22,8 @@ import {
   GitBranch,
   CheckCircle2,
   ArrowRight,
+  Menu,
+  X,
 } from "lucide-react";
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
@@ -54,6 +56,7 @@ const IMG = {
 };
 
 export default function Index() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
@@ -95,12 +98,52 @@ export default function Index() {
             <a key={href.toString()} href={href.toString()} className="hover:text-white transition-colors duration-200">{label}</a>
           ))}
         </div>
-        <a
-          href="/chat"
-          className="group flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
-        >
-          Acceder <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="/chat"
+            className="hidden sm:flex group items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
+          >
+            Acceder <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+          </a>
+          
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.1] transition-colors"
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* ── Mobile Menu Overlay ── */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-full left-0 right-0 mt-2 mx-4 p-6 rounded-3xl bg-[#0a0a1a]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl z-50 md:hidden flex flex-col gap-5"
+            >
+              {[["#architecture","Arquitectura"],["#features","Características"],["#stack","Stack"],["#security","Seguridad"]].map(([href, label]) => (
+                <a 
+                  key={href} 
+                  href={href} 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg font-bold text-white/70 hover:text-white flex items-center justify-between group"
+                >
+                  {label}
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                </a>
+              ))}
+              <hr className="border-white/[0.05]" />
+              <a
+                href="/chat"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-black text-lg shadow-xl shadow-purple-500/20"
+              >
+                Acceder <ArrowRight size={18} />
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* ── HERO ── */}
