@@ -1,6 +1,5 @@
-// Ported faithfully from orchids-crea-una-web — minimal Vite adaptations only
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { useState, useRef } from "react";
 import type { Variants } from "framer-motion";
 import {
   Eye,
@@ -23,9 +22,13 @@ import {
   GitBranch,
   CheckCircle2,
   ArrowRight,
+  Menu,
+  X,
 } from "lucide-react";
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import ChatMockup from "@/components/ChatMockup";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
@@ -53,6 +56,7 @@ const IMG = {
 };
 
 export default function Index() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
@@ -94,12 +98,52 @@ export default function Index() {
             <a key={href.toString()} href={href.toString()} className="hover:text-white transition-colors duration-200">{label}</a>
           ))}
         </div>
-        <a
-          href="/chat"
-          className="group flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
-        >
-          Acceder <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-        </a>
+        <div className="flex items-center gap-3">
+          <a
+            href="/chat"
+            className="hidden sm:flex group items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white text-sm font-bold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 transition-all duration-300"
+          >
+            Acceder <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+          </a>
+          
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.1] transition-colors"
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
+
+        {/* ── Mobile Menu Overlay ── */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-full left-0 right-0 mt-2 mx-4 p-6 rounded-3xl bg-[#0a0a1a]/95 backdrop-blur-2xl border border-white/[0.08] shadow-2xl z-50 md:hidden flex flex-col gap-5"
+            >
+              {[["#architecture","Arquitectura"],["#features","Características"],["#stack","Stack"],["#security","Seguridad"]].map(([href, label]) => (
+                <a 
+                  key={href} 
+                  href={href} 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-lg font-bold text-white/70 hover:text-white flex items-center justify-between group"
+                >
+                  {label}
+                  <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                </a>
+              ))}
+              <hr className="border-white/[0.05]" />
+              <a
+                href="/chat"
+                className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-black text-lg shadow-xl shadow-purple-500/20"
+              >
+                Acceder <ArrowRight size={18} />
+              </a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* ── HERO ── */}
@@ -125,15 +169,14 @@ export default function Index() {
             Versión 2.2.1 · Elite Edition · 100% Operativo
           </motion.div>
 
-          {/* Headline */}
           <motion.h1 initial="hidden" animate="visible" variants={fadeUp} custom={1}
             className="text-5xl md:text-7xl lg:text-[88px] font-black leading-[1.05] tracking-tighter mb-7 max-w-5xl"
           >
-            El asistente IA<br />
+            Bienvenido al <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400">
-              más inteligente
+              Mundo de la
             </span>
-            <br />de 2026
+            <br />Inteligencia Artificial
           </motion.h1>
 
           <motion.p initial="hidden" animate="visible" variants={fadeUp} custom={2}
@@ -171,16 +214,18 @@ export default function Index() {
             className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl"
           >
             {[
-              { label: "Motores IA", value: "2", sub: "Gemini + Groq", icon: <Brain size={18}/> },
-              { label: "Latencia", value: "<100ms", sub: "Groq LPU", icon: <Zap size={18}/> },
+              { label: "Motores IA", value: 2, sub: "Gemini + Groq", icon: <Brain size={18}/> },
+              { label: "Latencia", to: 100, suffix: "ms", value: "<100ms", sub: "Groq LPU", icon: <Zap size={18}/> },
               { label: "Plataformas", value: "PWA", sub: "iOS · Android · PC", icon: <Smartphone size={18}/> },
-              { label: "Estado", value: "100%", sub: "Operativo", icon: <CheckCircle2 size={18}/> },
+              { label: "Estado", to: 100, suffix: "%", value: "100%", sub: "Operativo", icon: <CheckCircle2 size={18}/> },
             ].map((s, i) => (
               <motion.div key={s.label} variants={fadeUp} custom={6 + i * 0.3}
                 className="flex flex-col items-center gap-1 p-5 rounded-2xl backdrop-blur-md bg-white/[0.04] border border-white/[0.08] hover:border-purple-500/40 transition-all duration-300"
               >
                 <div className="text-purple-400 mb-1">{s.icon}</div>
-                <span className="text-xl font-black text-white">{s.value}</span>
+                <span className="text-xl font-black text-white">
+                  {typeof s.to === 'number' ? <AnimatedCounter to={s.to} suffix={s.suffix} /> : s.value}
+                </span>
                 <span className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">{s.label}</span>
                 <span className="text-[10px] text-white/25">{s.sub}</span>
               </motion.div>
@@ -399,6 +444,33 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ── MOCKUP DEMO ── */}
+      <section className="relative z-10 py-28 px-6 md:px-14 bg-white/[0.01]">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                  <h2 className="text-4xl md:text-5xl font-black mb-6">Interactúa en <span className="text-purple-400">tiempo real</span></h2>
+                  <p className="text-white/50 text-lg mb-8">Nuestra interfaz está diseñada para que la IA se sienta como una extensión de tu mente.</p>
+                  <div className="space-y-4">
+                      {[
+                          "Respuesta inmediata de baja latencia",
+                          "Previsualización de archivos y fotos",
+                          "Modo voz activado por gestos",
+                          "Sincronización multi-dispositivo"
+                      ].map(text => (
+                          <div key={text} className="flex items-center gap-3">
+                              <CheckCircle2 size={18} className="text-emerald-400" />
+                              <span className="text-white/70 font-semibold">{text}</span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+              <div className="relative">
+                  <ChatMockup />
+                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/10 blur-[80px] rounded-full z-0" />
+              </div>
+          </div>
+      </section>
+
       {/* ── TECH STACK ── */}
       <section id="stack" className="relative z-10 py-28 px-6 md:px-14">
         <div className="max-w-6xl mx-auto">
@@ -491,17 +563,6 @@ export default function Index() {
                         <Shield size={40} className="text-emerald-400" />
                       </div>
                     </div>
-                    {[
-                      { label: "RLS", top: "0%", left: "42%", c: "bg-emerald-500/20 border-emerald-500/40 text-emerald-300" },
-                      { label: "SSL", top: "42%", right: "-8%", c: "bg-cyan-500/20 border-cyan-500/40 text-cyan-300" },
-                      { label: "OTP", bottom: "0%", left: "42%", c: "bg-purple-500/20 border-purple-500/40 text-purple-300" },
-                      { label: "CDN", top: "42%", left: "-8%", c: "bg-violet-500/20 border-violet-500/40 text-violet-300" },
-                    ].map((b) => (
-                      <div key={b.label} className={`absolute px-2.5 py-1 rounded-full backdrop-blur border text-[11px] font-black ${b.c}`}
-                        style={{ top: b.top, bottom: (b as any).bottom, left: b.left, right: (b as any).right }}>
-                        {b.label}
-                      </div>
-                    ))}
                   </div>
                 </div>
               </div>
@@ -512,19 +573,11 @@ export default function Index() {
 
       {/* ── CTA FINAL ── */}
       <section id="about" className="relative z-10 py-28 px-6 md:px-14">
-        <div className="max-w-4xl mx-auto text-center relative rounded-[2rem] overflow-hidden border border-white/10 p-12">
+        <div className="max-w-4xl mx-auto text-center relative rounded-[2rem] overflow-hidden border border-white/10 p-12 ">
             {/* BG */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-700/20 via-violet-700/10 to-cyan-700/15" />
             <img src={IMG.hero} alt="" className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#04040f]/80 to-transparent" />
-
-            {/* 3D cubes deco */}
-            <div className="absolute top-4 right-6 opacity-50">
-              <FloatingCube color="#a855f7" size={80} />
-            </div>
-            <div className="absolute bottom-4 left-6 opacity-40">
-              <FloatingCube color="#06b6d4" size={60} />
-            </div>
 
             <div className="relative z-10">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center mb-6 shadow-2xl shadow-purple-500/50">
