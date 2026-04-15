@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IA Castillo | Tu Asistente IA de Élite</title>
-    
+    <meta name="description" content="Ecosistema de Inteligencia Artificial colaborativa. Arquitectura híbrida Gemini + Groq para velocidad y razonamiento de élite.">
+
     <!-- PWA Manifest & Icons -->
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <meta name="theme-color" content="#0d0e12">
-    
-    <!-- Script Tailwind -->
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- Fonts (Urbanist, Epilogue equivalente a Outfit/Inter) -->
+
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -42,144 +43,379 @@
     </script>
 
     <style>
+        /* ── Base ──────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background-color: theme('colors.background');
-            color: theme('colors.foreground');
+            background-color: hsl(228, 20%, 6%);
+            color: hsl(210, 30%, 95%);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            scroll-behavior: smooth;
+            cursor: none; /* custom cursor */
         }
 
+        /* ── Custom Cursor ─────────────────────────────────────── */
+        #cursor-dot {
+            position: fixed;
+            width: 8px; height: 8px;
+            background: hsl(220, 80%, 60%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+            mix-blend-mode: screen;
+        }
+        #cursor-ring {
+            position: fixed;
+            width: 36px; height: 36px;
+            border: 1.5px solid hsla(220, 80%, 60%, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
+        }
+        body:has(a:hover) #cursor-ring,
+        body:has(button:hover) #cursor-ring {
+            width: 52px; height: 52px;
+            border-color: hsla(265, 70%, 60%, 0.6);
+        }
+
+        /* ── Scroll Progress Bar ───────────────────────────────── */
+        #scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, hsl(220,80%,60%), hsl(265,70%,60%), hsl(180,70%,50%));
+            z-index: 10000;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 12px hsla(220, 80%, 60%, 0.6);
+        }
+
+        /* ── Text Gradient ─────────────────────────────────────── */
         .text-gradient {
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(135deg, hsl(220, 80%, 60%), hsl(265, 70%, 60%), hsl(180, 70%, 50%));
+            background-image: linear-gradient(135deg, hsl(220,80%,65%), hsl(265,70%,65%), hsl(180,70%,55%));
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
+        /* ── Glass ─────────────────────────────────────────────── */
         .glass {
-            background: hsl(228, 20%, 12%, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid hsl(228, 15%, 22%, 0.5);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            background: hsla(228, 20%, 12%, 0.55);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid hsla(228, 15%, 22%, 0.45);
+            box-shadow: 0 4px 32px rgba(0,0,0,.18), inset 0 1px 0 hsla(255,255%,255%,.06);
         }
 
-        .glow-text {
-            text-shadow: 0 0 30px hsla(220, 80%, 60%, 0.4);
-        }
+        /* ── Glows ─────────────────────────────────────────────── */
+        .glow-text  { text-shadow: 0 0 30px hsla(220,80%,60%,.5), 0 0 60px hsla(265,70%,60%,.25); }
+        .glow-primary { box-shadow: 0 0 40px -10px hsla(220,80%,60%,.45); }
 
-        .glow-primary {
-            box-shadow: 0 0 40px -10px hsla(220, 80%, 60%, 0.4);
-        }
-
+        /* ── Grid Pattern ──────────────────────────────────────── */
         .grid-pattern {
-            background-image: linear-gradient(hsla(220, 80%, 60%, 0.15) 1px, transparent 1px), 
-                              linear-gradient(90deg, hsla(220, 80%, 60%, 0.15) 1px, transparent 1px);
+            background-image:
+                linear-gradient(hsla(220,80%,60%,.12) 1px, transparent 1px),
+                linear-gradient(90deg, hsla(220,80%,60%,.12) 1px, transparent 1px);
             background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+        /* ── Floating Orbs ─────────────────────────────────────── */
+        @keyframes floatA {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33%       { transform: translateY(-22px) translateX(8px); }
+            66%       { transform: translateY(-10px) translateX(-6px); }
         }
-        .animate-float { animation: float 6s ease-in-out infinite; }
+        @keyframes floatB {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50%       { transform: translateY(-18px) translateX(-10px); }
+        }
+        .animate-float-a { animation: floatA 8s ease-in-out infinite; }
+        .animate-float-b { animation: floatB 6s ease-in-out infinite; }
+        .animate-float-c { animation: floatB 10s ease-in-out infinite reverse; }
 
+        /* ── Particles ─────────────────────────────────────────── */
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ── Scroll Reveal ─────────────────────────────────────── */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(40px);
+            transition: opacity 0.75s cubic-bezier(.16,1,.3,1),
+                        transform 0.75s cubic-bezier(.16,1,.3,1);
         }
-        .reveal.active {
+        .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1); }
+        .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1); }
+        .reveal.active, .reveal-left.active, .reveal-right.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translate(0, 0);
+        }
+
+        /* ── 3D Card Tilt ──────────────────────────────────────── */
+        .card-tilt {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .card-tilt-inner {
+            transform-style: preserve-3d;
+            transition: transform 0.08s linear;
+            will-change: transform;
+        }
+        .card-tilt-inner:hover { box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+        .card-shine {
+            position: absolute; inset: 0; border-radius: inherit;
+            background: radial-gradient(circle at var(--mx,50%) var(--my,50%), hsla(255,255%,255%,.08), transparent 60%);
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        /* ── Navbar shrink ─────────────────────────────────────── */
+        #main-nav { transition: all 0.4s cubic-bezier(.16,1,.3,1); }
+        #main-nav.scrolled { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        #main-nav.scrolled .nav-inner {
+            background: hsla(228,20%,7%,.88) !important;
+            backdrop-filter: blur(30px);
+        }
+
+        /* ── Typing Cursor ─────────────────────────────────────── */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 0.8s step-end infinite;
+            color: hsl(180,70%,50%);
+        }
+        @keyframes blink { 0%,100%{ opacity:1} 50%{ opacity:0 } }
+
+        /* ── Pulse ring ────────────────────────────────────────── */
+        @keyframes pulseRing {
+            0%   { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        .pulse-ring::before {
+            content:'';
+            position: absolute; inset: 0;
+            border-radius: inherit;
+            border: 1.5px solid hsl(220,80%,60%);
+            animation: pulseRing 2s cubic-bezier(.41,0,.7,1.2) infinite;
+        }
+
+        /* ── Stat counter fade-up ──────────────────────────────── */
+        .stat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .stat-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 48px rgba(0,0,0,.35); }
+
+        /* ── Feature card ──────────────────────────────────────── */
+        .feature-card {
+            position: relative; overflow: hidden;
+            transition: transform 0.35s cubic-bezier(.16,1,.3,1),
+                        box-shadow 0.35s ease;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, hsla(220,80%,60%,.07) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.35s;
+        }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,.4); }
+        .feature-card:hover::before { opacity: 1; }
+
+        /* ── CTA glow pulse ─────────────────────────────────────── */
+        @keyframes ctaGlow {
+            0%,100% { box-shadow: 0 0 40px rgba(255,255,255,.18); }
+            50%     { box-shadow: 0 0 60px rgba(255,255,255,.35), 0 0 100px hsla(220,80%,60%,.2); }
+        }
+        .cta-btn { animation: ctaGlow 3s ease-in-out infinite; }
+        .cta-btn:hover { animation: none; box-shadow: 0 0 60px rgba(255,255,255,.45); }
+
+        /* ── Scrollbar ─────────────────────────────────────────── */
+        ::-webkit-scrollbar       { width: 6px; }
+        ::-webkit-scrollbar-track { background: hsl(228,20%,8%); }
+        ::-webkit-scrollbar-thumb { background: hsl(228,20%,22%); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: hsl(220,80%,50%); }
+
+        /* ── Badge shimmer ─────────────────────────────────────── */
+        .badge-shimmer {
+            position: relative; overflow: hidden;
+        }
+        .badge-shimmer::after {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, hsla(255,255%,255%,.15), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer { 0%{ left:-100% } 100%{ left:200% } }
+
+        /* ── Architecture orbit ────────────────────────────────── */
+        @keyframes orbitSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+        .orbit-ring {
+            animation: orbitSpin 18s linear infinite;
+            transform-origin: center;
+        }
+        .orbit-ring-2 {
+            animation: orbitSpin 12s linear infinite reverse;
         }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Navegación -->
-    <nav class="fixed top-0 left-0 w-full z-50 glass border-b-0 border-white/5 transition-all duration-300">
-        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+    <!-- Custom Cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <!-- Scroll Progress -->
+    <div id="scroll-progress"></div>
+
+    <!-- ── Navbar ─────────────────────────────────────────────────────── -->
+    <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 pt-4 pb-4 px-6">
+        <div class="nav-inner container mx-auto glass rounded-2xl px-6 h-16 flex items-center justify-between transition-all duration-400 border-white/5">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary">
-                    <i class="fa-solid fa-graduation-cap text-white"></i>
+                <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary pulse-ring">
+                    <i class="fa-solid fa-graduation-cap text-white relative z-10"></i>
                 </div>
                 <span class="font-heading font-bold text-xl tracking-tight text-white">IA Castillo</span>
             </div>
             <div class="hidden md:flex items-center gap-8">
-                <a href="#features" class="text-sm font-medium text-muted hover:text-white transition-colors">Características</a>
-                <a href="#architecture" class="text-sm font-medium text-muted hover:text-white transition-colors">Arquitectura</a>
-                <a href="#security" class="text-sm font-medium text-muted hover:text-white transition-colors">Seguridad</a>
+                <a href="#features"      class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
+                    Características
+                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="#architecture" class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
+                    Arquitectura
+                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="#security"     class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
+                    Seguridad
+                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
+                </a>
             </div>
-            <div class="flex items-center">
-                <a href="/chat" class="px-6 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md border border-white/10">INGRESAR</a>
-            </div>
+            <a href="/chat" class="relative px-6 py-2.5 rounded-xl text-white text-sm font-semibold overflow-hidden group border border-white/10"
+               style="background: linear-gradient(135deg, hsla(220,80%,60%,.25), hsla(265,70%,60%,.2))">
+                <span class="relative z-10 flex items-center gap-2">
+                    <i class="fa-solid fa-rocket text-xs"></i> INGRESAR
+                </span>
+                <span class="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            </a>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- ── Hero ───────────────────────────────────────────────────────── -->
     <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        
-        <!-- Imagen de Fondo (Oscurecida) -->
+
+        <!-- Particle canvas -->
+        <canvas id="particles-canvas"></canvas>
+
+        <!-- Background image -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1920" alt="IA Background" class="w-full h-full object-cover opacity-10">
-            <div class="absolute inset-0 bg-gradient-to-b from-[#0e111a]/60 via-[#0e111a]/80 to-[#0e111a]"></div>
+            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1920"
+                 alt="" aria-hidden="true"
+                 class="w-full h-full object-cover opacity-8"
+                 style="opacity:.08">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#0e111a]/70 via-[#0e111a]/80 to-[#0e111a]"></div>
         </div>
 
-        <!-- Patrón Grid -->
-        <div class="absolute inset-0 z-0 grid-pattern opacity-40"></div>
+        <!-- Grid -->
+        <div class="absolute inset-0 z-0 grid-pattern opacity-50"></div>
 
-        <!-- Orbes de Luz Flotantes -->
-        <div class="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-primary/20 blur-[120px] animate-float z-0 pointer-events-none"></div>
-        <div class="absolute bottom-1/4 right-1/4 w-60 h-60 rounded-full bg-secondary/20 blur-[100px] animate-float z-0 pointer-events-none" style="animation-delay: 2s;"></div>
-        <div class="absolute top-1/3 right-1/3 w-40 h-40 rounded-full bg-accent/20 blur-[80px] animate-float z-0 pointer-events-none" style="animation-delay: 1.5s;"></div>
+        <!-- Orbs (parallax) -->
+        <div id="orb-a" class="absolute top-1/4 left-1/4 w-[480px] h-[480px] rounded-full animate-float-a z-0 pointer-events-none"
+             style="background: radial-gradient(circle, hsla(220,80%,60%,.22), transparent 70%); filter: blur(80px);"></div>
+        <div id="orb-b" class="absolute bottom-1/4 right-1/4 w-[360px] h-[360px] rounded-full animate-float-b z-0 pointer-events-none"
+             style="background: radial-gradient(circle, hsla(265,70%,60%,.2), transparent 70%); filter: blur(70px);"></div>
+        <div id="orb-c" class="absolute top-1/3 right-1/3 w-[240px] h-[240px] rounded-full animate-float-c z-0 pointer-events-none"
+             style="background: radial-gradient(circle, hsla(180,70%,50%,.18), transparent 70%); filter: blur(60px);"></div>
 
-        <div class="container relative z-10 mx-auto px-6 text-center reveal">
+        <!-- Hero Content -->
+        <div class="container relative z-10 mx-auto px-6 text-center">
+
             <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 border-white/10 hover:bg-white/5 transition-colors cursor-default">
-                <i class="fa-solid fa-sparkles text-accent text-sm"></i>
-                <span class="text-muted text-sm font-heading font-medium tracking-wide">Versión 2.0 — Elite Edition</span>
+            <div class="reveal inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass mb-10 border-white/10 badge-shimmer hover:bg-white/5 transition-colors cursor-default">
+                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
+                <span class="text-muted text-xs font-heading font-semibold tracking-widest uppercase">Versión 2.0 — Elite Edition</span>
             </div>
 
-            <h1 class="font-heading text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight">
-                <span class="text-white">Tu Asistente</span><br>
-                <span class="text-gradient glow-text">IA de Élite</span>
+            <!-- Headline with typing effect -->
+            <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-extrabold leading-[1.08] mb-6 tracking-tight reveal" style="transition-delay:.1s">
+                <span class="text-white block mb-2">Tu Asistente</span>
+                <span class="text-gradient glow-text typing-cursor" id="typing-headline"></span>
             </h1>
 
-            <p class="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
-                Ecosistema de Inteligencia Artificial colaborativa programado para la excelencia. Rápido, empático e increíblemente poderoso.
+            <p class="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed reveal" style="transition-delay:.2s">
+                Ecosistema de Inteligencia Artificial colaborativa programado para la excelencia.
+                Rápido, empático e increíblemente poderoso.
             </p>
 
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                <a href="/chat" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-heading font-bold text-lg hover:opacity-90 transition-opacity glow-primary flex items-center justify-center gap-3">
-                    Probar Ahora <i class="fa-solid fa-arrow-right"></i>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 reveal" style="transition-delay:.3s">
+                <a href="/chat"
+                   class="group w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-primary to-secondary rounded-2xl text-white font-heading font-bold text-lg glow-primary flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all duration-200">
+                    Probar Ahora
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform duration-200"></i>
                 </a>
-                <a href="#features" class="w-full sm:w-auto px-8 py-4 glass rounded-xl text-white font-heading font-semibold text-lg hover:bg-white/5 transition-colors">
+                <a href="#features"
+                   class="group w-full sm:w-auto px-9 py-4 glass rounded-2xl text-white font-heading font-semibold text-lg hover:bg-white/8 transition-all duration-200 flex items-center justify-center gap-2">
                     Explorar
+                    <i class="fa-solid fa-chevron-down group-hover:translate-y-1 transition-transform duration-200"></i>
                 </a>
             </div>
 
             <!-- Stats -->
-            <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto border-t border-white/5 pt-12">
-                <div class="glass rounded-2xl p-6 text-center">
-                    <div class="font-heading text-4xl font-black text-gradient mb-2">3</div>
-                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Motores IA</div>
+            <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-5 max-w-3xl mx-auto border-t border-white/5 pt-12 reveal" style="transition-delay:.4s">
+                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
+                    <div class="font-heading text-4xl font-black text-gradient mb-2" data-count="3" data-suffix="">3</div>
+                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Motores IA</div>
                 </div>
-                <div class="glass rounded-2xl p-6 text-center">
+                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
                     <div class="font-heading text-4xl font-black text-gradient mb-2">&lt;100ms</div>
-                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Latencia</div>
+                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Latencia</div>
                 </div>
-                <div class="glass rounded-2xl p-6 text-center">
+                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
                     <div class="font-heading text-4xl font-black text-gradient mb-2">24/7</div>
-                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Disponible</div>
+                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Disponible</div>
                 </div>
             </div>
         </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+            <span class="text-muted text-xs font-label tracking-widest uppercase">Scroll</span>
+            <div class="w-0.5 h-12 overflow-hidden bg-white/10 rounded-full">
+                <div class="w-full bg-gradient-to-b from-accent to-transparent rounded-full" style="height:40%; animation: scrollLine 2s ease-in-out infinite;"></div>
+            </div>
+        </div>
+        <style>
+            @keyframes scrollLine {
+                0%   { transform: translateY(-100%); }
+                100% { transform: translateY(280%); }
+            }
+        </style>
     </section>
 
-    <!-- Características -->
+    <!-- ── Features ───────────────────────────────────────────────────── -->
     <section id="features" class="py-32 relative">
+        <!-- subtle background glow -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] rounded-full pointer-events-none"
+             style="background: radial-gradient(ellipse, hsla(220,80%,60%,.06) 0%, transparent 70%);"></div>
+
         <div class="container mx-auto px-6 relative z-10">
             <div class="text-center mb-20 reveal">
                 <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Características</p>
@@ -187,145 +423,443 @@
                 <p class="text-muted max-w-2xl mx-auto text-lg">Cada función ha sido diseñada para ofrecer una experiencia de IA premium, rápida y accesible.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Tarjetas -->
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                        <i class="fa-solid fa-eye text-2xl text-white"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+
+                <div class="card-tilt reveal" style="transition-delay:.05s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,.35)]">
+                            <i class="fa-solid fa-eye text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Visión Avanzada</h3>
+                        <p class="text-muted leading-relaxed text-sm">Lee fotos de cuadernos, libros, gráficos y documentos. Extrae información y resuelve problemas visuales al instante.</p>
                     </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Visión Avanzada</h3>
-                    <p class="text-muted leading-relaxed">Lee fotos de cuadernos, libros, gráficos y documentos. Extrae información y resuelve problemas visuales al instante.</p>
                 </div>
 
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 100ms;">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,0.3)]">
-                        <i class="fa-solid fa-microphone text-2xl text-white"></i>
+                <div class="card-tilt reveal" style="transition-delay:.12s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,.35)]">
+                            <i class="fa-solid fa-microphone text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Modo Voz Humanoide</h3>
+                        <p class="text-muted leading-relaxed text-sm">Interfaz de voz interactiva con avatar animado y síntesis de voz de alta fidelidad estilo nativo.</p>
                     </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Modo Voz Humanoide</h3>
-                    <p class="text-muted leading-relaxed">Interfaz de voz interactiva con avatar animado y síntesis de voz de alta fidelidad estilo nativo.</p>
                 </div>
 
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 200ms;">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
-                        <i class="fa-solid fa-mobile-screen text-2xl text-white"></i>
+                <div class="card-tilt reveal" style="transition-delay:.19s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,.35)]">
+                            <i class="fa-solid fa-mobile-screen text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Experiencia PWA</h3>
+                        <p class="text-muted leading-relaxed text-sm">Instalable en Android, iOS y escritorio como app nativa con tiempos de carga optimizados.</p>
                     </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Experiencia PWA</h3>
-                    <p class="text-muted leading-relaxed">Instalable en Android, iOS y escritorio como app nativa con tiempos de carga optimizados.</p>
-                </div>
-                
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-lock text-2xl text-white"></i>
-                    </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Acceso de Élite</h3>
-                    <p class="text-muted leading-relaxed">Autenticación dual con Google Login y códigos por email. Solo usuarios autorizados.</p>
                 </div>
 
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 100ms;">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-palette text-2xl text-white"></i>
+                <div class="card-tilt reveal" style="transition-delay:.05s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,.35)]">
+                            <i class="fa-solid fa-lock text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Acceso de Élite</h3>
+                        <p class="text-muted leading-relaxed text-sm">Autenticación dual con Google Login y códigos por email. Solo usuarios autorizados.</p>
                     </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Diseño Premium</h3>
-                    <p class="text-muted leading-relaxed">Glassmorphism, modo oscuro puro, gradientes dinámicos y micro-animaciones de primer nivel.</p>
                 </div>
 
-                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 200ms;">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mb-6">
-                        <i class="fa-solid fa-brain text-2xl text-white"></i>
+                <div class="card-tilt reveal" style="transition-delay:.12s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,.35)]">
+                            <i class="fa-solid fa-palette text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Diseño Premium</h3>
+                        <p class="text-muted leading-relaxed text-sm">Glassmorphism, modo oscuro puro, gradientes dinámicos y micro-animaciones de primer nivel.</p>
                     </div>
-                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Cerebro Multimodal</h3>
-                    <p class="text-muted leading-relaxed">Procesa simultáneamente texto, imagen y audio con razonamiento profundo e inteligente.</p>
+                </div>
+
+                <div class="card-tilt reveal" style="transition-delay:.19s">
+                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
+                        <div class="card-shine"></div>
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,.35)]">
+                            <i class="fa-solid fa-brain text-2xl text-white"></i>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-white mb-3">Cerebro Multimodal</h3>
+                        <p class="text-muted leading-relaxed text-sm">Procesa simultáneamente texto, imagen y audio con razonamiento profundo e inteligente.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Arquitectura -->
-    <section id="architecture" class="py-32 relative overflow-hidden bg-white/[0.02]">
+    <!-- ── Architecture ───────────────────────────────────────────────── -->
+    <section id="architecture" class="py-32 relative overflow-hidden" style="background: hsla(228,20%,7%,.6);">
+        <!-- Accent line -->
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
+
         <div class="container mx-auto px-6 relative z-10">
-             <div class="flex flex-col lg:flex-row items-center gap-16">
-                 <div class="lg:w-1/2 reveal">
-                     <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Arquitectura</p>
-                     <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">Procesamiento Neural <span class="text-gradient">Avanzado</span></h2>
-                     <p class="text-muted text-lg mb-8 leading-relaxed">Integración perfecta entre modelos de lenguaje de última generación. Utilizamos Google Gemini Flash para razonamiento complejo multimodal, y Groq LPU para respuestas que exigen velocidad inmediata superior a la humana.</p>
-                     
-                     <div class="space-y-6">
-                         <div class="flex items-start gap-4">
-                             <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                                 <i class="fa-solid fa-bolt text-primary"></i>
-                             </div>
-                             <div>
-                                 <h4 class="text-xl font-bold text-white mb-1">Ruteo Dinámico</h4>
-                                 <p class="text-muted text-sm leading-relaxed">El sistema escoge instántaneamente el motor más rápido y exacto dependiendo del tipo de dato.</p>
-                             </div>
-                         </div>
-                         <div class="flex items-start gap-4">
-                             <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 shrink-0">
-                                 <i class="fa-solid fa-cloud text-secondary"></i>
-                             </div>
-                             <div>
-                                 <h4 class="text-xl font-bold text-white mb-1">Caché Edge</h4>
-                                 <p class="text-muted text-sm leading-relaxed">Tu historial sincronizado globalmente a través de Supabase sin importar en dónde inicies sesión.</p>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="lg:w-1/2 w-full reveal">
-                     <div class="glass p-6 md:p-8 rounded-3xl relative">
-                         <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary blur opacity-30 rounded-3xl"></div>
-                         <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1200" alt="Tech Architecture" class="relative rounded-2xl w-full h-[400px] object-cover grayscale hover:grayscale-0 transition-all duration-700 opacity-90 border border-white/10">
-                     </div>
-                 </div>
-             </div>
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <!-- Text -->
+                <div class="lg:w-1/2 reveal-left">
+                    <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Arquitectura</p>
+                    <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">
+                        Procesamiento Neural <span class="text-gradient">Avanzado</span>
+                    </h2>
+                    <p class="text-muted text-lg mb-10 leading-relaxed">
+                        Integración perfecta entre modelos de lenguaje de última generación. Google Gemini Flash para razonamiento complejo multimodal y Groq LPU para respuestas que exigen velocidad superior a la humana.
+                    </p>
+
+                    <div class="space-y-7">
+                        <div class="flex items-start gap-5 group">
+                            <div class="shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-300">
+                                <i class="fa-solid fa-bolt text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors duration-300">Ruteo Dinámico</h4>
+                                <p class="text-muted text-sm leading-relaxed">El sistema escoge al instante el motor más rápido y exacto dependiendo del tipo de dato.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-5 group">
+                            <div class="shrink-0 w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 group-hover:bg-secondary/20 group-hover:border-secondary/40 transition-all duration-300">
+                                <i class="fa-solid fa-cloud text-secondary"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-secondary transition-colors duration-300">Caché Edge</h4>
+                                <p class="text-muted text-sm leading-relaxed">Tu historial sincronizado globalmente a través de Supabase sin importar dónde inicies sesión.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-5 group">
+                            <div class="shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:border-accent/40 transition-all duration-300">
+                                <i class="fa-solid fa-shield-halved text-accent"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-accent transition-colors duration-300">Seguridad RLS</h4>
+                                <p class="text-muted text-sm leading-relaxed">Row Level Security garantiza que solo accedes a tu propia información a nivel de base de datos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual: Tech cards -->
+                <div class="lg:w-1/2 w-full reveal-right">
+                    <div class="relative flex justify-center items-center h-[420px]">
+                        <!-- Orbit rings -->
+                        <div class="orbit-ring absolute w-[380px] h-[380px] rounded-full"
+                             style="border: 1px dashed hsla(220,80%,60%,.2);"></div>
+                        <div class="orbit-ring-2 absolute w-[280px] h-[280px] rounded-full"
+                             style="border: 1px dashed hsla(265,70%,60%,.2);"></div>
+
+                        <!-- Center node -->
+                        <div class="relative z-10 w-24 h-24 rounded-full glass flex flex-col items-center justify-center"
+                             style="box-shadow: 0 0 60px hsla(220,80%,60%,.3), 0 0 120px hsla(265,70%,60%,.15);">
+                            <i class="fa-solid fa-graduation-cap text-3xl text-white"></i>
+                            <span class="text-[10px] font-heading text-muted mt-1 uppercase tracking-widest">Core</span>
+                        </div>
+
+                        <!-- Gemini node -->
+                        <div class="absolute top-6 left-1/2 -translate-x-1/2 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
+                             style="box-shadow: 0 0 20px hsla(220,80%,60%,.2);">
+                            <i class="fa-solid fa-atom text-primary"></i>
+                            <span class="font-heading font-bold text-sm text-white">Gemini Flash</span>
+                        </div>
+
+                        <!-- Groq node -->
+                        <div class="absolute bottom-6 left-8 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
+                             style="box-shadow: 0 0 20px hsla(265,70%,60%,.2);">
+                            <i class="fa-solid fa-bolt text-secondary"></i>
+                            <span class="font-heading font-bold text-sm text-white">Groq LPU</span>
+                        </div>
+
+                        <!-- Supabase node -->
+                        <div class="absolute bottom-6 right-8 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
+                             style="box-shadow: 0 0 20px hsla(180,70%,50%,.2);">
+                            <i class="fa-solid fa-database text-accent"></i>
+                            <span class="font-heading font-bold text-sm text-white">Supabase</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-32 relative overflow-hidden">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-primary/30 to-secondary/30 blur-[150px] rounded-full z-0"></div>
+    <!-- ── Security ───────────────────────────────────────────────────── -->
+    <section id="security" class="py-32 relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="glass rounded-[2.5rem] p-10 md:p-16 border border-accent/15 relative overflow-hidden">
+                <div class="absolute -top-1/2 right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
+                     style="background: radial-gradient(circle, hsla(180,70%,50%,.06), transparent 70%); filter: blur(80px);"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center relative z-10">
+                    <div class="reveal-left">
+                        <div class="inline-block px-4 py-1.5 rounded-full mb-6 badge-shimmer"
+                             style="background: hsla(180,70%,50%,.12); border: 1px solid hsla(180,70%,50%,.2);">
+                            <span class="text-accent text-xs font-heading font-semibold tracking-widest uppercase">Security Protocol</span>
+                        </div>
+                        <h2 class="font-heading text-4xl md:text-5xl font-bold mb-8 leading-tight">
+                            Protección de Nivel <br><span class="text-gradient">Empresarial</span>
+                        </h2>
+                        <div class="space-y-8">
+                            <div class="flex gap-5 group">
+                                <div class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                                     style="background: hsla(180,70%,50%,.15); border: 1px solid hsla(180,70%,50%,.3);">
+                                    <i class="fa-solid fa-key text-accent"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white mb-2">Supabase RLS</h4>
+                                    <p class="text-muted text-sm leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a la información que le pertenece a nivel de base de datos.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-5 group">
+                                <div class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                                     style="background: hsla(180,70%,50%,.15); border: 1px solid hsla(180,70%,50%,.3);">
+                                    <i class="fa-solid fa-user-shield text-accent"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white mb-2">Dual Authentication</h4>
+                                    <p class="text-muted text-sm leading-relaxed">OAuth2 con Google y verificación por email. Acceso blindado para usuarios de élite.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center relative reveal-right">
+                        <div class="absolute inset-0 rounded-full pointer-events-none"
+                             style="background: radial-gradient(circle, hsla(180,70%,50%,.12), transparent 70%); filter: blur(40px);"></div>
+                        <div class="relative group">
+                            <div class="absolute -inset-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                 style="background: radial-gradient(circle, hsla(180,70%,50%,.2), transparent 70%); filter: blur(20px);"></div>
+                            <div class="relative p-14 glass rounded-full"
+                                 style="border: 1px solid hsla(180,70%,50%,.3); box-shadow: 0 0 60px hsla(180,70%,50%,.15);">
+                                <i class="fa-solid fa-shield-halved text-accent group-hover:scale-110 transition-transform duration-300 block"
+                                   style="font-size: 100px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA ────────────────────────────────────────────────────────── -->
+    <section class="py-40 relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[500px] rounded-full pointer-events-none"
+             style="background: linear-gradient(135deg, hsla(220,80%,60%,.25), hsla(265,70%,60%,.25)); filter: blur(150px);"></div>
         <div class="container mx-auto px-6 relative z-10 text-center reveal">
-            <h2 class="font-heading text-5xl md:text-6xl font-bold mb-8">El futuro de la <span class="text-gradient">Colaboración</span></h2>
-            <p class="text-muted text-xl max-w-2xl mx-auto mb-12">Da el salto. Accede a tu propio Asistente Inteligente personalizado con la más potente tecnología del mundo.</p>
-            <a href="/chat" class="inline-block px-10 py-5 bg-white text-black font-heading font-black text-lg rounded-2xl hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+            <p class="text-accent font-heading font-semibold tracking-widest uppercase text-sm mb-6">¿Listo para el Futuro?</p>
+            <h2 class="font-heading text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-[1.08]">
+                El futuro de la <span class="text-gradient">Colaboración</span>
+            </h2>
+            <p class="text-muted text-xl max-w-2xl mx-auto mb-14 leading-relaxed">
+                Da el salto. Accede a tu propio Asistente Inteligente personalizado con la más potente tecnología del mundo.
+            </p>
+            <a href="/chat"
+               class="cta-btn inline-flex items-center gap-3 px-12 py-6 bg-white text-gray-950 font-heading font-black text-xl rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200">
+                <i class="fa-solid fa-rocket"></i>
                 INICIAR SESIÓN AHORA
             </a>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="glass border-b-0 border-x-0 rounded-none py-12 relative z-10 border-t border-white/5">
+    <!-- ── Footer ─────────────────────────────────────────────────────── -->
+    <footer class="glass border-x-0 border-b-0 rounded-none py-12 relative z-10 border-t border-white/5">
         <div class="container mx-auto px-6 text-center">
-            <div class="flex items-center justify-center gap-3 mb-8">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                     <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
                 </div>
-                <span class="font-heading font-bold text-lg text-white">IA Castillo</span>
+                <span class="font-heading font-bold text-xl text-white">IA Castillo</span>
             </div>
-            <p class="text-muted text-sm font-medium">© 2026 Admin Bernal Castillo. Todos los derechos reservados.</p>
-            <p class="text-[11px] text-muted/50 uppercase tracking-widest mt-4">Powered by GLITCH · VERCEL · GROQ · GEMINI</p>
+            <p class="text-muted text-sm font-medium mb-2">© 2026 Admin Bernal Castillo. Todos los derechos reservados.</p>
+            <p class="text-[11px] text-muted/40 uppercase tracking-widest">Powered by GLITCH · VERCEL · GROQ · GEMINI</p>
         </div>
     </footer>
 
-    <!-- Script Animaciones de Scroll -->
+    <!-- ══════════════════════════════════════════════════════════════════
+         JavaScript — Animations & Interactions
+    ════════════════════════════════════════════════════════════════════ -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const reveals = document.querySelectorAll('.reveal');
-            
-            const revealOnScroll = () => {
-                const windowHeight = window.innerHeight;
-                const elementVisible = 100;
-                
-                reveals.forEach((element) => {
-                    const elementTop = element.getBoundingClientRect().top;
-                    if (elementTop < windowHeight - elementVisible) {
-                        element.classList.add('active');
-                    }
-                });
-            };
-            
-            window.addEventListener('scroll', revealOnScroll);
-            revealOnScroll(); // Trigger inicial
+    (() => {
+        'use strict';
+
+        // ── Custom Cursor ─────────────────────────────────────────────
+        const dot  = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        let mx = window.innerWidth/2, my = window.innerHeight/2;
+        let rx = mx, ry = my;
+
+        document.addEventListener('mousemove', e => {
+            mx = e.clientX; my = e.clientY;
+            dot.style.left = mx + 'px';
+            dot.style.top  = my + 'px';
         });
+
+        // Smoothly lag the ring behind
+        (function animRing() {
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx + 'px';
+            ring.style.top  = ry + 'px';
+            requestAnimationFrame(animRing);
+        })();
+
+        // Hide cursor when it leaves the window
+        document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
+        document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
+
+        // ── Scroll Progress Bar ───────────────────────────────────────
+        const progressBar = document.getElementById('scroll-progress');
+        function updateProgress() {
+            const max = document.documentElement.scrollHeight - window.innerHeight;
+            progressBar.style.width = (window.scrollY / max * 100) + '%';
+        }
+        window.addEventListener('scroll', updateProgress, { passive: true });
+
+        // ── Navbar Shrink ─────────────────────────────────────────────
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 60);
+        }, { passive: true });
+
+        // ── Scroll Reveal (IntersectionObserver) ──────────────────────
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+        const revealObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Stagger via transition-delay already set inline
+                    entry.target.classList.add('active');
+                    revealObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+        revealEls.forEach(el => revealObs.observe(el));
+
+        // ── Parallax Orbs ─────────────────────────────────────────────
+        const orbA = document.getElementById('orb-a');
+        const orbB = document.getElementById('orb-b');
+        const orbC = document.getElementById('orb-c');
+        window.addEventListener('scroll', () => {
+            const y = window.scrollY;
+            if (orbA) orbA.style.transform = `translateY(${y * 0.15}px)`;
+            if (orbB) orbB.style.transform = `translateY(${-y * 0.1}px)`;
+            if (orbC) orbC.style.transform = `translateY(${y * 0.08}px)`;
+        }, { passive: true });
+
+        // ── 3D Card Tilt ──────────────────────────────────────────────
+        document.querySelectorAll('.card-tilt').forEach(wrapper => {
+            const inner = wrapper.querySelector('.card-tilt-inner');
+            const shine = wrapper.querySelector('.card-shine');
+            wrapper.addEventListener('mousemove', e => {
+                const rect = wrapper.getBoundingClientRect();
+                const xPct = (e.clientX - rect.left) / rect.width  - 0.5;
+                const yPct = (e.clientY - rect.top)  / rect.height - 0.5;
+                const rotX = -yPct * 14;
+                const rotY =  xPct * 14;
+                inner.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02,1.02,1.02)`;
+                if (shine) {
+                    shine.style.setProperty('--mx', (xPct + 0.5) * 100 + '%');
+                    shine.style.setProperty('--my', (yPct + 0.5) * 100 + '%');
+                }
+            });
+            wrapper.addEventListener('mouseleave', () => {
+                inner.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)';
+            });
+        });
+
+        // ── Typing Headline ───────────────────────────────────────────
+        const typingEl = document.getElementById('typing-headline');
+        const text = 'IA de Élite';
+        let i = 0;
+        function type() {
+            if (i <= text.length) {
+                typingEl.textContent = text.slice(0, i);
+                i++;
+                setTimeout(type, 90);
+            } else {
+                // Remove cursor class after done
+                setTimeout(() => typingEl.classList.remove('typing-cursor'), 1200);
+            }
+        }
+        // Start typing after a brief delay
+        setTimeout(type, 800);
+
+        // ── Particle System ───────────────────────────────────────────
+        const canvas = document.getElementById('particles-canvas');
+        const ctx    = canvas.getContext('2d');
+        let W, H, particles = [];
+
+        const COLORS = [
+            'hsla(220,80%,65%,',
+            'hsla(265,70%,65%,',
+            'hsla(180,70%,55%,'
+        ];
+
+        function resizeCanvas() {
+            const section = canvas.parentElement;
+            W = canvas.width  = section.offsetWidth;
+            H = canvas.height = section.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() { this.reset(true); }
+            reset(init) {
+                this.x  = Math.random() * W;
+                this.y  = init ? Math.random() * H : H + 10;
+                this.r  = Math.random() * 1.8 + 0.4;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = -(Math.random() * 0.5 + 0.2);
+                this.alpha = Math.random() * 0.5 + 0.15;
+                this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                this.life  = 0;
+                this.maxLife = Math.random() * 300 + 200;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life++;
+                if (this.life > this.maxLife || this.y < -10) this.reset(false);
+            }
+            draw() {
+                const progress = this.life / this.maxLife;
+                const opacity = this.alpha * Math.sin(progress * Math.PI);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = this.color + opacity + ')';
+                ctx.fill();
+            }
+        }
+
+        for (let k = 0; k < 80; k++) particles.push(new Particle());
+
+        function animParticles() {
+            ctx.clearRect(0, 0, W, H);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animParticles);
+        }
+        animParticles();
+
+        // ── Smooth Active Nav Link ────────────────────────────────────
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks  = document.querySelectorAll('.nav-link');
+        const sectionObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navLinks.forEach(a => {
+                        const active = a.getAttribute('href') === '#' + id;
+                        a.classList.toggle('text-white', active);
+                        a.classList.toggle('text-muted', !active);
+                    });
+                }
+            });
+        }, { threshold: 0.4 });
+        sections.forEach(s => sectionObs.observe(s));
+
+    })();
     </script>
 </body>
 </html>
