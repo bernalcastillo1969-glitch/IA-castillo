@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Castillo | Ecosistema de Élite</title>
+    <title>IA Castillo | Tu Asistente IA de Élite</title>
     
-    <!-- PWA & SEO -->
+    <!-- PWA Manifest & Icons -->
     <link rel="icon" type="image/png" href="/static/favicon.png">
-    <meta name="theme-color" content="#06070a">
+    <meta name="theme-color" content="#0d0e12">
     
-    <!-- Tailwind & Icons -->
+    <!-- Script Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Fonts (Urbanist, Epilogue equivalente a Outfit/Inter) -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -24,15 +26,15 @@
                         body: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        background: '#06070a',
-                        foreground: '#f8fafc',
+                        background: 'hsl(228, 20%, 6%)',
+                        foreground: 'hsl(210, 30%, 95%)',
                         primary: {
-                            DEFAULT: '#c084fc', // Vibrant Purple
+                            DEFAULT: 'hsl(220, 80%, 60%)',
                             foreground: '#ffffff'
                         },
-                        secondary: '#22d3ee', // Electric Cyan
-                        accent: '#a855f7',
-                        obsidian: '#0f1117'
+                        secondary: 'hsl(265, 70%, 60%)',
+                        accent: 'hsl(180, 70%, 50%)',
+                        muted: 'hsl(215, 15%, 55%)'
                     }
                 }
             }
@@ -40,275 +42,290 @@
     </script>
 
     <style>
-        /* ── Obsidian Elite Theme ── */
         body {
-            background-color: #06070a;
-            color: #f8fafc;
+            background-color: theme('colors.background');
+            color: theme('colors.foreground');
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            cursor: none;
             scroll-behavior: smooth;
         }
 
-        /* Custom Cursor */
-        #cursor-dot {
-            position: fixed; width: 6px; height: 6px; background: #c084fc;
-            border-radius: 50%; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%); transition: transform 0.08s ease;
-        }
-        #cursor-ring {
-            position: fixed; width: 34px; height: 34px; border: 1.5px solid rgba(192, 132, 252, 0.4);
-            border-radius: 50%; pointer-events: none; z-index: 9998;
-            transform: translate(-50%, -50%); transition: transform 0.15s ease;
-        }
-
-        /* Glassmorphism Pro */
-        .glass {
-            background: rgba(15, 17, 23, 0.6);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255,255,255,0.02);
-        }
-
-        /* Text Gradients */
         .text-gradient {
-            background: linear-gradient(135deg, #f8fafc 0%, #c084fc 50%, #22d3ee 100%);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: shine 4s linear infinite;
+            background-image: linear-gradient(135deg, hsl(220, 80%, 60%), hsl(265, 70%, 60%), hsl(180, 70%, 50%));
         }
-        @keyframes shine { to { background-position: 200% center; } }
 
-        /* Floating Orbs */
-        .orb {
-            position: absolute; border-radius: 50%; filter: blur(100px);
-            pointer-events: none; opacity: 0.4; mix-blend-mode: plus-lighter;
-            animation: float 15s infinite ease-in-out;
+        .glass {
+            background: hsl(228, 20%, 12%, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid hsl(228, 15%, 22%, 0.5);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
+
+        .glow-text {
+            text-shadow: 0 0 30px hsla(220, 80%, 60%, 0.4);
+        }
+
+        .glow-primary {
+            box-shadow: 0 0 40px -10px hsla(220, 80%, 60%, 0.4);
+        }
+
+        .grid-pattern {
+            background-image: linear-gradient(hsla(220, 80%, 60%, 0.15) 1px, transparent 1px), 
+                              linear-gradient(90deg, hsla(220, 80%, 60%, 0.15) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
+        .animate-float { animation: float 6s ease-in-out infinite; }
 
-        /* Scroll Revelations */
         .reveal {
-            opacity: 0; transform: translateY(40px);
-            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        /* 3D Cards */
-        .card-perspective { perspective: 1000px; }
-        .card-inner {
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
-            transform-style: preserve-3d;
-        }
-        .card-inner:hover {
-            transform: rotateY(5deg) rotateX(2deg) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        /* Grid */
-        .grid-bg {
-            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
-            background-size: 40px 40px;
-        }
-        
-        #scroll-bar {
-            position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #c084fc, #22d3ee);
-            z-index: 10000; width: 0%; transition: width 0.1s;
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="antialiased grid-bg">
+<body class="antialiased">
 
-    <div id="scroll-bar"></div>
-    <div id="cursor-dot"></div>
-    <div id="cursor-ring"></div>
-
-    <!-- Background Orbs -->
-    <div class="orb w-96 h-96 bg-primary top-10 left-10" style="animation-delay: 0s;"></div>
-    <div class="orb w-80 h-80 bg-secondary bottom-10 right-10" style="animation-delay: -5s;"></div>
-    <div class="orb w-64 h-64 bg-accent top-1/2 left-1/2" style="animation-delay: -10s;"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-300" id="navbar">
-        <div class="container mx-auto h-20 glass rounded-[24px] px-8 flex items-center justify-between border-white/5">
-            <div class="flex items-center gap-4">
-                <div class="w-11 h-11 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                    <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+    <!-- Navegación -->
+    <nav class="fixed top-0 left-0 w-full z-50 glass border-b-0 border-white/5 transition-all duration-300">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary">
+                    <i class="fa-solid fa-graduation-cap text-white"></i>
                 </div>
-                <span class="font-heading font-black text-2xl tracking-tighter text-white">IA CASTILLO</span>
+                <span class="font-heading font-bold text-xl tracking-tight text-white">IA Castillo</span>
             </div>
-            
-            <div class="hidden md:flex items-center gap-10">
-                <a href="#features" class="text-sm font-semibold text-gray-400 hover:text-white transition-colors relative group">
-                    Funciones
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
-                </a>
-                <a href="#architecture" class="text-sm font-semibold text-gray-400 hover:text-white transition-colors relative group">
-                    Arquitectura
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
-                </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm font-medium text-muted hover:text-white transition-colors">Características</a>
+                <a href="#architecture" class="text-sm font-medium text-muted hover:text-white transition-colors">Arquitectura</a>
+                <a href="#security" class="text-sm font-medium text-muted hover:text-white transition-colors">Seguridad</a>
             </div>
-
-            <div class="flex items-center gap-4">
-                <a href="/chat" class="px-8 py-3 bg-white text-black font-heading font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-xl shadow-white/10 tracking-widest uppercase">
-                    Ingresar
-                </a>
+            <div class="flex items-center">
+                <a href="/chat" class="px-6 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all backdrop-blur-md border border-white/10">INGRESAR</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center pt-24">
-        <div class="container mx-auto px-6 text-center relative z-10">
-            <div class="reveal inline-flex items-center gap-3 px-5 py-2 rounded-full glass mb-8 border-white/10 group cursor-default">
-                <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse shadow-[0_0_10px_#22d3ee]"></span>
-                <span class="text-xs font-heading font-bold tracking-[0.2em] text-gray-400 uppercase">Ecosistema Neural v2.0</span>
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        
+        <!-- Imagen de Fondo (Oscurecida) -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1920" alt="IA Background" class="w-full h-full object-cover opacity-10">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#0e111a]/60 via-[#0e111a]/80 to-[#0e111a]"></div>
+        </div>
+
+        <!-- Patrón Grid -->
+        <div class="absolute inset-0 z-0 grid-pattern opacity-40"></div>
+
+        <!-- Orbes de Luz Flotantes -->
+        <div class="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-primary/20 blur-[120px] animate-float z-0 pointer-events-none"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-60 h-60 rounded-full bg-secondary/20 blur-[100px] animate-float z-0 pointer-events-none" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/3 right-1/3 w-40 h-40 rounded-full bg-accent/20 blur-[80px] animate-float z-0 pointer-events-none" style="animation-delay: 1.5s;"></div>
+
+        <div class="container relative z-10 mx-auto px-6 text-center reveal">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 border-white/10 hover:bg-white/5 transition-colors cursor-default">
+                <i class="fa-solid fa-sparkles text-accent text-sm"></i>
+                <span class="text-muted text-sm font-heading font-medium tracking-wide">Versión 2.0 — Elite Edition</span>
             </div>
 
-            <h1 class="reveal font-heading text-6xl md:text-8xl lg:text-9xl font-black leading-none mb-8 tracking-tighter">
-                <span class="text-white">IA DE</span><br>
-                <span class="text-gradient">ÉLITE S26</span>
+            <h1 class="font-heading text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 tracking-tight">
+                <span class="text-white">Tu Asistente</span><br>
+                <span class="text-gradient glow-text">IA de Élite</span>
             </h1>
 
-            <p class="reveal text-gray-400 text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-light">
-                Redefiniendo la colaboración humana-IA con potencia híbrida <span class="text-white font-medium">Gemini + Groq</span>. 
-                Rápida, fluida e inteligente.
+            <p class="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+                Ecosistema de Inteligencia Artificial colaborativa programado para la excelencia. Rápido, empático e increíblemente poderoso.
             </p>
 
-            <div class="reveal flex flex-col sm:flex-row justify-center items-center gap-6">
-                <a href="/chat" class="group w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-primary to-accent rounded-2xl text-white font-heading font-black text-xl hover:shadow-[0_0_50px_rgba(192,132,252,0.4)] transition-all flex items-center justify-center gap-3">
-                    COMENZAR <i class="fa-solid fa-bolt group-hover:translate-x-1 transition-transform"></i>
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="/chat" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-primary to-secondary rounded-xl text-white font-heading font-bold text-lg hover:opacity-90 transition-opacity glow-primary flex items-center justify-center gap-3">
+                    Probar Ahora <i class="fa-solid fa-arrow-right"></i>
                 </a>
-                <a href="#features" class="w-full sm:w-auto px-12 py-5 glass rounded-2xl text-white font-heading font-bold text-xl hover:bg-white/5 transition-all">
+                <a href="#features" class="w-full sm:w-auto px-8 py-4 glass rounded-xl text-white font-heading font-semibold text-lg hover:bg-white/5 transition-colors">
                     Explorar
                 </a>
             </div>
 
-            <div class="mt-32 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto reveal" style="transition-delay: 0.6s">
-                <div class="glass p-8 rounded-3xl">
-                    <div class="text-3xl font-black text-white mb-1">3</div>
-                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Motores</div>
+            <!-- Stats -->
+            <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto border-t border-white/5 pt-12">
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="font-heading text-4xl font-black text-gradient mb-2">3</div>
+                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Motores IA</div>
                 </div>
-                <div class="glass p-8 rounded-3xl">
-                    <div class="text-3xl font-black text-white mb-1">&lt;80ms</div>
-                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Latencia</div>
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="font-heading text-4xl font-black text-gradient mb-2">&lt;100ms</div>
+                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Latencia</div>
                 </div>
-                <div class="glass p-8 rounded-3xl">
-                    <div class="text-3xl font-black text-white mb-1">2026</div>
-                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Versión</div>
-                </div>
-                <div class="glass p-8 rounded-3xl">
-                    <div class="text-3xl font-black text-white mb-1">∞</div>
-                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Potencia</div>
+                <div class="glass rounded-2xl p-6 text-center">
+                    <div class="font-heading text-4xl font-black text-gradient mb-2">24/7</div>
+                    <div class="text-muted text-sm font-medium uppercase tracking-widest">Disponible</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features -->
-    <section id="features" class="py-40 relative">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-24 reveal">
-                <h2 class="font-heading text-5xl md:text-7xl font-black mb-6">POTENCIA <span class="text-primary italic">TOTAL</span></h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8 rounded-full"></div>
+    <!-- Características -->
+    <section id="features" class="py-32 relative">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-20 reveal">
+                <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Características</p>
+                <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">Potencia <span class="text-gradient">sin límites</span></h2>
+                <p class="text-muted max-w-2xl mx-auto text-lg">Cada función ha sido diseñada para ofrecer una experiencia de IA premium, rápida y accesible.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="card-perspective reveal">
-                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
-                        <i class="fa-solid fa-eye text-4xl text-secondary mb-8"></i>
-                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Visión Pro</h3>
-                        <p class="text-gray-400 leading-relaxed font-light text-lg">Análisis multimodal avanzado. IA Castillo ve y entiende imágenes, gráficos y documentos al instante.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tarjetas -->
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+                        <i class="fa-solid fa-eye text-2xl text-white"></i>
                     </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Visión Avanzada</h3>
+                    <p class="text-muted leading-relaxed">Lee fotos de cuadernos, libros, gráficos y documentos. Extrae información y resuelve problemas visuales al instante.</p>
                 </div>
-                <div class="card-perspective reveal" style="transition-delay: 0.1s">
-                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
-                        <i class="fa-solid fa-microphone text-4xl text-primary mb-8"></i>
-                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Voz Sónica</h3>
-                        <p class="text-gray-400 leading-relaxed font-light text-lg">Respuestas de voz ultra-realistas en menos de 100ms. Conversación humana fluida.</p>
+
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+                        <i class="fa-solid fa-microphone text-2xl text-white"></i>
                     </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Modo Voz Humanoide</h3>
+                    <p class="text-muted leading-relaxed">Interfaz de voz interactiva con avatar animado y síntesis de voz de alta fidelidad estilo nativo.</p>
                 </div>
-                <div class="card-perspective reveal" style="transition-delay: 0.2s">
-                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
-                        <i class="fa-solid fa-brain text-4xl text-accent mb-8"></i>
-                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Razonamiento</h3>
-                        <p class="text-gray-400 leading-relaxed font-light text-lg">Capacidad de lógica profunda para programación, matemáticas y estrategia empresarial.</p>
+
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                        <i class="fa-solid fa-mobile-screen text-2xl text-white"></i>
                     </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Experiencia PWA</h3>
+                    <p class="text-muted leading-relaxed">Instalable en Android, iOS y escritorio como app nativa con tiempos de carga optimizados.</p>
+                </div>
+                
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-lock text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Acceso de Élite</h3>
+                    <p class="text-muted leading-relaxed">Autenticación dual con Google Login y códigos por email. Solo usuarios autorizados.</p>
+                </div>
+
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-palette text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Diseño Premium</h3>
+                    <p class="text-muted leading-relaxed">Glassmorphism, modo oscuro puro, gradientes dinámicos y micro-animaciones de primer nivel.</p>
+                </div>
+
+                <div class="glass p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-300 reveal" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-brain text-2xl text-white"></i>
+                    </div>
+                    <h3 class="font-heading text-2xl font-bold text-white mb-3">Cerebro Multimodal</h3>
+                    <p class="text-muted leading-relaxed">Procesa simultáneamente texto, imagen y audio con razonamiento profundo e inteligente.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="py-40">
-        <div class="container mx-auto px-6 text-center reveal">
-            <div class="glass p-16 md:p-32 rounded-[60px] relative overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-50"></div>
-                <div class="relative z-10">
-                    <h2 class="font-heading text-6xl md:text-8xl font-black mb-10 tracking-tighter">EL FUTURO <br>ES <span class="text-secondary italic">AHORA</span></h2>
-                    <p class="text-gray-300 text-xl md:text-3xl mb-16 max-w-2xl mx-auto font-light">Accede al asistente más avanzado jamás creado por Bernal Castillo.</p>
-                    <a href="/chat" class="inline-block px-16 py-8 bg-white text-black font-heading font-black text-2xl rounded-3xl hover:scale-110 transition-transform shadow-2xl">
-                        DESBLOQUEAR ACCESO
-                    </a>
-                </div>
-            </div>
+    <!-- Arquitectura -->
+    <section id="architecture" class="py-32 relative overflow-hidden bg-white/[0.02]">
+        <div class="container mx-auto px-6 relative z-10">
+             <div class="flex flex-col lg:flex-row items-center gap-16">
+                 <div class="lg:w-1/2 reveal">
+                     <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Arquitectura</p>
+                     <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">Procesamiento Neural <span class="text-gradient">Avanzado</span></h2>
+                     <p class="text-muted text-lg mb-8 leading-relaxed">Integración perfecta entre modelos de lenguaje de última generación. Utilizamos Google Gemini Flash para razonamiento complejo multimodal, y Groq LPU para respuestas que exigen velocidad inmediata superior a la humana.</p>
+                     
+                     <div class="space-y-6">
+                         <div class="flex items-start gap-4">
+                             <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
+                                 <i class="fa-solid fa-bolt text-primary"></i>
+                             </div>
+                             <div>
+                                 <h4 class="text-xl font-bold text-white mb-1">Ruteo Dinámico</h4>
+                                 <p class="text-muted text-sm leading-relaxed">El sistema escoge instántaneamente el motor más rápido y exacto dependiendo del tipo de dato.</p>
+                             </div>
+                         </div>
+                         <div class="flex items-start gap-4">
+                             <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 shrink-0">
+                                 <i class="fa-solid fa-cloud text-secondary"></i>
+                             </div>
+                             <div>
+                                 <h4 class="text-xl font-bold text-white mb-1">Caché Edge</h4>
+                                 <p class="text-muted text-sm leading-relaxed">Tu historial sincronizado globalmente a través de Supabase sin importar en dónde inicies sesión.</p>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="lg:w-1/2 w-full reveal">
+                     <div class="glass p-6 md:p-8 rounded-3xl relative">
+                         <div class="absolute -inset-1 bg-gradient-to-r from-primary to-secondary blur opacity-30 rounded-3xl"></div>
+                         <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc48?auto=format&fit=crop&q=80&w=1200" alt="Tech Architecture" class="relative rounded-2xl w-full h-[400px] object-cover grayscale hover:grayscale-0 transition-all duration-700 opacity-90 border border-white/10">
+                     </div>
+                 </div>
+             </div>
         </div>
     </section>
 
-    <footer class="py-20 border-t border-white/5 relative z-10 bg-background/80 backdrop-blur-md">
+    <!-- CTA Section -->
+    <section class="py-32 relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-r from-primary/30 to-secondary/30 blur-[150px] rounded-full z-0"></div>
+        <div class="container mx-auto px-6 relative z-10 text-center reveal">
+            <h2 class="font-heading text-5xl md:text-6xl font-bold mb-8">El futuro de la <span class="text-gradient">Colaboración</span></h2>
+            <p class="text-muted text-xl max-w-2xl mx-auto mb-12">Da el salto. Accede a tu propio Asistente Inteligente personalizado con la más potente tecnología del mundo.</p>
+            <a href="/chat" class="inline-block px-10 py-5 bg-white text-black font-heading font-black text-lg rounded-2xl hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+                INICIAR SESIÓN AHORA
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="glass border-b-0 border-x-0 rounded-none py-12 relative z-10 border-t border-white/5">
         <div class="container mx-auto px-6 text-center">
-            <div class="text-gray-500 font-heading font-bold text-lg mb-4 tracking-widest uppercase">IA CASTILLO BY BERNAL</div>
-            <p class="text-gray-600 text-sm italic">"Donde la velocidad se encuentra con la inteligencia superior."</p>
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
+                </div>
+                <span class="font-heading font-bold text-lg text-white">IA Castillo</span>
+            </div>
+            <p class="text-muted text-sm font-medium">© 2026 Admin Bernal Castillo. Todos los derechos reservados.</p>
+            <p class="text-[11px] text-muted/50 uppercase tracking-widest mt-4">Powered by GLITCH · VERCEL · GROQ · GEMINI</p>
         </div>
     </footer>
 
+    <!-- Script Animaciones de Scroll -->
     <script>
-        // Smooth Cursor
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        let mouseX = 0, mouseY = 0;
-        let ringX = 0, ringY = 0;
-
-        document.addEventListener('mousemove', e => {
-            mouseX = e.clientX; mouseY = e.clientY;
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
-        });
-
-        function animateCursor() {
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Scroll Bar
-        window.onscroll = () => {
-            const h = document.documentElement, b = document.body, st = 'scrollTop', sh = 'scrollHeight';
-            const percent = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
-            document.getElementById('scroll-bar').style.width = percent + '%';
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
             
-            // Navbar Glass effect
-            const nav = document.getElementById('navbar');
-            if(window.scrollY > 50) nav.classList.add('px-16');
-            else nav.classList.remove('px-16');
-        };
-
-        // Scroll Reveal
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 100;
+                
+                reveals.forEach((element) => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        element.classList.add('active');
+                    }
+                });
+            };
+            
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // Trigger inicial
+        });
     </script>
 </body>
 </html>
