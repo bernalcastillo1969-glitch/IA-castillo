@@ -1,865 +1,474 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Castillo | Tu Asistente IA de Élite</title>
-    <meta name="description" content="Ecosistema de Inteligencia Artificial colaborativa. Arquitectura híbrida Gemini + Groq para velocidad y razonamiento de élite.">
-
-    <!-- PWA Manifest & Icons -->
-    <link rel="icon" type="image/png" href="/static/favicon.png">
-    <meta name="theme-color" content="#0d0e12">
-
-    <!-- Tailwind -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>IA Castillo | Arquitectura AI Neuronal de Élite</title>
+    
+    <!-- Scripts Base -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        heading: ['Outfit', 'sans-serif'],
-                        body: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        background: 'hsl(228, 20%, 6%)',
-                        foreground: 'hsl(210, 30%, 95%)',
-                        primary: {
-                            DEFAULT: 'hsl(220, 80%, 60%)',
-                            foreground: '#ffffff'
-                        },
-                        secondary: 'hsl(265, 70%, 60%)',
-                        accent: 'hsl(180, 70%, 50%)',
-                        muted: 'hsl(215, 15%, 55%)'
-                    }
-                }
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary": "#4edea3",
+                "outline": "#958ea0",
+                "inverse-surface": "#e3e0f3",
+                "on-error": "#690005",
+                "surface-container-low": "#1a1a28",
+                "inverse-primary": "#6d3bd7",
+                "on-secondary-fixed-variant": "#004e5c",
+                "surface-tint": "#d0bcff",
+                "on-primary-fixed-variant": "#5516be",
+                "primary-container": "#a078ff",
+                "surface-container-highest": "#343342",
+                "on-secondary-container": "#00424e",
+                "background": "#12121f",
+                "on-tertiary-container": "#00311f",
+                "on-background": "#e3e0f3",
+                "secondary-fixed-dim": "#4cd7f6",
+                "on-tertiary-fixed-variant": "#005236",
+                "surface-container-lowest": "#0d0d1a",
+                "surface-container-high": "#292937",
+                "secondary": "#4cd7f6",
+                "surface": "#12121f",
+                "on-primary-container": "#340080",
+                "on-surface-variant": "#cbc3d7",
+                "inverse-on-surface": "#2f2f3d",
+                "primary": "#d0bcff",
+                "secondary-fixed": "#acedff",
+                "tertiary-fixed-dim": "#4edea3",
+                "surface-dim": "#12121f",
+                "on-error-container": "#ffdad6",
+                "on-secondary": "#003640",
+                "outline-variant": "#494454",
+                "on-tertiary-fixed": "#002113",
+                "surface-variant": "#343342",
+                "tertiary-fixed": "#6ffbbe",
+                "surface-container": "#1e1e2c",
+                "tertiary-container": "#00a572",
+                "primary-fixed-dim": "#d0bcff",
+                "on-primary-fixed": "#23005c",
+                "error": "#ffb4ab",
+                "on-primary": "#3c0091",
+                "surface-bright": "#383846",
+                "on-surface": "#e3e0f3",
+                "secondary-container": "#03b5d3",
+                "on-tertiary": "#003824",
+                "primary-fixed": "#e9ddff",
+                "on-secondary-fixed": "#001f26",
+                "error-container": "#93000a"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "fontFamily": {
+                "headline": ["Epilogue"],
+                "body": ["Inter"],
+                "label": ["Space Grotesk"]
             }
-        }
+          },
+        },
+      }
     </script>
-
+    
     <style>
-        /* ── Base ──────────────────────────────────────────────── */
-        *, *::before, *::after { box-sizing: border-box; }
+      /* ── Estilos Premium ── */
+      body {
+        background-color: #12121f;
+        color: #e3e0f3;
+        font-family: 'Inter', sans-serif;
+        cursor: none;
+        overflow-x: hidden;
+      }
+      
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      
+      .glass-card {
+        background: rgba(30, 30, 44, 0.4);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      /* Cursor */
+      #cursor-dot {
+        position: fixed; width: 8px; height: 8px; background: #d0bcff;
+        border-radius: 50%; pointer-events: none; z-index: 9999;
+        transform: translate(-50%, -50%); transition: transform 0.1s ease;
+      }
+      #cursor-ring {
+        position: fixed; width: 40px; height: 40px; border: 2px solid rgba(208, 188, 255, 0.3);
+        border-radius: 50%; pointer-events: none; z-index: 9998;
+        transform: translate(-50%, -50%); transition: transform 0.2s ease;
+      }
 
-        html { scroll-behavior: smooth; }
+      /* Scroll Reveal */
+      .reveal {
+        opacity: 0; transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+      }
+      .reveal.active { opacity: 1; transform: translateY(0); }
 
-        body {
-            background-color: hsl(228, 20%, 6%);
-            color: hsl(210, 30%, 95%);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            cursor: none; /* custom cursor */
-        }
+      /* Particle Canvas */
+      #particles {
+        position: absolute; inset: 0; pointer-events: none; z-index: 0;
+      }
 
-        /* ── Custom Cursor ─────────────────────────────────────── */
-        #cursor-dot {
-            position: fixed;
-            width: 8px; height: 8px;
-            background: hsl(220, 80%, 60%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
-            mix-blend-mode: screen;
-        }
-        #cursor-ring {
-            position: fixed;
-            width: 36px; height: 36px;
-            border: 1.5px solid hsla(220, 80%, 60%, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
-        }
-        body:has(a:hover) #cursor-ring,
-        body:has(button:hover) #cursor-ring {
-            width: 52px; height: 52px;
-            border-color: hsla(265, 70%, 60%, 0.6);
-        }
+      /* Typing Effect */
+      .typing::after {
+        content: '|'; animation: blink 1s step-end infinite; color: #4cd7f6;
+      }
+      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* ── Scroll Progress Bar ───────────────────────────────── */
-        #scroll-progress {
-            position: fixed;
-            top: 0; left: 0;
-            height: 3px;
-            width: 0%;
-            background: linear-gradient(90deg, hsl(220,80%,60%), hsl(265,70%,60%), hsl(180,70%,50%));
-            z-index: 10000;
-            transition: width 0.1s linear;
-            box-shadow: 0 0 12px hsla(220, 80%, 60%, 0.6);
-        }
+      /* Glows */
+      .glow-primary { shadow: 0 0 30px rgba(208, 188, 255, 0.2); }
+      
+      .nav-glass {
+        background: rgba(52, 51, 66, 0.4);
+        backdrop-filter: blur(20px);
+      }
 
-        /* ── Text Gradient ─────────────────────────────────────── */
-        .text-gradient {
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-image: linear-gradient(135deg, hsl(220,80%,65%), hsl(265,70%,65%), hsl(180,70%,55%));
-            background-size: 200% 200%;
-            animation: gradientShift 6s ease infinite;
-        }
-        @keyframes gradientShift {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* ── Glass ─────────────────────────────────────────────── */
-        .glass {
-            background: hsla(228, 20%, 12%, 0.55);
-            backdrop-filter: blur(22px);
-            -webkit-backdrop-filter: blur(22px);
-            border: 1px solid hsla(228, 15%, 22%, 0.45);
-            box-shadow: 0 4px 32px rgba(0,0,0,.18), inset 0 1px 0 hsla(255,255%,255%,.06);
-        }
-
-        /* ── Glows ─────────────────────────────────────────────── */
-        .glow-text  { text-shadow: 0 0 30px hsla(220,80%,60%,.5), 0 0 60px hsla(265,70%,60%,.25); }
-        .glow-primary { box-shadow: 0 0 40px -10px hsla(220,80%,60%,.45); }
-
-        /* ── Grid Pattern ──────────────────────────────────────── */
-        .grid-pattern {
-            background-image:
-                linear-gradient(hsla(220,80%,60%,.12) 1px, transparent 1px),
-                linear-gradient(90deg, hsla(220,80%,60%,.12) 1px, transparent 1px);
-            background-size: 60px 60px;
-            mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
-        }
-
-        /* ── Floating Orbs ─────────────────────────────────────── */
-        @keyframes floatA {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            33%       { transform: translateY(-22px) translateX(8px); }
-            66%       { transform: translateY(-10px) translateX(-6px); }
-        }
-        @keyframes floatB {
-            0%, 100% { transform: translateY(0px) translateX(0px); }
-            50%       { transform: translateY(-18px) translateX(-10px); }
-        }
-        .animate-float-a { animation: floatA 8s ease-in-out infinite; }
-        .animate-float-b { animation: floatB 6s ease-in-out infinite; }
-        .animate-float-c { animation: floatB 10s ease-in-out infinite reverse; }
-
-        /* ── Particles ─────────────────────────────────────────── */
-        #particles-canvas {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* ── Scroll Reveal ─────────────────────────────────────── */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.75s cubic-bezier(.16,1,.3,1),
-                        transform 0.75s cubic-bezier(.16,1,.3,1);
-        }
-        .reveal-left  { opacity: 0; transform: translateX(-40px); transition: opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1); }
-        .reveal-right { opacity: 0; transform: translateX(40px);  transition: opacity 0.75s cubic-bezier(.16,1,.3,1), transform 0.75s cubic-bezier(.16,1,.3,1); }
-        .reveal.active, .reveal-left.active, .reveal-right.active {
-            opacity: 1;
-            transform: translate(0, 0);
-        }
-
-        /* ── 3D Card Tilt ──────────────────────────────────────── */
-        .card-tilt {
-            perspective: 1000px;
-            transform-style: preserve-3d;
-        }
-        .card-tilt-inner {
-            transform-style: preserve-3d;
-            transition: transform 0.08s linear;
-            will-change: transform;
-        }
-        .card-tilt-inner:hover { box-shadow: 0 20px 60px rgba(0,0,0,.4); }
-        .card-shine {
-            position: absolute; inset: 0; border-radius: inherit;
-            background: radial-gradient(circle at var(--mx,50%) var(--my,50%), hsla(255,255%,255%,.08), transparent 60%);
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        /* ── Navbar shrink ─────────────────────────────────────── */
-        #main-nav { transition: all 0.4s cubic-bezier(.16,1,.3,1); }
-        #main-nav.scrolled { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-        #main-nav.scrolled .nav-inner {
-            background: hsla(228,20%,7%,.88) !important;
-            backdrop-filter: blur(30px);
-        }
-
-        /* ── Typing Cursor ─────────────────────────────────────── */
-        .typing-cursor::after {
-            content: '|';
-            animation: blink 0.8s step-end infinite;
-            color: hsl(180,70%,50%);
-        }
-        @keyframes blink { 0%,100%{ opacity:1} 50%{ opacity:0 } }
-
-        /* ── Pulse ring ────────────────────────────────────────── */
-        @keyframes pulseRing {
-            0%   { transform: scale(1); opacity: 0.5; }
-            100% { transform: scale(2.2); opacity: 0; }
-        }
-        .pulse-ring::before {
-            content:'';
-            position: absolute; inset: 0;
-            border-radius: inherit;
-            border: 1.5px solid hsl(220,80%,60%);
-            animation: pulseRing 2s cubic-bezier(.41,0,.7,1.2) infinite;
-        }
-
-        /* ── Stat counter fade-up ──────────────────────────────── */
-        .stat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .stat-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 48px rgba(0,0,0,.35); }
-
-        /* ── Feature card ──────────────────────────────────────── */
-        .feature-card {
-            position: relative; overflow: hidden;
-            transition: transform 0.35s cubic-bezier(.16,1,.3,1),
-                        box-shadow 0.35s ease;
-        }
-        .feature-card::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: linear-gradient(135deg, hsla(220,80%,60%,.07) 0%, transparent 60%);
-            opacity: 0; transition: opacity 0.35s;
-        }
-        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,.4); }
-        .feature-card:hover::before { opacity: 1; }
-
-        /* ── CTA glow pulse ─────────────────────────────────────── */
-        @keyframes ctaGlow {
-            0%,100% { box-shadow: 0 0 40px rgba(255,255,255,.18); }
-            50%     { box-shadow: 0 0 60px rgba(255,255,255,.35), 0 0 100px hsla(220,80%,60%,.2); }
-        }
-        .cta-btn { animation: ctaGlow 3s ease-in-out infinite; }
-        .cta-btn:hover { animation: none; box-shadow: 0 0 60px rgba(255,255,255,.45); }
-
-        /* ── Scrollbar ─────────────────────────────────────────── */
-        ::-webkit-scrollbar       { width: 6px; }
-        ::-webkit-scrollbar-track { background: hsl(228,20%,8%); }
-        ::-webkit-scrollbar-thumb { background: hsl(228,20%,22%); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: hsl(220,80%,50%); }
-
-        /* ── Badge shimmer ─────────────────────────────────────── */
-        .badge-shimmer {
-            position: relative; overflow: hidden;
-        }
-        .badge-shimmer::after {
-            content: '';
-            position: absolute; top: 0; left: -100%;
-            width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, hsla(255,255%,255%,.15), transparent);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-        @keyframes shimmer { 0%{ left:-100% } 100%{ left:200% } }
-
-        /* ── Architecture orbit ────────────────────────────────── */
-        @keyframes orbitSpin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-        .orbit-ring {
-            animation: orbitSpin 18s linear infinite;
-            transform-origin: center;
-        }
-        .orbit-ring-2 {
-            animation: orbitSpin 12s linear infinite reverse;
-        }
+      /* 3D Tilt */
+      .tilt-wrapper { perspective: 1000px; }
+      .tilt-card { transition: transform 0.1s ease; transform-style: preserve-3d; }
     </style>
 </head>
-<body class="antialiased">
+<body class="bg-background text-on-surface">
 
     <!-- Custom Cursor -->
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <!-- Scroll Progress -->
-    <div id="scroll-progress"></div>
-
-    <!-- ── Navbar ─────────────────────────────────────────────────────── -->
-    <nav id="main-nav" class="fixed top-0 left-0 w-full z-50 pt-4 pb-4 px-6">
-        <div class="nav-inner container mx-auto glass rounded-2xl px-6 h-16 flex items-center justify-between transition-all duration-400 border-white/5">
-            <div class="flex items-center gap-3">
-                <div class="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center glow-primary pulse-ring">
-                    <i class="fa-solid fa-graduation-cap text-white relative z-10"></i>
-                </div>
-                <span class="font-heading font-bold text-xl tracking-tight text-white">IA Castillo</span>
-            </div>
-            <div class="hidden md:flex items-center gap-8">
-                <a href="#features"      class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
-                    Características
-                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
-                </a>
-                <a href="#architecture" class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
-                    Arquitectura
-                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
-                </a>
-                <a href="#security"     class="nav-link text-sm font-medium text-muted hover:text-white transition-colors duration-200 relative group">
-                    Seguridad
-                    <span class="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-primary to-secondary group-hover:w-full transition-all duration-300"></span>
-                </a>
-            </div>
-            <a href="/chat" class="relative px-6 py-2.5 rounded-xl text-white text-sm font-semibold overflow-hidden group border border-white/10"
-               style="background: linear-gradient(135deg, hsla(220,80%,60%,.25), hsla(265,70%,60%,.2))">
-                <span class="relative z-10 flex items-center gap-2">
-                    <i class="fa-solid fa-rocket text-xs"></i> INGRESAR
-                </span>
-                <span class="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+    <!-- TopNavBar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-3 bg-surface-container-highest/40 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-5xl shadow-[0_0_40px_rgba(208,188,255,0.08)] border border-white/5 transition-all duration-500" id="main-nav">
+        <div class="text-2xl font-bold text-[#d0bcff] font-headline tracking-tight flex items-center gap-2">
+            <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary text-sm">IC</span>
+            IA Castillo
+        </div>
+        <div class="hidden md:flex items-center gap-8">
+            <a class="text-[#4cd7f6] font-semibold border-b-2 border-[#4cd7f6] pb-1 font-label" href="#">Ecosistema</a>
+            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#architecture">Arquitectura</a>
+            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#features">Funciones</a>
+            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#security">Seguridad</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="/chat" class="px-6 py-2 rounded-full text-sm font-semibold bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-110 transition-transform shadow-lg shadow-primary/20">
+                PROBAR GRATIS
             </a>
         </div>
     </nav>
 
-    <!-- ── Hero ───────────────────────────────────────────────────────── -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+    <main class="pt-32 pb-20 relative">
+        <canvas id="particles"></canvas>
 
-        <!-- Particle canvas -->
-        <canvas id="particles-canvas"></canvas>
-
-        <!-- Background image -->
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1920"
-                 alt="" aria-hidden="true"
-                 class="w-full h-full object-cover opacity-8"
-                 style="opacity:.08">
-            <div class="absolute inset-0 bg-gradient-to-b from-[#0e111a]/70 via-[#0e111a]/80 to-[#0e111a]"></div>
-        </div>
-
-        <!-- Grid -->
-        <div class="absolute inset-0 z-0 grid-pattern opacity-50"></div>
-
-        <!-- Orbs (parallax) -->
-        <div id="orb-a" class="absolute top-1/4 left-1/4 w-[480px] h-[480px] rounded-full animate-float-a z-0 pointer-events-none"
-             style="background: radial-gradient(circle, hsla(220,80%,60%,.22), transparent 70%); filter: blur(80px);"></div>
-        <div id="orb-b" class="absolute bottom-1/4 right-1/4 w-[360px] h-[360px] rounded-full animate-float-b z-0 pointer-events-none"
-             style="background: radial-gradient(circle, hsla(265,70%,60%,.2), transparent 70%); filter: blur(70px);"></div>
-        <div id="orb-c" class="absolute top-1/3 right-1/3 w-[240px] h-[240px] rounded-full animate-float-c z-0 pointer-events-none"
-             style="background: radial-gradient(circle, hsla(180,70%,50%,.18), transparent 70%); filter: blur(60px);"></div>
-
-        <!-- Hero Content -->
-        <div class="container relative z-10 mx-auto px-6 text-center">
-
-            <!-- Badge -->
-            <div class="reveal inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass mb-10 border-white/10 badge-shimmer hover:bg-white/5 transition-colors cursor-default">
-                <span class="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                <span class="text-muted text-xs font-heading font-semibold tracking-widest uppercase">Versión 2.0 — Elite Edition</span>
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-6 text-center mb-40 relative z-10">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+            
+            <div class="reveal inline-flex items-center gap-2 px-4 py-1 rounded-full bg-surface-container-high border border-outline-variant/15 mb-8">
+                <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+                <span class="text-xs font-label text-on-surface-variant uppercase tracking-widest">Protocolo Activo v2.4 — 2026</span>
             </div>
-
-            <!-- Headline with typing effect -->
-            <h1 class="font-heading text-5xl md:text-7xl lg:text-8xl font-extrabold leading-[1.08] mb-6 tracking-tight reveal" style="transition-delay:.1s">
-                <span class="text-white block mb-2">Tu Asistente</span>
-                <span class="text-gradient glow-text typing-cursor" id="typing-headline"></span>
+            
+            <h1 class="reveal text-5xl md:text-8xl font-headline font-extrabold tracking-tighter mb-8 leading-[1.1]" style="transition-delay: 0.2s">
+                Bienvenidos al Mundo de la <br/>
+                <span class="text-secondary typing" id="typing-text"></span>
             </h1>
-
-            <p class="text-muted text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed reveal" style="transition-delay:.2s">
-                Ecosistema de Inteligencia Artificial colaborativa programado para la excelencia.
-                Rápido, empático e increíblemente poderoso.
+            
+            <p class="reveal text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 font-body" style="transition-delay: 0.4s">
+                Arquitectura de última generación diseñada para potenciar la productividad empresarial con modelos híbridos de baja latencia.
             </p>
-
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 reveal" style="transition-delay:.3s">
-                <a href="/chat"
-                   class="group w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-primary to-secondary rounded-2xl text-white font-heading font-bold text-lg glow-primary flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all duration-200">
-                    Probar Ahora
-                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform duration-200"></i>
+            
+            <div class="reveal flex flex-col md:flex-row items-center justify-center gap-6" style="transition-delay: 0.6s">
+                <a href="/chat" class="px-10 py-5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black text-lg shadow-[0_0_40px_rgba(208,188,255,0.4)] hover:scale-105 transition-transform active:scale-95">
+                    Probar Gratis Ahora
                 </a>
-                <a href="#features"
-                   class="group w-full sm:w-auto px-9 py-4 glass rounded-2xl text-white font-heading font-semibold text-lg hover:bg-white/8 transition-all duration-200 flex items-center justify-center gap-2">
-                    Explorar
-                    <i class="fa-solid fa-chevron-down group-hover:translate-y-1 transition-transform duration-200"></i>
+                <a href="#features" class="px-10 py-5 rounded-xl border border-outline-variant/30 text-on-surface font-semibold text-lg hover:bg-surface-container-low transition-colors">
+                    Ver Documentación
                 </a>
             </div>
+        </section>
 
-            <!-- Stats -->
-            <div class="mt-24 grid grid-cols-1 md:grid-cols-3 gap-5 max-w-3xl mx-auto border-t border-white/5 pt-12 reveal" style="transition-delay:.4s">
-                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
-                    <div class="font-heading text-4xl font-black text-gradient mb-2" data-count="3" data-suffix="">3</div>
-                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Motores IA</div>
+        <!-- Architecture Section -->
+        <section id="architecture" class="max-w-7xl mx-auto px-6 mb-40 relative z-10">
+            <div class="reveal flex flex-col md:flex-row items-end justify-between mb-16 gap-4">
+                <div class="max-w-xl text-left">
+                    <h2 class="text-4xl font-headline font-bold mb-4">Cerebro <span class="text-secondary">Híbrido</span></h2>
+                    <p class="text-on-surface-variant text-lg">Nuestra arquitectura distribuye las cargas de trabajo dinámicamente entre los motores más eficientes del mercado.</p>
                 </div>
-                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
-                    <div class="font-heading text-4xl font-black text-gradient mb-2">&lt;100ms</div>
-                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Latencia</div>
-                </div>
-                <div class="stat-card glass rounded-2xl p-6 text-center cursor-default">
-                    <div class="font-heading text-4xl font-black text-gradient mb-2">24/7</div>
-                    <div class="text-muted text-xs font-medium uppercase tracking-widest">Disponible</div>
-                </div>
+                <div class="font-label text-outline text-sm tracking-widest uppercase">Arquitectura del Sistema</div>
             </div>
-        </div>
-
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-            <span class="text-muted text-xs font-label tracking-widest uppercase">Scroll</span>
-            <div class="w-0.5 h-12 overflow-hidden bg-white/10 rounded-full">
-                <div class="w-full bg-gradient-to-b from-accent to-transparent rounded-full" style="height:40%; animation: scrollLine 2s ease-in-out infinite;"></div>
-            </div>
-        </div>
-        <style>
-            @keyframes scrollLine {
-                0%   { transform: translateY(-100%); }
-                100% { transform: translateY(280%); }
-            }
-        </style>
-    </section>
-
-    <!-- ── Features ───────────────────────────────────────────────────── -->
-    <section id="features" class="py-32 relative">
-        <!-- subtle background glow -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] rounded-full pointer-events-none"
-             style="background: radial-gradient(ellipse, hsla(220,80%,60%,.06) 0%, transparent 70%);"></div>
-
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center mb-20 reveal">
-                <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Características</p>
-                <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">Potencia <span class="text-gradient">sin límites</span></h2>
-                <p class="text-muted max-w-2xl mx-auto text-lg">Cada función ha sido diseñada para ofrecer una experiencia de IA premium, rápida y accesible.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-
-                <div class="card-tilt reveal" style="transition-delay:.05s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,.35)]">
-                            <i class="fa-solid fa-eye text-2xl text-white"></i>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Gemini Card -->
+                <div class="tilt-wrapper reveal" style="transition-delay: 0.1s">
+                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span class="material-symbols-outlined text-6xl">neurology</span>
                         </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Visión Avanzada</h3>
-                        <p class="text-muted leading-relaxed text-sm">Lee fotos de cuadernos, libros, gráficos y documentos. Extrae información y resuelve problemas visuales al instante.</p>
+                        <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-primary">model_training</span>
+                        </div>
+                        <h3 class="text-2xl font-headline font-bold mb-4">Gemini Flash 1.5</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Procesamiento masivo de contexto con una ventana de 1M de tokens para análisis profundos.</p>
                     </div>
                 </div>
 
-                <div class="card-tilt reveal" style="transition-delay:.12s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,.35)]">
-                            <i class="fa-solid fa-microphone text-2xl text-white"></i>
+                <!-- Groq Card -->
+                <div class="tilt-wrapper reveal" style="transition-delay: 0.2s">
+                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span class="material-symbols-outlined text-6xl">bolt</span>
                         </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Modo Voz Humanoide</h3>
-                        <p class="text-muted leading-relaxed text-sm">Interfaz de voz interactiva con avatar animado y síntesis de voz de alta fidelidad estilo nativo.</p>
+                        <div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-secondary">memory</span>
+                        </div>
+                        <h3 class="text-2xl font-headline font-bold mb-4">Groq LPU</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas para flujos de trabajo en tiempo real.</p>
                     </div>
                 </div>
 
-                <div class="card-tilt reveal" style="transition-delay:.19s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,.35)]">
-                            <i class="fa-solid fa-mobile-screen text-2xl text-white"></i>
+                <!-- Ruteo Card -->
+                <div class="tilt-wrapper reveal" style="transition-delay: 0.3s">
+                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <span class="material-symbols-outlined text-6xl">alt_route</span>
                         </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Experiencia PWA</h3>
-                        <p class="text-muted leading-relaxed text-sm">Instalable en Android, iOS y escritorio como app nativa con tiempos de carga optimizados.</p>
-                    </div>
-                </div>
-
-                <div class="card-tilt reveal" style="transition-delay:.05s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(59,130,246,.35)]">
-                            <i class="fa-solid fa-lock text-2xl text-white"></i>
+                        <div class="w-12 h-12 rounded-xl bg-tertiary/20 flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-tertiary">hub</span>
                         </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Acceso de Élite</h3>
-                        <p class="text-muted leading-relaxed text-sm">Autenticación dual con Google Login y códigos por email. Solo usuarios autorizados.</p>
-                    </div>
-                </div>
-
-                <div class="card-tilt reveal" style="transition-delay:.12s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent to-primary flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(34,211,238,.35)]">
-                            <i class="fa-solid fa-palette text-2xl text-white"></i>
-                        </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Diseño Premium</h3>
-                        <p class="text-muted leading-relaxed text-sm">Glassmorphism, modo oscuro puro, gradientes dinámicos y micro-animaciones de primer nivel.</p>
-                    </div>
-                </div>
-
-                <div class="card-tilt reveal" style="transition-delay:.19s">
-                    <div class="card-tilt-inner feature-card glass p-8 rounded-3xl relative overflow-hidden">
-                        <div class="card-shine"></div>
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(168,85,247,.35)]">
-                            <i class="fa-solid fa-brain text-2xl text-white"></i>
-                        </div>
-                        <h3 class="font-heading text-xl font-bold text-white mb-3">Cerebro Multimodal</h3>
-                        <p class="text-muted leading-relaxed text-sm">Procesa simultáneamente texto, imagen y audio con razonamiento profundo e inteligente.</p>
+                        <h3 class="text-2xl font-headline font-bold mb-4">Ruteo Automático</h3>
+                        <p class="text-on-surface-variant leading-relaxed">Optimización de costos y latencia. El sistema elige el modelo ideal para cada consulta específica.</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ── Architecture ───────────────────────────────────────────────── -->
-    <section id="architecture" class="py-32 relative overflow-hidden" style="background: hsla(228,20%,7%,.6);">
-        <!-- Accent line -->
-        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
-        <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent"></div>
-
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <!-- Text -->
-                <div class="lg:w-1/2 reveal-left">
-                    <p class="text-primary font-heading font-semibold tracking-widest uppercase text-sm mb-4">Arquitectura</p>
-                    <h2 class="font-heading text-4xl md:text-5xl font-bold mb-6">
-                        Procesamiento Neural <span class="text-gradient">Avanzado</span>
-                    </h2>
-                    <p class="text-muted text-lg mb-10 leading-relaxed">
-                        Integración perfecta entre modelos de lenguaje de última generación. Google Gemini Flash para razonamiento complejo multimodal y Groq LPU para respuestas que exigen velocidad superior a la humana.
-                    </p>
-
-                    <div class="space-y-7">
-                        <div class="flex items-start gap-5 group">
-                            <div class="shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 group-hover:border-primary/40 transition-all duration-300">
-                                <i class="fa-solid fa-bolt text-primary"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-primary transition-colors duration-300">Ruteo Dinámico</h4>
-                                <p class="text-muted text-sm leading-relaxed">El sistema escoge al instante el motor más rápido y exacto dependiendo del tipo de dato.</p>
-                            </div>
+        <!-- Capabilities Section -->
+        <section id="features" class="bg-surface-container-low/30 py-32 mb-40 relative">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-5xl font-headline font-bold mb-6">Todo en <span class="text-primary">Uno</span></h2>
+                    <p class="text-on-surface-variant max-w-xl mx-auto text-lg">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="reveal md:col-span-2 md:row-span-2 glass-card p-10 rounded-3xl border border-outline-variant/10 flex flex-col justify-between min-h-[400px]">
+                        <div>
+                            <span class="material-symbols-outlined text-secondary text-6xl mb-6">analytics</span>
+                            <h3 class="text-3xl font-headline font-bold mb-4">Análisis de Datos Avanzado</h3>
+                            <p class="text-on-surface-variant text-lg leading-relaxed">Conecta tus fuentes de datos y deja que la IA genere visualizaciones y reportes ejecutivos en segundos.</p>
                         </div>
-                        <div class="flex items-start gap-5 group">
-                            <div class="shrink-0 w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center border border-secondary/20 group-hover:bg-secondary/20 group-hover:border-secondary/40 transition-all duration-300">
-                                <i class="fa-solid fa-cloud text-secondary"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-secondary transition-colors duration-300">Caché Edge</h4>
-                                <p class="text-muted text-sm leading-relaxed">Tu historial sincronizado globalmente a través de Supabase sin importar dónde inicies sesión.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-5 group">
-                            <div class="shrink-0 w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 group-hover:border-accent/40 transition-all duration-300">
-                                <i class="fa-solid fa-shield-halved text-accent"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-bold text-white mb-1 group-hover:text-accent transition-colors duration-300">Seguridad RLS</h4>
-                                <p class="text-muted text-sm leading-relaxed">Row Level Security garantiza que solo accedes a tu propia información a nivel de base de datos.</p>
-                            </div>
+                        <div class="mt-8 flex gap-3">
+                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">SQL</span>
+                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">Python</span>
+                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">Tableau</span>
                         </div>
                     </div>
-                </div>
 
-                <!-- Visual: Tech cards -->
-                <div class="lg:w-1/2 w-full reveal-right">
-                    <div class="relative flex justify-center items-center h-[420px]">
-                        <!-- Orbit rings -->
-                        <div class="orbit-ring absolute w-[380px] h-[380px] rounded-full"
-                             style="border: 1px dashed hsla(220,80%,60%,.2);"></div>
-                        <div class="orbit-ring-2 absolute w-[280px] h-[280px] rounded-full"
-                             style="border: 1px dashed hsla(265,70%,60%,.2);"></div>
+                    <div class="reveal glass-card p-8 rounded-3xl border border-outline-variant/10" style="transition-delay: 0.1s">
+                        <span class="material-symbols-outlined text-tertiary text-4xl mb-4">translate</span>
+                        <h4 class="text-xl font-headline font-bold mb-2">Multi-idioma</h4>
+                        <p class="text-on-surface-variant text-sm">Traducción contextual y soporte en más de 95 idiomas nativos.</p>
+                    </div>
 
-                        <!-- Center node -->
-                        <div class="relative z-10 w-24 h-24 rounded-full glass flex flex-col items-center justify-center"
-                             style="box-shadow: 0 0 60px hsla(220,80%,60%,.3), 0 0 120px hsla(265,70%,60%,.15);">
-                            <i class="fa-solid fa-graduation-cap text-3xl text-white"></i>
-                            <span class="text-[10px] font-heading text-muted mt-1 uppercase tracking-widest">Core</span>
+                    <div class="reveal glass-card p-8 rounded-3xl border border-outline-variant/10" style="transition-delay: 0.2s">
+                        <span class="material-symbols-outlined text-primary text-4xl mb-4">terminal</span>
+                        <h4 class="text-xl font-headline font-bold mb-2">Copilot de Código</h4>
+                        <p class="text-on-surface-variant text-sm">Generación de fragmentos de código optimizados y depuración.</p>
+                    </div>
+
+                    <div class="reveal md:col-span-2 glass-card p-8 rounded-3xl border border-outline-variant/10 flex items-center gap-8" style="transition-delay: 0.3s">
+                        <div class="shrink-0 w-20 h-20 bg-secondary/10 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-secondary text-5xl">integration_instructions</span>
                         </div>
-
-                        <!-- Gemini node -->
-                        <div class="absolute top-6 left-1/2 -translate-x-1/2 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
-                             style="box-shadow: 0 0 20px hsla(220,80%,60%,.2);">
-                            <i class="fa-solid fa-atom text-primary"></i>
-                            <span class="font-heading font-bold text-sm text-white">Gemini Flash</span>
-                        </div>
-
-                        <!-- Groq node -->
-                        <div class="absolute bottom-6 left-8 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
-                             style="box-shadow: 0 0 20px hsla(265,70%,60%,.2);">
-                            <i class="fa-solid fa-bolt text-secondary"></i>
-                            <span class="font-heading font-bold text-sm text-white">Groq LPU</span>
-                        </div>
-
-                        <!-- Supabase node -->
-                        <div class="absolute bottom-6 right-8 glass rounded-2xl px-5 py-3 flex items-center gap-3 hover:scale-105 transition-transform cursor-default"
-                             style="box-shadow: 0 0 20px hsla(180,70%,50%,.2);">
-                            <i class="fa-solid fa-database text-accent"></i>
-                            <span class="font-heading font-bold text-sm text-white">Supabase</span>
+                        <div>
+                            <h4 class="text-xl font-headline font-bold mb-2">API de Nivel Enterprise</h4>
+                            <p class="text-on-surface-variant text-sm">Integración directa mediante RESTful API con documentación técnica completa.</p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ── Security ───────────────────────────────────────────────────── -->
-    <section id="security" class="py-32 relative overflow-hidden">
-        <div class="container mx-auto px-6">
-            <div class="glass rounded-[2.5rem] p-10 md:p-16 border border-accent/15 relative overflow-hidden">
-                <div class="absolute -top-1/2 right-[-10%] w-[600px] h-[600px] rounded-full pointer-events-none"
-                     style="background: radial-gradient(circle, hsla(180,70%,50%,.06), transparent 70%); filter: blur(80px);"></div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center relative z-10">
-                    <div class="reveal-left">
-                        <div class="inline-block px-4 py-1.5 rounded-full mb-6 badge-shimmer"
-                             style="background: hsla(180,70%,50%,.12); border: 1px solid hsla(180,70%,50%,.2);">
-                            <span class="text-accent text-xs font-heading font-semibold tracking-widest uppercase">Security Protocol</span>
+        <!-- Security Section -->
+        <section id="security" class="max-w-7xl mx-auto px-6 mb-40">
+            <div class="reveal glass-card rounded-[3rem] p-12 md:p-20 border border-tertiary/20 relative overflow-hidden">
+                <div class="absolute top-[-50%] right-[-10%] w-[600px] h-[600px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                    <div class="relative z-10 text-left">
+                        <div class="inline-block px-4 py-1 rounded-full bg-tertiary/10 text-tertiary font-label text-xs tracking-widest uppercase mb-6">
+                            Security Protocol
                         </div>
-                        <h2 class="font-heading text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                            Protección de Nivel <br><span class="text-gradient">Empresarial</span>
-                        </h2>
-                        <div class="space-y-8">
-                            <div class="flex gap-5 group">
-                                <div class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                                     style="background: hsla(180,70%,50%,.15); border: 1px solid hsla(180,70%,50%,.3);">
-                                    <i class="fa-solid fa-key text-accent"></i>
+                        <h2 class="text-4xl md:text-5xl font-headline font-bold mb-8 leading-tight">Protección de Nivel <br/><span class="text-tertiary">Empresarial</span></h2>
+                        <div class="space-y-10">
+                            <div class="flex gap-6 group">
+                                <div class="shrink-0 w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-tertiary text-3xl">vpn_key</span>
                                 </div>
                                 <div>
-                                    <h4 class="text-xl font-bold text-white mb-2">Supabase RLS</h4>
-                                    <p class="text-muted text-sm leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a la información que le pertenece a nivel de base de datos.</p>
+                                    <h4 class="text-2xl font-headline font-bold mb-2 text-white">Supabase RLS</h4>
+                                    <p class="text-on-surface-variant text-lg">Row Level Security para garantizar que cada usuario solo acceda a su información.</p>
                                 </div>
                             </div>
-                            <div class="flex gap-5 group">
-                                <div class="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-                                     style="background: hsla(180,70%,50%,.15); border: 1px solid hsla(180,70%,50%,.3);">
-                                    <i class="fa-solid fa-user-shield text-accent"></i>
+                            <div class="flex gap-6 group">
+                                <div class="shrink-0 w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
+                                    <span class="material-symbols-outlined text-tertiary text-3xl">verified_user</span>
                                 </div>
                                 <div>
-                                    <h4 class="text-xl font-bold text-white mb-2">Dual Authentication</h4>
-                                    <p class="text-muted text-sm leading-relaxed">OAuth2 con Google y verificación por email. Acceso blindado para usuarios de élite.</p>
+                                    <h4 class="text-2xl font-headline font-bold mb-2 text-white">Dual Auth</h4>
+                                    <p class="text-on-surface-variant text-lg">OAuth2 y WebAuthn con capas biométricas para sesiones críticas.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="flex justify-center relative reveal-right">
-                        <div class="absolute inset-0 rounded-full pointer-events-none"
-                             style="background: radial-gradient(circle, hsla(180,70%,50%,.12), transparent 70%); filter: blur(40px);"></div>
-                        <div class="relative group">
-                            <div class="absolute -inset-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                 style="background: radial-gradient(circle, hsla(180,70%,50%,.2), transparent 70%); filter: blur(20px);"></div>
-                            <div class="relative p-14 glass rounded-full"
-                                 style="border: 1px solid hsla(180,70%,50%,.3); box-shadow: 0 0 60px hsla(180,70%,50%,.15);">
-                                <i class="fa-solid fa-shield-halved text-accent group-hover:scale-110 transition-transform duration-300 block"
-                                   style="font-size: 100px;"></i>
-                            </div>
+                    <div class="flex justify-center relative">
+                        <div class="absolute inset-0 bg-tertiary/20 rounded-full blur-[100px] opacity-30"></div>
+                        <div class="relative p-16 bg-surface-container-high rounded-full border border-tertiary/30 shadow-[0_0_80px_rgba(78,222,163,0.3)] animate-pulse">
+                            <span class="material-symbols-outlined text-[140px] text-tertiary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- ── CTA ────────────────────────────────────────────────────────── -->
-    <section class="py-40 relative overflow-hidden">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-[500px] rounded-full pointer-events-none"
-             style="background: linear-gradient(135deg, hsla(220,80%,60%,.25), hsla(265,70%,60%,.25)); filter: blur(150px);"></div>
-        <div class="container mx-auto px-6 relative z-10 text-center reveal">
-            <p class="text-accent font-heading font-semibold tracking-widest uppercase text-sm mb-6">¿Listo para el Futuro?</p>
-            <h2 class="font-heading text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 tracking-tight leading-[1.08]">
-                El futuro de la <span class="text-gradient">Colaboración</span>
-            </h2>
-            <p class="text-muted text-xl max-w-2xl mx-auto mb-14 leading-relaxed">
-                Da el salto. Accede a tu propio Asistente Inteligente personalizado con la más potente tecnología del mundo.
-            </p>
-            <a href="/chat"
-               class="cta-btn inline-flex items-center gap-3 px-12 py-6 bg-white text-gray-950 font-heading font-black text-xl rounded-2xl hover:scale-105 active:scale-95 transition-all duration-200">
-                <i class="fa-solid fa-rocket"></i>
-                INICIAR SESIÓN AHORA
-            </a>
-        </div>
-    </section>
-
-    <!-- ── Footer ─────────────────────────────────────────────────────── -->
-    <footer class="glass border-x-0 border-b-0 rounded-none py-12 relative z-10 border-t border-white/5">
-        <div class="container mx-auto px-6 text-center">
-            <div class="flex items-center justify-center gap-3 mb-6">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                    <i class="fa-solid fa-graduation-cap text-white text-sm"></i>
-                </div>
-                <span class="font-heading font-bold text-xl text-white">IA Castillo</span>
+        <!-- CTA Section -->
+        <section class="max-w-4xl mx-auto px-6 text-center mb-40 reveal">
+            <h2 class="text-5xl md:text-7xl font-headline font-extrabold mb-8 tracking-tight">Listo para el Futuro</h2>
+            <p class="text-xl text-on-surface-variant mb-12">Únete a cientos de desarrolladores y empresas que ya están construyendo el mañana con IA Castillo.</p>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <a href="/chat" class="w-full md:w-auto px-12 py-6 rounded-2xl bg-primary text-on-primary-container font-black text-2xl hover:shadow-[0_0_50px_rgba(208,188,255,0.5)] transition-all hover:scale-105 active:scale-95">
+                    COMENZAR AHORA
+                </a>
             </div>
-            <p class="text-muted text-sm font-medium mb-2">© 2026 Admin Bernal Castillo. Todos los derechos reservados.</p>
-            <p class="text-[11px] text-muted/40 uppercase tracking-widest">Powered by GLITCH · VERCEL · GROQ · GEMINI</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-20 px-8 flex flex-col md:flex-row justify-between items-center gap-10 bg-[#0d0d1a] border-t border-white/5">
+        <div class="flex flex-col items-center md:items-start gap-3">
+            <div class="text-2xl font-bold text-[#d0bcff] font-headline">IA Castillo</div>
+            <p class="text-[#cbc3d7] font-body text-sm">© 2026 IA Castillo. Neural-Architected AI by Bernal.</p>
+        </div>
+        <div class="flex gap-10">
+            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Privacy</a>
+            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Terms</a>
+            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Docs</a>
+        </div>
+        <div class="flex gap-6">
+            <span class="material-symbols-outlined text-[#cbc3d7] hover:text-[#d0bcff] cursor-pointer text-3xl">language</span>
+            <span class="material-symbols-outlined text-[#cbc3d7] hover:text-[#d0bcff] cursor-pointer text-3xl">terminal</span>
         </div>
     </footer>
 
-    <!-- ══════════════════════════════════════════════════════════════════
-         JavaScript — Animations & Interactions
-    ════════════════════════════════════════════════════════════════════ -->
+    <!-- Scripts Premium -->
     <script>
-    (() => {
-        'use strict';
-
-        // ── Custom Cursor ─────────────────────────────────────────────
-        const dot  = document.getElementById('cursor-dot');
+        // Custom Cursor
+        const dot = document.getElementById('cursor-dot');
         const ring = document.getElementById('cursor-ring');
-        let mx = window.innerWidth/2, my = window.innerHeight/2;
-        let rx = mx, ry = my;
-
-        document.addEventListener('mousemove', e => {
-            mx = e.clientX; my = e.clientY;
-            dot.style.left = mx + 'px';
-            dot.style.top  = my + 'px';
+        document.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            setTimeout(() => {
+                ring.style.left = e.clientX + 'px';
+                ring.style.top = e.clientY + 'px';
+            }, 50);
         });
 
-        // Smoothly lag the ring behind
-        (function animRing() {
-            rx += (mx - rx) * 0.12;
-            ry += (my - ry) * 0.12;
-            ring.style.left = rx + 'px';
-            ring.style.top  = ry + 'px';
-            requestAnimationFrame(animRing);
-        })();
-
-        // Hide cursor when it leaves the window
-        document.addEventListener('mouseleave', () => { dot.style.opacity = 0; ring.style.opacity = 0; });
-        document.addEventListener('mouseenter', () => { dot.style.opacity = 1; ring.style.opacity = 1; });
-
-        // ── Scroll Progress Bar ───────────────────────────────────────
-        const progressBar = document.getElementById('scroll-progress');
-        function updateProgress() {
-            const max = document.documentElement.scrollHeight - window.innerHeight;
-            progressBar.style.width = (window.scrollY / max * 100) + '%';
+        // Typing Effect
+        const typingEl = document.getElementById('typing-text');
+        const textToType = "Inteligencia Artificial";
+        let charIndex = 0;
+        function type() {
+            if (charIndex < textToType.length) {
+                typingEl.textContent += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(type, 100);
+            }
         }
-        window.addEventListener('scroll', updateProgress, { passive: true });
+        setTimeout(type, 1000);
 
-        // ── Navbar Shrink ─────────────────────────────────────────────
-        const nav = document.getElementById('main-nav');
-        window.addEventListener('scroll', () => {
-            nav.classList.toggle('scrolled', window.scrollY > 60);
-        }, { passive: true });
-
-        // ── Scroll Reveal (IntersectionObserver) ──────────────────────
-        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
-        const revealObs = new IntersectionObserver((entries) => {
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Stagger via transition-delay already set inline
                     entry.target.classList.add('active');
-                    revealObs.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-        revealEls.forEach(el => revealObs.observe(el));
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // ── Parallax Orbs ─────────────────────────────────────────────
-        const orbA = document.getElementById('orb-a');
-        const orbB = document.getElementById('orb-b');
-        const orbC = document.getElementById('orb-c');
-        window.addEventListener('scroll', () => {
-            const y = window.scrollY;
-            if (orbA) orbA.style.transform = `translateY(${y * 0.15}px)`;
-            if (orbB) orbB.style.transform = `translateY(${-y * 0.1}px)`;
-            if (orbC) orbC.style.transform = `translateY(${y * 0.08}px)`;
-        }, { passive: true });
-
-        // ── 3D Card Tilt ──────────────────────────────────────────────
-        document.querySelectorAll('.card-tilt').forEach(wrapper => {
-            const inner = wrapper.querySelector('.card-tilt-inner');
-            const shine = wrapper.querySelector('.card-shine');
-            wrapper.addEventListener('mousemove', e => {
-                const rect = wrapper.getBoundingClientRect();
-                const xPct = (e.clientX - rect.left) / rect.width  - 0.5;
-                const yPct = (e.clientY - rect.top)  / rect.height - 0.5;
-                const rotX = -yPct * 14;
-                const rotY =  xPct * 14;
-                inner.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02,1.02,1.02)`;
-                if (shine) {
-                    shine.style.setProperty('--mx', (xPct + 0.5) * 100 + '%');
-                    shine.style.setProperty('--my', (yPct + 0.5) * 100 + '%');
-                }
-            });
-            wrapper.addEventListener('mouseleave', () => {
-                inner.style.transform = 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)';
-            });
-        });
-
-        // ── Typing Headline ───────────────────────────────────────────
-        const typingEl = document.getElementById('typing-headline');
-        const text = 'IA de Élite';
-        let i = 0;
-        function type() {
-            if (i <= text.length) {
-                typingEl.textContent = text.slice(0, i);
-                i++;
-                setTimeout(type, 90);
-            } else {
-                // Remove cursor class after done
-                setTimeout(() => typingEl.classList.remove('typing-cursor'), 1200);
-            }
+        // Particle System
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
-        // Start typing after a brief delay
-        setTimeout(type, 800);
-
-        // ── Particle System ───────────────────────────────────────────
-        const canvas = document.getElementById('particles-canvas');
-        const ctx    = canvas.getContext('2d');
-        let W, H, particles = [];
-
-        const COLORS = [
-            'hsla(220,80%,65%,',
-            'hsla(265,70%,65%,',
-            'hsla(180,70%,55%,'
-        ];
-
-        function resizeCanvas() {
-            const section = canvas.parentElement;
-            W = canvas.width  = section.offsetWidth;
-            H = canvas.height = section.offsetHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+        window.addEventListener('resize', resize);
+        resize();
 
         class Particle {
-            constructor() { this.reset(true); }
-            reset(init) {
-                this.x  = Math.random() * W;
-                this.y  = init ? Math.random() * H : H + 10;
-                this.r  = Math.random() * 1.8 + 0.4;
-                this.vx = (Math.random() - 0.5) * 0.3;
-                this.vy = -(Math.random() * 0.5 + 0.2);
-                this.alpha = Math.random() * 0.5 + 0.15;
-                this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-                this.life  = 0;
-                this.maxLife = Math.random() * 300 + 200;
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
             }
             update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life++;
-                if (this.life > this.maxLife || this.y < -10) this.reset(false);
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
             }
             draw() {
-                const progress = this.life / this.maxLife;
-                const opacity = this.alpha * Math.sin(progress * Math.PI);
+                ctx.fillStyle = 'rgba(208, 188, 255, 0.2)';
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                ctx.fillStyle = this.color + opacity + ')';
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
-
-        for (let k = 0; k < 80; k++) particles.push(new Particle());
-
-        function animParticles() {
-            ctx.clearRect(0, 0, W, H);
+        for (let i = 0; i < 70; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animParticles);
+            requestAnimationFrame(animate);
         }
-        animParticles();
+        animate();
 
-        // ── Smooth Active Nav Link ────────────────────────────────────
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks  = document.querySelectorAll('.nav-link');
-        const sectionObs = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.id;
-                    navLinks.forEach(a => {
-                        const active = a.getAttribute('href') === '#' + id;
-                        a.classList.toggle('text-white', active);
-                        a.classList.toggle('text-muted', !active);
-                    });
-                }
+        // 3D Tilt Effect
+        document.querySelectorAll('.tilt-wrapper').forEach(wrapper => {
+            const card = wrapper.querySelector('.tilt-card');
+            wrapper.addEventListener('mousemove', (e) => {
+                const rect = wrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
             });
-        }, { threshold: 0.4 });
-        sections.forEach(s => sectionObs.observe(s));
-
-    })();
+            wrapper.addEventListener('mouseleave', () => {
+                card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+            });
+        });
     </script>
 </body>
 </html>
