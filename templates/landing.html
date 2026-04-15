@@ -1,474 +1,314 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>IA Castillo | Arquitectura AI Neuronal de Élite</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Castillo | Ecosistema de Élite</title>
     
-    <!-- Scripts Base -->
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- PWA & SEO -->
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <meta name="theme-color" content="#06070a">
+    
+    <!-- Tailwind & Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                "tertiary": "#4edea3",
-                "outline": "#958ea0",
-                "inverse-surface": "#e3e0f3",
-                "on-error": "#690005",
-                "surface-container-low": "#1a1a28",
-                "inverse-primary": "#6d3bd7",
-                "on-secondary-fixed-variant": "#004e5c",
-                "surface-tint": "#d0bcff",
-                "on-primary-fixed-variant": "#5516be",
-                "primary-container": "#a078ff",
-                "surface-container-highest": "#343342",
-                "on-secondary-container": "#00424e",
-                "background": "#12121f",
-                "on-tertiary-container": "#00311f",
-                "on-background": "#e3e0f3",
-                "secondary-fixed-dim": "#4cd7f6",
-                "on-tertiary-fixed-variant": "#005236",
-                "surface-container-lowest": "#0d0d1a",
-                "surface-container-high": "#292937",
-                "secondary": "#4cd7f6",
-                "surface": "#12121f",
-                "on-primary-container": "#340080",
-                "on-surface-variant": "#cbc3d7",
-                "inverse-on-surface": "#2f2f3d",
-                "primary": "#d0bcff",
-                "secondary-fixed": "#acedff",
-                "tertiary-fixed-dim": "#4edea3",
-                "surface-dim": "#12121f",
-                "on-error-container": "#ffdad6",
-                "on-secondary": "#003640",
-                "outline-variant": "#494454",
-                "on-tertiary-fixed": "#002113",
-                "surface-variant": "#343342",
-                "tertiary-fixed": "#6ffbbe",
-                "surface-container": "#1e1e2c",
-                "tertiary-container": "#00a572",
-                "primary-fixed-dim": "#d0bcff",
-                "on-primary-fixed": "#23005c",
-                "error": "#ffb4ab",
-                "on-primary": "#3c0091",
-                "surface-bright": "#383846",
-                "on-surface": "#e3e0f3",
-                "secondary-container": "#03b5d3",
-                "on-tertiary": "#003824",
-                "primary-fixed": "#e9ddff",
-                "on-secondary-fixed": "#001f26",
-                "error-container": "#93000a"
-            },
-            "borderRadius": {
-                "DEFAULT": "0.25rem",
-                "lg": "0.5rem",
-                "xl": "0.75rem",
-                "full": "9999px"
-            },
-            "fontFamily": {
-                "headline": ["Epilogue"],
-                "body": ["Inter"],
-                "label": ["Space Grotesk"]
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Outfit', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        background: '#06070a',
+                        foreground: '#f8fafc',
+                        primary: {
+                            DEFAULT: '#c084fc', // Vibrant Purple
+                            foreground: '#ffffff'
+                        },
+                        secondary: '#22d3ee', // Electric Cyan
+                        accent: '#a855f7',
+                        obsidian: '#0f1117'
+                    }
+                }
             }
-          },
-        },
-      }
+        }
     </script>
-    
+
     <style>
-      /* ── Estilos Premium ── */
-      body {
-        background-color: #12121f;
-        color: #e3e0f3;
-        font-family: 'Inter', sans-serif;
-        cursor: none;
-        overflow-x: hidden;
-      }
-      
-      .material-symbols-outlined {
-        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      }
-      
-      .glass-card {
-        background: rgba(30, 30, 44, 0.4);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      
-      /* Cursor */
-      #cursor-dot {
-        position: fixed; width: 8px; height: 8px; background: #d0bcff;
-        border-radius: 50%; pointer-events: none; z-index: 9999;
-        transform: translate(-50%, -50%); transition: transform 0.1s ease;
-      }
-      #cursor-ring {
-        position: fixed; width: 40px; height: 40px; border: 2px solid rgba(208, 188, 255, 0.3);
-        border-radius: 50%; pointer-events: none; z-index: 9998;
-        transform: translate(-50%, -50%); transition: transform 0.2s ease;
-      }
+        /* ── Obsidian Elite Theme ── */
+        body {
+            background-color: #06070a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            scroll-behavior: smooth;
+        }
 
-      /* Scroll Reveal */
-      .reveal {
-        opacity: 0; transform: translateY(30px);
-        transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
-      }
-      .reveal.active { opacity: 1; transform: translateY(0); }
+        /* Custom Cursor */
+        #cursor-dot {
+            position: fixed; width: 6px; height: 6px; background: #c084fc;
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%); transition: transform 0.08s ease;
+        }
+        #cursor-ring {
+            position: fixed; width: 34px; height: 34px; border: 1.5px solid rgba(192, 132, 252, 0.4);
+            border-radius: 50%; pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%); transition: transform 0.15s ease;
+        }
 
-      /* Particle Canvas */
-      #particles {
-        position: absolute; inset: 0; pointer-events: none; z-index: 0;
-      }
+        /* Glassmorphism Pro */
+        .glass {
+            background: rgba(15, 17, 23, 0.6);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255,255,255,0.02);
+        }
 
-      /* Typing Effect */
-      .typing::after {
-        content: '|'; animation: blink 1s step-end infinite; color: #4cd7f6;
-      }
-      @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        /* Text Gradients */
+        .text-gradient {
+            background: linear-gradient(135deg, #f8fafc 0%, #c084fc 50%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
 
-      /* Glows */
-      .glow-primary { shadow: 0 0 30px rgba(208, 188, 255, 0.2); }
-      
-      .nav-glass {
-        background: rgba(52, 51, 66, 0.4);
-        backdrop-filter: blur(20px);
-      }
+        /* Floating Orbs */
+        .orb {
+            position: absolute; border-radius: 50%; filter: blur(100px);
+            pointer-events: none; opacity: 0.4; mix-blend-mode: plus-lighter;
+            animation: float 15s infinite ease-in-out;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
 
-      /* 3D Tilt */
-      .tilt-wrapper { perspective: 1000px; }
-      .tilt-card { transition: transform 0.1s ease; transform-style: preserve-3d; }
+        /* Scroll Revelations */
+        .reveal {
+            opacity: 0; transform: translateY(40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* 3D Cards */
+        .card-perspective { perspective: 1000px; }
+        .card-inner {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
+            transform-style: preserve-3d;
+        }
+        .card-inner:hover {
+            transform: rotateY(5deg) rotateX(2deg) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Grid */
+        .grid-bg {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        
+        #scroll-bar {
+            position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #c084fc, #22d3ee);
+            z-index: 10000; width: 0%; transition: width 0.1s;
+        }
     </style>
 </head>
-<body class="bg-background text-on-surface">
+<body class="antialiased grid-bg">
 
-    <!-- Custom Cursor -->
+    <div id="scroll-bar"></div>
     <div id="cursor-dot"></div>
     <div id="cursor-ring"></div>
 
-    <!-- TopNavBar -->
-    <nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-3 bg-surface-container-highest/40 backdrop-blur-xl rounded-full mt-4 mx-auto max-w-5xl shadow-[0_0_40px_rgba(208,188,255,0.08)] border border-white/5 transition-all duration-500" id="main-nav">
-        <div class="text-2xl font-bold text-[#d0bcff] font-headline tracking-tight flex items-center gap-2">
-            <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-on-primary text-sm">IC</span>
-            IA Castillo
-        </div>
-        <div class="hidden md:flex items-center gap-8">
-            <a class="text-[#4cd7f6] font-semibold border-b-2 border-[#4cd7f6] pb-1 font-label" href="#">Ecosistema</a>
-            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#architecture">Arquitectura</a>
-            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#features">Funciones</a>
-            <a class="text-[#cbc3d7] hover:text-[#e3e0f3] transition-colors font-label" href="#security">Seguridad</a>
-        </div>
-        <div class="flex items-center gap-4">
-            <a href="/chat" class="px-6 py-2 rounded-full text-sm font-semibold bg-gradient-to-br from-primary to-primary-container text-on-primary hover:scale-110 transition-transform shadow-lg shadow-primary/20">
-                PROBAR GRATIS
-            </a>
+    <!-- Background Orbs -->
+    <div class="orb w-96 h-96 bg-primary top-10 left-10" style="animation-delay: 0s;"></div>
+    <div class="orb w-80 h-80 bg-secondary bottom-10 right-10" style="animation-delay: -5s;"></div>
+    <div class="orb w-64 h-64 bg-accent top-1/2 left-1/2" style="animation-delay: -10s;"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 transition-all duration-300" id="navbar">
+        <div class="container mx-auto h-20 glass rounded-[24px] px-8 flex items-center justify-between border-white/5">
+            <div class="flex items-center gap-4">
+                <div class="w-11 h-11 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+                    <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <span class="font-heading font-black text-2xl tracking-tighter text-white">IA CASTILLO</span>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-10">
+                <a href="#features" class="text-sm font-semibold text-gray-400 hover:text-white transition-colors relative group">
+                    Funciones
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="#architecture" class="text-sm font-semibold text-gray-400 hover:text-white transition-colors relative group">
+                    Arquitectura
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-secondary group-hover:w-full transition-all duration-300"></span>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="/chat" class="px-8 py-3 bg-white text-black font-heading font-black text-sm rounded-xl hover:scale-105 transition-transform shadow-xl shadow-white/10 tracking-widest uppercase">
+                    Ingresar
+                </a>
+            </div>
         </div>
     </nav>
 
-    <main class="pt-32 pb-20 relative">
-        <canvas id="particles"></canvas>
-
-        <!-- Hero Section -->
-        <section class="max-w-7xl mx-auto px-6 text-center mb-40 relative z-10">
-            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
-            
-            <div class="reveal inline-flex items-center gap-2 px-4 py-1 rounded-full bg-surface-container-high border border-outline-variant/15 mb-8">
-                <span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
-                <span class="text-xs font-label text-on-surface-variant uppercase tracking-widest">Protocolo Activo v2.4 — 2026</span>
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-24">
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <div class="reveal inline-flex items-center gap-3 px-5 py-2 rounded-full glass mb-8 border-white/10 group cursor-default">
+                <span class="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse shadow-[0_0_10px_#22d3ee]"></span>
+                <span class="text-xs font-heading font-bold tracking-[0.2em] text-gray-400 uppercase">Ecosistema Neural v2.0</span>
             </div>
-            
-            <h1 class="reveal text-5xl md:text-8xl font-headline font-extrabold tracking-tighter mb-8 leading-[1.1]" style="transition-delay: 0.2s">
-                Bienvenidos al Mundo de la <br/>
-                <span class="text-secondary typing" id="typing-text"></span>
+
+            <h1 class="reveal font-heading text-6xl md:text-8xl lg:text-9xl font-black leading-none mb-8 tracking-tighter">
+                <span class="text-white">IA DE</span><br>
+                <span class="text-gradient">ÉLITE S26</span>
             </h1>
-            
-            <p class="reveal text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 font-body" style="transition-delay: 0.4s">
-                Arquitectura de última generación diseñada para potenciar la productividad empresarial con modelos híbridos de baja latencia.
+
+            <p class="reveal text-gray-400 text-lg md:text-2xl max-w-3xl mx-auto mb-16 leading-relaxed font-light">
+                Redefiniendo la colaboración humana-IA con potencia híbrida <span class="text-white font-medium">Gemini + Groq</span>. 
+                Rápida, fluida e inteligente.
             </p>
-            
-            <div class="reveal flex flex-col md:flex-row items-center justify-center gap-6" style="transition-delay: 0.6s">
-                <a href="/chat" class="px-10 py-5 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-black text-lg shadow-[0_0_40px_rgba(208,188,255,0.4)] hover:scale-105 transition-transform active:scale-95">
-                    Probar Gratis Ahora
-                </a>
-                <a href="#features" class="px-10 py-5 rounded-xl border border-outline-variant/30 text-on-surface font-semibold text-lg hover:bg-surface-container-low transition-colors">
-                    Ver Documentación
-                </a>
-            </div>
-        </section>
 
-        <!-- Architecture Section -->
-        <section id="architecture" class="max-w-7xl mx-auto px-6 mb-40 relative z-10">
-            <div class="reveal flex flex-col md:flex-row items-end justify-between mb-16 gap-4">
-                <div class="max-w-xl text-left">
-                    <h2 class="text-4xl font-headline font-bold mb-4">Cerebro <span class="text-secondary">Híbrido</span></h2>
-                    <p class="text-on-surface-variant text-lg">Nuestra arquitectura distribuye las cargas de trabajo dinámicamente entre los motores más eficientes del mercado.</p>
-                </div>
-                <div class="font-label text-outline text-sm tracking-widest uppercase">Arquitectura del Sistema</div>
+            <div class="reveal flex flex-col sm:flex-row justify-center items-center gap-6">
+                <a href="/chat" class="group w-full sm:w-auto px-12 py-5 bg-gradient-to-r from-primary to-accent rounded-2xl text-white font-heading font-black text-xl hover:shadow-[0_0_50px_rgba(192,132,252,0.4)] transition-all flex items-center justify-center gap-3">
+                    COMENZAR <i class="fa-solid fa-bolt group-hover:translate-x-1 transition-transform"></i>
+                </a>
+                <a href="#features" class="w-full sm:w-auto px-12 py-5 glass rounded-2xl text-white font-heading font-bold text-xl hover:bg-white/5 transition-all">
+                    Explorar
+                </a>
             </div>
-            
+
+            <div class="mt-32 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto reveal" style="transition-delay: 0.6s">
+                <div class="glass p-8 rounded-3xl">
+                    <div class="text-3xl font-black text-white mb-1">3</div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Motores</div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <div class="text-3xl font-black text-white mb-1">&lt;80ms</div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Latencia</div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <div class="text-3xl font-black text-white mb-1">2026</div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Versión</div>
+                </div>
+                <div class="glass p-8 rounded-3xl">
+                    <div class="text-3xl font-black text-white mb-1">∞</div>
+                    <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Potencia</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-40 relative">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-24 reveal">
+                <h2 class="font-heading text-5xl md:text-7xl font-black mb-6">POTENCIA <span class="text-primary italic">TOTAL</span></h2>
+                <div class="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto mb-8 rounded-full"></div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Gemini Card -->
-                <div class="tilt-wrapper reveal" style="transition-delay: 0.1s">
-                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span class="material-symbols-outlined text-6xl">neurology</span>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-primary">model_training</span>
-                        </div>
-                        <h3 class="text-2xl font-headline font-bold mb-4">Gemini Flash 1.5</h3>
-                        <p class="text-on-surface-variant leading-relaxed">Procesamiento masivo de contexto con una ventana de 1M de tokens para análisis profundos.</p>
+                <div class="card-perspective reveal">
+                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
+                        <i class="fa-solid fa-eye text-4xl text-secondary mb-8"></i>
+                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Visión Pro</h3>
+                        <p class="text-gray-400 leading-relaxed font-light text-lg">Análisis multimodal avanzado. IA Castillo ve y entiende imágenes, gráficos y documentos al instante.</p>
                     </div>
                 </div>
-
-                <!-- Groq Card -->
-                <div class="tilt-wrapper reveal" style="transition-delay: 0.2s">
-                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span class="material-symbols-outlined text-6xl">bolt</span>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-secondary">memory</span>
-                        </div>
-                        <h3 class="text-2xl font-headline font-bold mb-4">Groq LPU</h3>
-                        <p class="text-on-surface-variant leading-relaxed">Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas para flujos de trabajo en tiempo real.</p>
+                <div class="card-perspective reveal" style="transition-delay: 0.1s">
+                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
+                        <i class="fa-solid fa-microphone text-4xl text-primary mb-8"></i>
+                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Voz Sónica</h3>
+                        <p class="text-gray-400 leading-relaxed font-light text-lg">Respuestas de voz ultra-realistas en menos de 100ms. Conversación humana fluida.</p>
                     </div>
                 </div>
-
-                <!-- Ruteo Card -->
-                <div class="tilt-wrapper reveal" style="transition-delay: 0.3s">
-                    <div class="tilt-card glass-card p-8 rounded-3xl border border-outline-variant/10 relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <span class="material-symbols-outlined text-6xl">alt_route</span>
-                        </div>
-                        <div class="w-12 h-12 rounded-xl bg-tertiary/20 flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-tertiary">hub</span>
-                        </div>
-                        <h3 class="text-2xl font-headline font-bold mb-4">Ruteo Automático</h3>
-                        <p class="text-on-surface-variant leading-relaxed">Optimización de costos y latencia. El sistema elige el modelo ideal para cada consulta específica.</p>
+                <div class="card-perspective reveal" style="transition-delay: 0.2s">
+                    <div class="card-inner glass p-10 rounded-[40px] h-full border-t-white/10">
+                        <i class="fa-solid fa-brain text-4xl text-accent mb-8"></i>
+                        <h3 class="font-heading text-3xl font-bold text-white mb-4">Razonamiento</h3>
+                        <p class="text-gray-400 leading-relaxed font-light text-lg">Capacidad de lógica profunda para programación, matemáticas y estrategia empresarial.</p>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- Capabilities Section -->
-        <section id="features" class="bg-surface-container-low/30 py-32 mb-40 relative">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="text-center mb-20 reveal">
-                    <h2 class="text-5xl font-headline font-bold mb-6">Todo en <span class="text-primary">Uno</span></h2>
-                    <p class="text-on-surface-variant max-w-xl mx-auto text-lg">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="reveal md:col-span-2 md:row-span-2 glass-card p-10 rounded-3xl border border-outline-variant/10 flex flex-col justify-between min-h-[400px]">
-                        <div>
-                            <span class="material-symbols-outlined text-secondary text-6xl mb-6">analytics</span>
-                            <h3 class="text-3xl font-headline font-bold mb-4">Análisis de Datos Avanzado</h3>
-                            <p class="text-on-surface-variant text-lg leading-relaxed">Conecta tus fuentes de datos y deja que la IA genere visualizaciones y reportes ejecutivos en segundos.</p>
-                        </div>
-                        <div class="mt-8 flex gap-3">
-                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">SQL</span>
-                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">Python</span>
-                            <span class="px-4 py-1.5 rounded-full bg-surface-container-highest text-xs font-label">Tableau</span>
-                        </div>
-                    </div>
-
-                    <div class="reveal glass-card p-8 rounded-3xl border border-outline-variant/10" style="transition-delay: 0.1s">
-                        <span class="material-symbols-outlined text-tertiary text-4xl mb-4">translate</span>
-                        <h4 class="text-xl font-headline font-bold mb-2">Multi-idioma</h4>
-                        <p class="text-on-surface-variant text-sm">Traducción contextual y soporte en más de 95 idiomas nativos.</p>
-                    </div>
-
-                    <div class="reveal glass-card p-8 rounded-3xl border border-outline-variant/10" style="transition-delay: 0.2s">
-                        <span class="material-symbols-outlined text-primary text-4xl mb-4">terminal</span>
-                        <h4 class="text-xl font-headline font-bold mb-2">Copilot de Código</h4>
-                        <p class="text-on-surface-variant text-sm">Generación de fragmentos de código optimizados y depuración.</p>
-                    </div>
-
-                    <div class="reveal md:col-span-2 glass-card p-8 rounded-3xl border border-outline-variant/10 flex items-center gap-8" style="transition-delay: 0.3s">
-                        <div class="shrink-0 w-20 h-20 bg-secondary/10 rounded-2xl flex items-center justify-center">
-                            <span class="material-symbols-outlined text-secondary text-5xl">integration_instructions</span>
-                        </div>
-                        <div>
-                            <h4 class="text-xl font-headline font-bold mb-2">API de Nivel Enterprise</h4>
-                            <p class="text-on-surface-variant text-sm">Integración directa mediante RESTful API con documentación técnica completa.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Security Section -->
-        <section id="security" class="max-w-7xl mx-auto px-6 mb-40">
-            <div class="reveal glass-card rounded-[3rem] p-12 md:p-20 border border-tertiary/20 relative overflow-hidden">
-                <div class="absolute top-[-50%] right-[-10%] w-[600px] h-[600px] bg-tertiary/5 rounded-full blur-[100px] pointer-events-none"></div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div class="relative z-10 text-left">
-                        <div class="inline-block px-4 py-1 rounded-full bg-tertiary/10 text-tertiary font-label text-xs tracking-widest uppercase mb-6">
-                            Security Protocol
-                        </div>
-                        <h2 class="text-4xl md:text-5xl font-headline font-bold mb-8 leading-tight">Protección de Nivel <br/><span class="text-tertiary">Empresarial</span></h2>
-                        <div class="space-y-10">
-                            <div class="flex gap-6 group">
-                                <div class="shrink-0 w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
-                                    <span class="material-symbols-outlined text-tertiary text-3xl">vpn_key</span>
-                                </div>
-                                <div>
-                                    <h4 class="text-2xl font-headline font-bold mb-2 text-white">Supabase RLS</h4>
-                                    <p class="text-on-surface-variant text-lg">Row Level Security para garantizar que cada usuario solo acceda a su información.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-6 group">
-                                <div class="shrink-0 w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:scale-110 transition-transform">
-                                    <span class="material-symbols-outlined text-tertiary text-3xl">verified_user</span>
-                                </div>
-                                <div>
-                                    <h4 class="text-2xl font-headline font-bold mb-2 text-white">Dual Auth</h4>
-                                    <p class="text-on-surface-variant text-lg">OAuth2 y WebAuthn con capas biométricas para sesiones críticas.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-center relative">
-                        <div class="absolute inset-0 bg-tertiary/20 rounded-full blur-[100px] opacity-30"></div>
-                        <div class="relative p-16 bg-surface-container-high rounded-full border border-tertiary/30 shadow-[0_0_80px_rgba(78,222,163,0.3)] animate-pulse">
-                            <span class="material-symbols-outlined text-[140px] text-tertiary" style="font-variation-settings: 'FILL' 1;">shield_lock</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="max-w-4xl mx-auto px-6 text-center mb-40 reveal">
-            <h2 class="text-5xl md:text-7xl font-headline font-extrabold mb-8 tracking-tight">Listo para el Futuro</h2>
-            <p class="text-xl text-on-surface-variant mb-12">Únete a cientos de desarrolladores y empresas que ya están construyendo el mañana con IA Castillo.</p>
-            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                <a href="/chat" class="w-full md:w-auto px-12 py-6 rounded-2xl bg-primary text-on-primary-container font-black text-2xl hover:shadow-[0_0_50px_rgba(208,188,255,0.5)] transition-all hover:scale-105 active:scale-95">
-                    COMENZAR AHORA
-                </a>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer class="w-full py-20 px-8 flex flex-col md:flex-row justify-between items-center gap-10 bg-[#0d0d1a] border-t border-white/5">
-        <div class="flex flex-col items-center md:items-start gap-3">
-            <div class="text-2xl font-bold text-[#d0bcff] font-headline">IA Castillo</div>
-            <p class="text-[#cbc3d7] font-body text-sm">© 2026 IA Castillo. Neural-Architected AI by Bernal.</p>
         </div>
-        <div class="flex gap-10">
-            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Privacy</a>
-            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Terms</a>
-            <a class="text-[#cbc3d7] hover:text-[#4cd7f6] transition-colors font-body text-sm uppercase tracking-widest" href="#">Docs</a>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-40">
+        <div class="container mx-auto px-6 text-center reveal">
+            <div class="glass p-16 md:p-32 rounded-[60px] relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-50"></div>
+                <div class="relative z-10">
+                    <h2 class="font-heading text-6xl md:text-8xl font-black mb-10 tracking-tighter">EL FUTURO <br>ES <span class="text-secondary italic">AHORA</span></h2>
+                    <p class="text-gray-300 text-xl md:text-3xl mb-16 max-w-2xl mx-auto font-light">Accede al asistente más avanzado jamás creado por Bernal Castillo.</p>
+                    <a href="/chat" class="inline-block px-16 py-8 bg-white text-black font-heading font-black text-2xl rounded-3xl hover:scale-110 transition-transform shadow-2xl">
+                        DESBLOQUEAR ACCESO
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="flex gap-6">
-            <span class="material-symbols-outlined text-[#cbc3d7] hover:text-[#d0bcff] cursor-pointer text-3xl">language</span>
-            <span class="material-symbols-outlined text-[#cbc3d7] hover:text-[#d0bcff] cursor-pointer text-3xl">terminal</span>
+    </section>
+
+    <footer class="py-20 border-t border-white/5 relative z-10 bg-background/80 backdrop-blur-md">
+        <div class="container mx-auto px-6 text-center">
+            <div class="text-gray-500 font-heading font-bold text-lg mb-4 tracking-widest uppercase">IA CASTILLO BY BERNAL</div>
+            <p class="text-gray-600 text-sm italic">"Donde la velocidad se encuentra con la inteligencia superior."</p>
         </div>
     </footer>
 
-    <!-- Scripts Premium -->
     <script>
-        // Custom Cursor
+        // Smooth Cursor
         const dot = document.getElementById('cursor-dot');
         const ring = document.getElementById('cursor-ring');
-        document.addEventListener('mousemove', (e) => {
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            setTimeout(() => {
-                ring.style.left = e.clientX + 'px';
-                ring.style.top = e.clientY + 'px';
-            }, 50);
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
         });
 
-        // Typing Effect
-        const typingEl = document.getElementById('typing-text');
-        const textToType = "Inteligencia Artificial";
-        let charIndex = 0;
-        function type() {
-            if (charIndex < textToType.length) {
-                typingEl.textContent += textToType.charAt(charIndex);
-                charIndex++;
-                setTimeout(type, 100);
-            }
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
+            requestAnimationFrame(animateCursor);
         }
-        setTimeout(type, 1000);
+        animateCursor();
+
+        // Scroll Bar
+        window.onscroll = () => {
+            const h = document.documentElement, b = document.body, st = 'scrollTop', sh = 'scrollHeight';
+            const percent = (h[st] || b[st]) / ((h[sh] || b[sh]) - h.clientHeight) * 100;
+            document.getElementById('scroll-bar').style.width = percent + '%';
+            
+            // Navbar Glass effect
+            const nav = document.getElementById('navbar');
+            if(window.scrollY > 50) nav.classList.add('px-16');
+            else nav.classList.remove('px-16');
+        };
 
         // Scroll Reveal
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
+                if (entry.isIntersecting) entry.target.classList.add('active');
             });
         }, { threshold: 0.1 });
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // Particle System
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(208, 188, 255, 0.2)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        for (let i = 0; i < 70; i++) particles.push(new Particle());
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        // 3D Tilt Effect
-        document.querySelectorAll('.tilt-wrapper').forEach(wrapper => {
-            const card = wrapper.querySelector('.tilt-card');
-            wrapper.addEventListener('mousemove', (e) => {
-                const rect = wrapper.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-                card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-            });
-            wrapper.addEventListener('mouseleave', () => {
-                card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
-            });
-        });
     </script>
 </body>
 </html>
