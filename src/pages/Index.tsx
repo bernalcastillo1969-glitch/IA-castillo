@@ -60,9 +60,9 @@ const Index = () => {
           <a className="hover:text-white transition-colors" href="#features">Features</a>
           <a className="hover:text-white transition-colors" href="#security">Security</a>
         </div>
-        <Link to="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
+        <a href="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
           Get Started
-        </Link>
+        </a>
       </nav>
 
       <main>
@@ -97,9 +97,9 @@ const Index = () => {
             <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}
               className="flex flex-col sm:flex-row items-center gap-6 mb-20"
             >
-              <Link to="/chat" className="px-10 py-5 rounded-xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-bold text-lg shadow-2xl shadow-[#d0bcff]/30 hover:scale-105 transition-all">
+              <a href="/chat" className="px-10 py-5 rounded-xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-bold text-lg shadow-2xl shadow-[#d0bcff]/30 hover:scale-105 transition-all">
                 Probar Gratis
-              </Link>
+              </a>
               <button className="px-10 py-5 rounded-xl border border-white/10 text-white font-semibold text-lg hover:bg-white/5 transition-colors">
                 Ver Documentación
               </button>
@@ -298,9 +298,9 @@ const Index = () => {
             <h2 className="text-5xl md:text-7xl font-bold mb-8 text-white leading-tight">Listo para el futuro de la IA</h2>
             <p className="text-xl text-[#cbc3d7] mb-12">Únete a cientos de usuarios y potencia tu productividad hoy mismo.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link to="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all">
+              <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all">
                 Comenzar Ahora
-              </Link>
+              </a>
               <button className="px-12 py-6 rounded-2xl border border-white/10 text-white font-bold text-xl hover:bg-white/5 transition-all">
                 Agendar Demostración
               </button>
