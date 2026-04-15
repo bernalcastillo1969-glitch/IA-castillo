@@ -17,7 +17,10 @@ import {
   BarChart3,
   Languages,
   Terminal,
-  Layers
+  Layers,
+  GraduationCap,
+  Microscope,
+  CpuIcon
 } from "lucide-react";
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
@@ -37,6 +40,7 @@ const navItems = [
   { id: 'arquitectura', label: 'Arquitectura', href: '#architecture' },
   { id: 'funciones', label: 'Funciones', href: '#features' },
   { id: 'seguridad', label: 'Seguridad', href: '#security' },
+  { id: 'autor', label: 'Desarrollador', href: '#sobre-mi' },
 ];
 
 const Index = () => {
@@ -57,7 +61,7 @@ const Index = () => {
         <FloatingCube className="top-[60%] right-[15%]" size={120} color="#4cd7f6" speed={35} />
       </div>
 
-      {/* ── Navbar Perfeccionada (Animada) ── */}
+      {/* ── Navbar ── */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[90%] max-w-5xl shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <div className="flex items-center gap-3">
           <span className="font-bold text-xl tracking-tight text-[#d0bcff]">IA Castillo</span>
@@ -138,7 +142,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── TODO EN UNO (Bento Grid) ── */}
+        {/* ── BENTO GRID ── */}
         <section className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto text-center mb-20">
             <h2 className="text-5xl font-bold mb-6 text-white">Todo en <span className="text-[#d0bcff]">Uno</span></h2>
@@ -225,37 +229,27 @@ const Index = () => {
         {/* ── ARCHITECTURE ── */}
         <section id="architecture" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-6">
-              <div className="max-w-2xl text-left">
-                <span className="text-[#4cd7f6] text-xs font-black tracking-widest uppercase">Arquitectura del Sistema</span>
-                <h2 className="text-4xl md:text-5xl font-bold mt-4 text-white">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-white text-left">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
               {[
                 { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." },
                 { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas instantáneas." },
                 { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." },
               ].map((item, i) => (
-                <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp}
-                  className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5 text-left group hover:border-[#4cd7f6]/30 transition-all"
-                >
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5 text-[#4cd7f6]">
-                    {item.icon}
-                  </div>
+                <div key={item.title} className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-[#4cd7f6]">{item.icon}</div>
                   <h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3>
                   <p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── FEATURES ── */}
+        {/* ── INTERACTION PREVIEW ── */}
         <section id="features" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-left">
+            <div className="text-left">
               <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
               <div className="space-y-6">
                 {["Latencia inferior a 200ms", "Streaming de tokens ultra-fluido", "Soporte para visión y archivos complejos"].map((feature, i) => (
@@ -265,35 +259,91 @@ const Index = () => {
                   </div>
                 ))}
               </div>
-            </motion.div>
-            
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }}>
-              <ChatMockup title="Chat de IA Castillo v2.4" />
-            </motion.div>
+            </div>
+            <ChatMockup title="Chat de IA Castillo v2.4" />
           </div>
         </section>
 
         {/* ── SECURITY ── */}
-        <section id="security" className="relative z-10 py-32 px-6 single-page-item">
+        <section id="security" className="relative z-10 py-32 px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden">
+                <h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
+                <div className="flex gap-8">
+                  <div className="w-14 h-14 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3]"><Lock size={24} /></div>
+                  <div><h4 className="text-2xl font-bold mb-2 text-white">Supabase RLS</h4><p className="text-[#cbc3d7] text-lg">Row Level Security para aislamiento total.</p></div>
+                </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── SOBRE MI (Bernal Castillo) ── */}
+        <section id="sobre-mi" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-              className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden"
+              className="bg-[#343342]/40 backdrop-blur-xl rounded-[4rem] p-12 md:p-20 border border-white/5 relative overflow-hidden"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div className="relative z-10">
-                  <h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
-                  <div className="flex gap-8">
-                    <div className="w-14 h-14 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] border border-[#4edea3]/20">
-                      <Lock size={24} />
-                    </div>
-                    <div>
-                      <h4 className="text-2xl font-bold mb-2 text-white">Supabase RLS</h4>
-                      <p className="text-[#cbc3d7] text-lg">Row Level Security para aislamiento total de datos.</p>
+              <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+                <GraduationCap size={400} />
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
+                <div className="lg:col-span-5 text-left">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#d0bcff]/10 text-[#d0bcff] text-xs font-bold uppercase tracking-widest mb-8 border border-[#d0bcff]/20">
+                    Desarrollador Full-Stack
+                  </span>
+                  <h2 className="text-4xl md:text-5xl font-black mb-8 text-white leading-tight underline decoration-[#4cd7f6] decoration-4 underline-offset-8 transition-all hover:decoration-[#d0bcff]">
+                    Bernal Castillo
+                  </h2>
+                  <p className="text-xl text-[#cbc3d7] leading-relaxed italic mb-8 border-l-4 border-[#4cd7f6] pl-6">
+                    "Mi enfoque principal es la resolución de problemas mediante la tecnología, buscando siempre optimizar procesos."
+                  </p>
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121f]/60 border border-white/5">
+                    <GraduationCap className="text-[#4cd7f6]" size={32} />
+                    <div className="text-left">
+                      <p className="text-white font-bold text-lg">Estudiante de Computación</p>
+                      <p className="text-[#cbc3d7]/60 text-sm">Universidad del Zulia (LUZ)</p>
                     </div>
                   </div>
                 </div>
-                <div className="relative flex justify-center">
-                  <ShieldCheck size={140} className="text-[#4edea3] drop-shadow-[0_0_40px_rgba(78,222,163,0.5)]" />
+
+                <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-[#4cd7f6]">
+                      <Terminal size={20} />
+                      <h4 className="font-bold text-lg text-white">Programación</h4>
+                    </div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
+                      Especializado en la creación de arquitecturas funcionales con Flask e integración robusta con Supabase.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-[#d0bcff]">
+                      <Database size={20} />
+                      <h4 className="font-bold text-lg text-white">Gestión de Datos</h4>
+                    </div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
+                      Capacidad para el manejo y análisis eficiente de datos, asegurando flujos de información seguros.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-[#4edea3]">
+                      <Zap size={20} />
+                      <h4 className="font-bold text-lg text-white">IA & Despliegue</h4>
+                    </div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
+                      Implementación de APIs avanzadas (Gemini) y despliegues en entornos de producción vía Vercel.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-secondary">
+                      <Microscope size={20} />
+                      <h4 className="font-bold text-lg text-white">Investigación</h4>
+                    </div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
+                      Interés constante en nuevas herramientas y metodologías ligadas a la innovación tecnológica.
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -302,16 +352,16 @@ const Index = () => {
 
         {/* ── FINAL CTA ── */}
         <section className="relative z-10 py-32 px-6 text-center">
-          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-5xl md:text-7xl font-bold mb-8 text-white">Listo para el futuro de la IA</motion.h2>
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-5xl md:text-7xl font-bold mb-8 text-white tracking-tighter">Listo para el futuro con IA Castillo</motion.h2>
           <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all inline-block">
-            Comenzar Ahora
+            Probar Ahora
           </a>
         </section>
       </main>
 
       <footer className="relative z-10 py-16 px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 bg-[#12121f]">
         <div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div>
-        <p className="text-white/40 text-sm italic">© 2026 IA Castillo. Creado por Bernal Castillo.</p>
+        <p className="text-white/40 text-sm italic">© 2026 IA Castillo. Diseñado y Desarrollado por Bernal Castillo.</p>
         <div className="flex gap-12 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest">
            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
            <a href="#" className="hover:text-white transition-colors">Términos</a>
