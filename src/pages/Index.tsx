@@ -14,13 +14,14 @@ import {
   Sparkles,
   Lock,
   ChevronDown,
-  Star,
-  Smartphone
+  BarChart3,
+  Languages,
+  Terminal,
+  Layers
 } from "lucide-react";
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
 import ChatMockup from "@/components/ChatMockup";
-import AnimatedCounter from "@/components/AnimatedCounter";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -48,27 +49,25 @@ const Index = () => {
         <FloatingCube className="top-[60%] right-[15%]" size={120} color="#4cd7f6" speed={35} />
       </div>
 
-      {/* TopNavBar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-14 py-4 bg-[#343342]/40 backdrop-blur-xl border-b border-white/[0.07]">
+      {/* ── Navbar ── */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[90%] max-w-5xl">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] flex items-center justify-center shadow-lg shadow-[#d0bcff]/20">
-            <Brain size={18} className="text-[#3c0091]" />
-          </div>
-          <span className="font-black text-xl tracking-tight text-white">IA Castillo</span>
+          <span className="font-bold text-xl tracking-tight text-[#d0bcff]">IA Castillo</span>
         </div>
-        <div className="hidden md:flex items-center gap-9 text-sm text-[#cbc3d7]/80 font-medium">
+        <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-[#cbc3d7]">
+          <a className="text-[#4cd7f6] border-b-2 border-[#4cd7f6] pb-0.5" href="#">Ecosystem</a>
           <a className="hover:text-white transition-colors" href="#architecture">Architecture</a>
           <a className="hover:text-white transition-colors" href="#features">Features</a>
           <a className="hover:text-white transition-colors" href="#security">Security</a>
         </div>
-        <Link to="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-[#d0bcff] to-[#a078ff] text-[#340080] hover:scale-105 transition-all shadow-lg shadow-[#d0bcff]/20">
-          Acceder
+        <Link to="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
+          Get Started
         </Link>
       </nav>
 
       <main>
         {/* HERO SECTION */}
-        <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-20 overflow-hidden text-center">
+        <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20 overflow-hidden text-center">
           <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 z-0 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#12121f]/50 to-[#12121f]" />
           </motion.div>
@@ -76,35 +75,33 @@ const Index = () => {
           <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
             {/* Badge */}
             <motion.div custom={0} initial="hidden" animate="visible" variants={fadeUp}
-              className="mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#4edea3]/10 border border-[#4edea3]/30 text-[#4edea3] text-xs font-bold uppercase tracking-widest"
+              className="mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#292937] border border-white/5 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest"
             >
-              <Sparkles size={14} className="animate-pulse" /> Sistemas Activos v2.4 · Elite Edition
+              <span className="w-2 h-2 rounded-full bg-[#4edea3] animate-pulse"></span> Sistemas Activos v2.4
             </motion.div>
 
             <motion.h1 custom={1} initial="hidden" animate="visible" variants={fadeUp}
-              className="text-5xl md:text-8xl font-black leading-[1.05] tracking-tighter mb-8 max-w-5xl text-white"
+              className="text-5xl md:text-8xl font-black leading-[1.1] tracking-tighter mb-8 max-w-5xl text-white"
             >
               Bienvenidos al Mundo de la <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d0bcff] via-[#4cd7f6] to-[#4edea3]">
-                Inteligencia Artificial
-              </span>
+              <span className="text-[#4cd7f6]">Inteligencia Artificial</span>
             </motion.h1>
 
             <motion.p custom={2} initial="hidden" animate="visible" variants={fadeUp}
-              className="text-xl text-[#cbc3d7] max-w-3xl mb-12"
+              className="text-xl text-[#cbc3d7] max-w-2xl mb-12"
             >
               Arquitectura de última generación diseñada para potenciar la productividad empresarial con modelos híbridos de baja latencia.
             </motion.p>
 
             {/* CTAs */}
             <motion.div custom={3} initial="hidden" animate="visible" variants={fadeUp}
-              className="flex flex-col sm:flex-row items-center gap-5 mb-20"
+              className="flex flex-col sm:flex-row items-center gap-6 mb-20"
             >
-              <Link to="/chat" className="px-10 py-5 rounded-2xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-black text-xl shadow-2xl shadow-[#d0bcff]/30 hover:scale-105 transition-all">
-                Probar Gratis Ahora
+              <Link to="/chat" className="px-10 py-5 rounded-xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-bold text-lg shadow-2xl shadow-[#d0bcff]/30 hover:scale-105 transition-all">
+                Probar Gratis
               </Link>
-              <button className="px-10 py-5 rounded-2xl border border-white/10 text-white font-bold text-xl hover:bg-white/5 transition-colors flex items-center gap-2">
-                Ver Documentación <ChevronDown size={20} />
+              <button className="px-10 py-5 rounded-xl border border-white/10 text-white font-semibold text-lg hover:bg-white/5 transition-colors">
+                Ver Documentación
               </button>
             </motion.div>
 
@@ -115,30 +112,116 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── ARCHITECTURE ── */}
+        {/* ── TODO EN UNO (Bento Grid) ── */}
+        <section className="relative z-10 py-32 px-6">
+          <div className="max-w-7xl mx-auto text-center mb-20 animate-fade-in">
+            <h2 className="text-5xl font-bold mb-6 text-white">Todo en <span className="text-[#d0bcff]">Uno</span></h2>
+            <p className="text-[#cbc3d7] text-xl max-w-2xl mx-auto">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
+          </div>
+
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Análisis Pro */}
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} 
+              className="md:col-span-2 bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 flex flex-col justify-between group hover:border-[#4cd7f6]/40 transition-all min-h-[400px]"
+            >
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-[#4cd7f6]/20 flex items-center justify-center mb-8 text-[#4cd7f6]">
+                  <BarChart3 size={28} />
+                </div>
+                <h3 className="text-3xl font-bold mb-6 text-white text-left">Análisis de Datos Avanzado</h3>
+                <p className="text-[#cbc3d7] text-lg leading-relaxed text-left max-w-lg">Conecta tus fuentes de datos y deja que la IA genere visualizaciones y reportes ejecutivos en segundos.</p>
+              </div>
+              <div className="flex gap-4 mt-8">
+                {['SQL', 'Python', 'Tableau'].map(tag => (
+                   <span key={tag} className="px-4 py-1.5 rounded-lg bg-[#12121f] border border-white/5 text-[#958ea0] text-xs font-bold uppercase">{tag}</span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Multi-idioma */}
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+              className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 group hover:border-[#d0bcff]/40 transition-all text-left"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#d0bcff]/20 flex items-center justify-center mb-8 text-[#d0bcff]">
+                <Languages size={28} />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-white">Multi-idioma</h3>
+              <p className="text-[#cbc3d7] leading-relaxed">Traducción contextual y soporte en más de 95 idiomas nativos.</p>
+            </motion.div>
+
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+              className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 group hover:border-[#a078ff]/40 transition-all text-left"
+            >
+              <div className="w-12 h-12 rounded-xl bg-[#a078ff]/20 flex items-center justify-center mb-8 text-[#a078ff]">
+                <Terminal size={28} />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-white">Copilot de Código</h3>
+              <p className="text-[#cbc3d7] leading-relaxed">Generación de fragmentos de código optimizados y depuración.</p>
+            </motion.div>
+
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+              className="md:col-span-2 bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 group hover:border-[#4edea3]/40 transition-all flex items-center gap-10 text-left"
+            >
+              <div className="w-20 h-20 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] shrink-0">
+                <Layers size={40} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold mb-2 text-white">API de Nivel Enterprise</h3>
+                <p className="text-[#cbc3d7]">Integración directa mediante RESTful API con documentación técnica completa.</p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── INFRAESTRUCTURA DE CLASE MUNDIAL ── */}
+        <section className="relative z-10 py-32 px-6 bg-[#0c0c14]/40">
+          <div className="max-w-7xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-20 text-white">Infraestructura de <span className="text-[#4cd7f6]">Clase Mundial</span></h2>
+            <div className="flex flex-wrap items-center justify-center gap-12 md:gap-24 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+               {[
+                 { name: 'PYTHON', icon: 'fa-brands fa-python', color: 'text-yellow-500' },
+                 { name: 'REACT', icon: 'fa-brands fa-react', color: 'text-blue-400' },
+                 { name: 'SUPABASE', icon: 'fa-solid fa-database', color: 'text-emerald-500' },
+                 { name: 'TAILWIND', icon: 'fa-solid fa-wind', color: 'text-cyan-400' },
+                 { name: 'VERCEL', icon: 'fa-solid fa-triangle-exclamation', color: 'text-white' }
+               ].map((tech, i) => (
+                 <motion.div key={tech.name} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                   className="flex flex-col items-center gap-4"
+                 >
+                   <div className={`text-5xl ${tech.color}`}>
+                     <i className={tech.icon}></i>
+                   </div>
+                   <span className="text-xs font-black tracking-widest text-white/60">{tech.name}</span>
+                 </motion.div>
+               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── ARCHITECTURE (Cerebro Híbrido) ── */}
         <section id="architecture" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-6">
               <div className="max-w-2xl text-left">
                 <span className="text-[#4cd7f6] text-xs font-black tracking-widest uppercase">Arquitectura del Sistema</span>
-                <h2 className="text-4xl md:text-5xl font-black mt-4 text-white">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
+                <h2 className="text-4xl md:text-5xl font-bold mt-4 text-white">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
                 <p className="text-[#cbc3d7] text-lg mt-4 leading-relaxed">Nuestra arquitectura distribuye las cargas de trabajo dinámicamente entre los motores más eficientes del mercado.</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { icon: <Cpu className="text-primary" />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens.", color: "bg-primary/20", icon_bg: "neurology" },
-                { icon: <Zap className="text-secondary" />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas instantáneas.", color: "bg-secondary/20", icon_bg: "bolt" },
-                { icon: <CheckCircle2 className="text-tertiary" />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta.", color: "bg-tertiary/20", icon_bg: "hub" },
+                { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." },
+                { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas instantáneas." },
+                { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." },
               ].map((item, i) => (
                 <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp}
-                  className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5 relative overflow-hidden h-full flex flex-col items-start group hover:border-[#4cd7f6]/30 transition-all"
+                  className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5 relative overflow-hidden h-full flex flex-col items-start group hover:border-[#4cd7f6]/30 transition-all text-left"
                 >
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-8" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5">
                     {item.icon}
                   </div>
-                  <h3 className="text-2xl font-black mb-4 text-white">{item.title}</h3>
+                  <h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3>
                   <p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p>
                 </motion.div>
               ))}
@@ -147,10 +230,10 @@ const Index = () => {
         </section>
 
         {/* ── INTERACTION (CHAT MOCKUP) ── */}
-        <section id="features" className="relative z-10 py-32 px-6 bg-[#000000]/20">
+        <section id="features" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-left">
-              <h2 className="text-4xl md:text-5xl font-black mb-8 text-white">Interacción en <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4cd7f6] to-[#d0bcff]">Tiempo Real</span></h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
               <p className="text-[#cbc3d7] text-xl mb-10 leading-relaxed">
                 Experimenta la velocidad de Groq combinada con la inteligencia de Gemini. Nuestra interfaz de chat está diseñada para la máxima productividad.
               </p>
@@ -167,7 +250,7 @@ const Index = () => {
             </motion.div>
             
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="relative">
-              <div className="absolute -inset-10 bg-gradient-to-br from-[#4cd7f6]/10 to-[#d0bcff]/10 rounded-full blur-[80px]" />
+              <div className="absolute -inset-10 bg-[#4cd7f6]/10 rounded-full blur-[80px]" />
               <ChatMockup title="Chat de IA Castillo v2.4" />
             </motion.div>
           </div>
@@ -177,12 +260,12 @@ const Index = () => {
         <section id="security" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-              className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-white/5 relative overflow-hidden"
+              className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 relative overflow-hidden text-left"
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div className="text-left relative z-10">
-                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#4edea3]/10 text-[#4edea3] text-xs font-black tracking-widest uppercase mb-8">Security Protocol</span>
-                  <h2 className="text-5xl md:text-6xl font-black mb-10 text-white leading-tight">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
+                <div className="relative z-10">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#4edea3]/10 text-[#4edea3] text-xs font-bold uppercase tracking-widest mb-8">Security Protocol</span>
+                  <h2 className="text-5xl md:text-6xl font-bold mb-10 text-white leading-tight">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
                   
                   <div className="space-y-8">
                     <div className="flex gap-8">
@@ -190,8 +273,8 @@ const Index = () => {
                         <Lock size={24} />
                       </div>
                       <div>
-                        <h4 className="text-2xl font-black mb-2 text-white">Supabase RLS</h4>
-                        <p className="text-[#cbc3d7] text-lg">Row Level Security para garantizar el aislamiento total de tus datos educativos.</p>
+                        <h4 className="text-2xl font-bold mb-2 text-white">Supabase RLS</h4>
+                        <p className="text-[#cbc3d7] text-lg">Row Level Security para garantizar el aislamiento total de tus datos.</p>
                       </div>
                     </div>
                   </div>
@@ -212,16 +295,13 @@ const Index = () => {
         {/* ── CTA FINAL ── */}
         <section className="relative z-10 py-32 px-6 text-center">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="max-w-4xl mx-auto">
-            <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#d0bcff] to-[#4cd7f6] flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-[#d0bcff]/40">
-              <Sparkles size={40} className="text-white" />
-            </div>
-            <h2 className="text-5xl md:text-7xl font-black mb-8 text-white leading-tight">Listo para el futuro de la IA</h2>
+            <h2 className="text-5xl md:text-7xl font-bold mb-8 text-white leading-tight">Listo para el futuro de la IA</h2>
             <p className="text-xl text-[#cbc3d7] mb-12">Únete a cientos de usuarios y potencia tu productividad hoy mismo.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link to="/chat" className="px-14 py-6 rounded-3xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all">
+              <Link to="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all">
                 Comenzar Ahora
               </Link>
-              <button className="px-12 py-6 rounded-3xl border border-white/10 text-white font-bold text-xl hover:bg-white/5 transition-all">
+              <button className="px-12 py-6 rounded-2xl border border-white/10 text-white font-bold text-xl hover:bg-white/5 transition-all">
                 Agendar Demostración
               </button>
             </div>
@@ -232,13 +312,13 @@ const Index = () => {
       {/* Footer */}
       <footer className="relative z-10 py-16 px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="flex flex-col items-center md:items-start gap-3">
-          <div className="text-2xl font-black text-white">IA Castillo</div>
-          <p className="text-white/40 text-sm italic">Creado con pasión por Bernal Castillo &copy; 2026</p>
+          <div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div>
+          <p className="text-white/40 text-sm italic">Creado por Bernal Castillo · 2026</p>
         </div>
-        <div className="flex gap-12">
-          <a href="#" className="text-white/40 hover:text-[#4cd7f6] transition-colors font-bold uppercase tracking-widest text-xs">Privacy</a>
-          <a href="#" className="text-white/40 hover:text-[#4cd7f6] transition-colors font-bold uppercase tracking-widest text-xs">Terms</a>
-          <a href="#" className="text-white/40 hover:text-[#4cd7f6] transition-colors font-bold uppercase tracking-widest text-xs">Docs</a>
+        <div className="flex gap-12 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest">
+           <a href="#" className="hover:text-white transition-colors">Privacy</a>
+           <a href="#" className="hover:text-white transition-colors">Terms</a>
+           <a href="#" className="hover:text-white transition-colors">Docs</a>
         </div>
       </footer>
     </div>
