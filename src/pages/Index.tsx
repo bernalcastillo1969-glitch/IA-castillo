@@ -20,7 +20,9 @@ import {
   Layers,
   GraduationCap,
   Microscope,
-  CpuIcon
+  CpuIcon,
+  Menu,
+  X
 } from "lucide-react";
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
@@ -45,6 +47,8 @@ const navItems = [
 
 const Index = () => {
   const [activeItem, setActiveItem] = useState('ecosistema');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -62,11 +66,12 @@ const Index = () => {
       </div>
 
       {/* ── Navbar ── */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[90%] max-w-5xl shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-6 md:px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[92%] max-w-5xl shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <div className="flex items-center gap-3">
-          <span className="font-bold text-xl tracking-tight text-[#d0bcff]">IA Castillo</span>
+          <span className="font-bold text-lg md:text-xl tracking-tight text-[#d0bcff]">IA Castillo</span>
         </div>
         
+        {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-2 relative h-full">
           {navItems.map((item) => (
             <a
@@ -90,10 +95,57 @@ const Index = () => {
           ))}
         </div>
 
-        <a href="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
-          Comenzar
-        </a>
+        <div className="flex items-center gap-4">
+          <a href="/chat" className="hidden sm:inline-block px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
+            Comenzar
+          </a>
+          
+          {/* Mobile Toggle */}
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-[#cbc3d7] hover:text-white transition-colors"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </nav>
+
+      {/* ── Mobile Menu Overlay ── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-24 left-1/2 -translate-x-1/2 w-[90%] z-[45] md:hidden bg-[#1e1e2c]/95 backdrop-blur-2xl rounded-3xl border border-white/10 p-8 shadow-2xl"
+          >
+            <div className="flex flex-col gap-6 text-center">
+              {navItems.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => {
+                    setActiveItem(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`text-xl font-bold transition-all ${
+                    activeItem === item.id ? 'text-[#4cd7f6] scale-110' : 'text-[#cbc3d7]'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              ))}
+              <hr className="border-white/5" />
+              <a 
+                href="/chat" 
+                className="w-full py-4 rounded-2xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-black text-xl text-center"
+              >
+                Comenzar Chat
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <main>
         {/* HERO SECTION */}
@@ -135,7 +187,6 @@ const Index = () => {
               </button>
             </motion.div>
 
-            {/* Brain 3D Section */}
             <motion.div custom={4} initial="hidden" animate="visible" variants={fadeUp} className="w-full max-w-2xl">
               <Brain3D />
             </motion.div>
@@ -144,7 +195,8 @@ const Index = () => {
 
         {/* ── BENTO GRID ── */}
         <section className="relative z-10 py-32 px-6">
-          <div className="max-w-7xl mx-auto text-center mb-20">
+          <div className="max-w-7xl mx-auto text-center mb-20 uppercase tracking-[0.2em] text-[#d0bcff] text-sm font-bold">Capacidades</div>
+          <div className="max-w-7xl mx-auto text-center mb-20 animate-fade-in">
             <h2 className="text-5xl font-bold mb-6 text-white">Todo en <span className="text-[#d0bcff]">Uno</span></h2>
             <p className="text-[#cbc3d7] text-xl max-w-2xl mx-auto">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
           </div>
@@ -277,7 +329,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── SOBRE MI (Bernal Castillo) ── */}
+        {/* ── SOBRE MI ── */}
         <section id="sobre-mi" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
@@ -286,64 +338,33 @@ const Index = () => {
               <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
                 <GraduationCap size={400} />
               </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10">
-                <div className="lg:col-span-5 text-left">
-                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#d0bcff]/10 text-[#d0bcff] text-xs font-bold uppercase tracking-widest mb-8 border border-[#d0bcff]/20">
-                    Desarrollador Full-Stack
-                  </span>
-                  <h2 className="text-4xl md:text-5xl font-black mb-8 text-white leading-tight underline decoration-[#4cd7f6] decoration-4 underline-offset-8 transition-all hover:decoration-[#d0bcff]">
-                    Bernal Castillo
-                  </h2>
-                  <p className="text-xl text-[#cbc3d7] leading-relaxed italic mb-8 border-l-4 border-[#4cd7f6] pl-6">
-                    "Mi enfoque principal es la resolución de problemas mediante la tecnología, buscando siempre optimizar procesos."
-                  </p>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10 text-left">
+                <div className="lg:col-span-5">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#d0bcff]/10 text-[#d0bcff] text-xs font-bold uppercase tracking-widest mb-8 border border-[#d0bcff]/20">Desarrollador Full-Stack</span>
+                  <h2 className="text-4xl md:text-5xl font-black mb-8 text-white leading-tight underline decoration-[#4cd7f6] decoration-4 underline-offset-8 transition-all hover:decoration-[#d0bcff]">Bernal Castillo</h2>
+                  <p className="text-xl text-[#cbc3d7] leading-relaxed italic mb-8 border-l-4 border-[#4cd7f6] pl-6 text-left">"Mi enfoque principal es la resolución de problemas mediante la tecnología, buscando siempre optimizar procesos."</p>
                   <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121f]/60 border border-white/5">
                     <GraduationCap className="text-[#4cd7f6]" size={32} />
-                    <div className="text-left">
-                      <p className="text-white font-bold text-lg">Estudiante de Computación</p>
-                      <p className="text-[#cbc3d7]/60 text-sm">Universidad del Zulia (LUZ)</p>
-                    </div>
+                    <div><p className="text-white font-bold text-lg">Estudiante de Computación</p><p className="text-[#cbc3d7]/60 text-sm">Universidad del Zulia (LUZ)</p></div>
                   </div>
                 </div>
-
-                <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-[#4cd7f6]">
-                      <Terminal size={20} />
-                      <h4 className="font-bold text-lg text-white">Programación</h4>
-                    </div>
-                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
-                      Especializado en la creación de arquitecturas funcionales con Flask e integración robusta con Supabase.
-                    </p>
+                    <div className="flex items-center gap-3 text-[#4cd7f6]"><Terminal size={20} /><h4 className="font-bold text-lg text-white">Programación</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Especializado en arquitecturas con Flask e integración con Supabase.</p>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-[#d0bcff]">
-                      <Database size={20} />
-                      <h4 className="font-bold text-lg text-white">Gestión de Datos</h4>
-                    </div>
-                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
-                      Capacidad para el manejo y análisis eficiente de datos, asegurando flujos de información seguros.
-                    </p>
+                    <div className="flex items-center gap-3 text-[#d0bcff]"><Database size={20} /><h4 className="font-bold text-lg text-white">Gestión de Datos</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Manejo y análisis eficiente de datos, asegurando flujos seguros.</p>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-[#4edea3]">
-                      <Zap size={20} />
-                      <h4 className="font-bold text-lg text-white">IA & Despliegue</h4>
-                    </div>
-                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
-                      Implementación de APIs avanzadas (Gemini) y despliegues en entornos de producción vía Vercel.
-                    </p>
+                    <div className="flex items-center gap-3 text-[#4edea3]"><Zap size={20} /><h4 className="font-bold text-lg text-white">IA & Despliegue</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Implementación de Gemini y producción en Vercel.</p>
                   </div>
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-secondary">
-                      <Microscope size={20} />
-                      <h4 className="font-bold text-lg text-white">Investigación</h4>
-                    </div>
-                    <p className="text-[#cbc3d7] text-sm leading-relaxed">
-                      Interés constante en nuevas herramientas y metodologías ligadas a la innovación tecnológica.
-                    </p>
-                  </div>
+                     <div className="flex items-center gap-3 text-secondary"><Microscope size={20} /><h4 className="font-bold text-lg text-white">Investigación</h4></div>
+                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Interés constante en nuevas herramientas y metodologías.</p>
+                   </div>
                 </div>
               </div>
             </motion.div>
@@ -353,15 +374,13 @@ const Index = () => {
         {/* ── FINAL CTA ── */}
         <section className="relative z-10 py-32 px-6 text-center">
           <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-5xl md:text-7xl font-bold mb-8 text-white tracking-tighter">Listo para el futuro con IA Castillo</motion.h2>
-          <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all inline-block">
-            Probar Ahora
-          </a>
+          <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all inline-block">Probar Ahora</a>
         </section>
       </main>
 
       <footer className="relative z-10 py-16 px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 bg-[#12121f]">
         <div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div>
-        <p className="text-white/40 text-sm italic">© 2026 IA Castillo. Diseñado y Desarrollado por Bernal Castillo.</p>
+        <p className="text-white/40 text-sm italic">© 2026 IA Castillo. Creado por Bernal Castillo.</p>
         <div className="flex gap-12 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest">
            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
            <a href="#" className="hover:text-white transition-colors">Términos</a>
