@@ -246,6 +246,24 @@ const Index = () => {
           </div>
         </section>
 
+        {/* ── FEATURES ── */}
+        <section id="features" className="relative z-10 py-32 px-6">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+            <div className="text-left">
+              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
+              <div className="space-y-6">
+                {["Latencia inferior a 200ms", "Streaming de tokens ultra-fluido", "Soporte para visión y archivos complejos"].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <CheckCircle2 size={24} className="text-[#4edea3]" />
+                    <span className="text-white font-bold">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <ChatMockup title="Chat de IA Castillo v2.4" />
+          </div>
+        </section>
+
         {/* ── SECURITY ── */}
         <section id="security" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
