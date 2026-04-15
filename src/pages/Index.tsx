@@ -249,18 +249,20 @@ const Index = () => {
         {/* ── FEATURES ── */}
         <section id="features" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="text-left">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-left">
               <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
               <div className="space-y-6">
                 {["Latencia inferior a 200ms", "Streaming de tokens ultra-fluido", "Soporte para visión y archivos complejos"].map((feature, i) => (
-                  <div key={i} className="flex items-center gap-4">
+                  <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp} className="flex items-center gap-4">
                     <CheckCircle2 size={24} className="text-[#4edea3]" />
                     <span className="text-white font-bold">{feature}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
-            <ChatMockup title="Chat de IA Castillo v2.4" />
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} variants={fadeUp}>
+              <ChatMockup title="Chat de IA Castillo v2.4" />
+            </motion.div>
           </div>
         </section>
 
