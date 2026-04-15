@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { 
   Brain, 
   Cpu, 
@@ -32,7 +32,15 @@ const fadeUp = {
   }),
 };
 
+const navItems = [
+  { id: 'ecosistema', label: 'Ecosistema', href: '#' },
+  { id: 'arquitectura', label: 'Arquitectura', href: '#architecture' },
+  { id: 'funciones', label: 'Funciones', href: '#features' },
+  { id: 'seguridad', label: 'Seguridad', href: '#security' },
+];
+
 const Index = () => {
+  const [activeItem, setActiveItem] = useState('ecosistema');
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -49,19 +57,37 @@ const Index = () => {
         <FloatingCube className="top-[60%] right-[15%]" size={120} color="#4cd7f6" speed={35} />
       </div>
 
-      {/* ── Navbar ── */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[90%] max-w-5xl">
+      {/* ── Navbar Perfeccionada (Animada) ── */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-8 py-3 bg-[#343342]/60 backdrop-blur-xl border border-white/5 rounded-full w-[90%] max-w-5xl shadow-[0_0_30px_rgba(0,0,0,0.3)]">
         <div className="flex items-center gap-3">
           <span className="font-bold text-xl tracking-tight text-[#d0bcff]">IA Castillo</span>
         </div>
-        <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-[#cbc3d7]">
-          <a className="text-[#4cd7f6] border-b-2 border-[#4cd7f6] pb-0.5" href="#">Ecosystem</a>
-          <a className="hover:text-white transition-colors" href="#architecture">Architecture</a>
-          <a className="hover:text-white transition-colors" href="#features">Features</a>
-          <a className="hover:text-white transition-colors" href="#security">Security</a>
+        
+        <div className="hidden md:flex items-center gap-2 relative h-full">
+          {navItems.map((item) => (
+            <a
+              key={item.id}
+              href={item.href}
+              onClick={() => setActiveItem(item.id)}
+              className={`px-4 py-2 text-sm font-semibold transition-colors relative z-10 ${
+                activeItem === item.id ? 'text-[#4cd7f6]' : 'text-[#cbc3d7] hover:text-white'
+              }`}
+            >
+              {item.label}
+              {activeItem === item.id && (
+                <motion.div
+                  layoutId="nav-underline"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#4cd7f6] z-0"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+            </a>
+          ))}
         </div>
+
         <a href="/chat" className="px-6 py-2 rounded-full text-sm font-bold bg-[#d0bcff] text-[#3c0091] hover:bg-white transition-all shadow-lg shadow-[#d0bcff]/20">
-          Get Started
+          Comenzar
         </a>
       </nav>
 
@@ -114,13 +140,12 @@ const Index = () => {
 
         {/* ── TODO EN UNO (Bento Grid) ── */}
         <section className="relative z-10 py-32 px-6">
-          <div className="max-w-7xl mx-auto text-center mb-20 animate-fade-in">
+          <div className="max-w-7xl mx-auto text-center mb-20">
             <h2 className="text-5xl font-bold mb-6 text-white">Todo en <span className="text-[#d0bcff]">Uno</span></h2>
             <p className="text-[#cbc3d7] text-xl max-w-2xl mx-auto">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
           </div>
 
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Análisis Pro */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} 
               className="md:col-span-2 bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 flex flex-col justify-between group hover:border-[#4cd7f6]/40 transition-all min-h-[400px]"
             >
@@ -138,7 +163,6 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Multi-idioma */}
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
               className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-3xl border border-white/5 group hover:border-[#d0bcff]/40 transition-all text-left"
             >
@@ -173,7 +197,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── INFRAESTRUCTURA DE CLASE MUNDIAL ── */}
+        {/* ── INFRAESTRUCTURA ── */}
         <section className="relative z-10 py-32 px-6 bg-[#0c0c14]/40">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-20 text-white">Infraestructura de <span className="text-[#4cd7f6]">Clase Mundial</span></h2>
@@ -198,14 +222,13 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── ARCHITECTURE (Cerebro Híbrido) ── */}
+        {/* ── ARCHITECTURE ── */}
         <section id="architecture" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-6">
               <div className="max-w-2xl text-left">
                 <span className="text-[#4cd7f6] text-xs font-black tracking-widest uppercase">Arquitectura del Sistema</span>
                 <h2 className="text-4xl md:text-5xl font-bold mt-4 text-white">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
-                <p className="text-[#cbc3d7] text-lg mt-4 leading-relaxed">Nuestra arquitectura distribuye las cargas de trabajo dinámicamente entre los motores más eficientes del mercado.</p>
               </div>
             </div>
 
@@ -216,9 +239,9 @@ const Index = () => {
                 { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." },
               ].map((item, i) => (
                 <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp}
-                  className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5 relative overflow-hidden h-full flex flex-col items-start group hover:border-[#4cd7f6]/30 transition-all text-left"
+                  className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5 text-left group hover:border-[#4cd7f6]/30 transition-all"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 border border-white/5 text-[#4cd7f6]">
                     {item.icon}
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3>
@@ -229,95 +252,69 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── INTERACTION (CHAT MOCKUP) ── */}
+        {/* ── FEATURES ── */}
         <section id="features" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-left">
               <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
-              <p className="text-[#cbc3d7] text-xl mb-10 leading-relaxed">
-                Experimenta la velocidad de Groq combinada con la inteligencia de Gemini. Nuestra interfaz de chat está diseñada para la máxima productividad.
-              </p>
               <div className="space-y-6">
                 {["Latencia inferior a 200ms", "Streaming de tokens ultra-fluido", "Soporte para visión y archivos complejos"].map((feature, i) => (
                   <div key={i} className="flex items-center gap-4">
-                    <div className="w-6 h-6 rounded-full bg-[#4edea3]/20 flex items-center justify-center">
-                      <CheckCircle2 size={14} className="text-[#4edea3]" />
-                    </div>
+                    <CheckCircle2 size={24} className="text-[#4edea3]" />
                     <span className="text-white font-bold">{feature}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
             
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="relative">
-              <div className="absolute -inset-10 bg-[#4cd7f6]/10 rounded-full blur-[80px]" />
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }}>
               <ChatMockup title="Chat de IA Castillo v2.4" />
             </motion.div>
           </div>
         </section>
 
         {/* ── SECURITY ── */}
-        <section id="security" className="relative z-10 py-32 px-6">
+        <section id="security" className="relative z-10 py-32 px-6 single-page-item">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-              className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 relative overflow-hidden text-left"
+              className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden"
             >
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div className="relative z-10">
-                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#4edea3]/10 text-[#4edea3] text-xs font-bold uppercase tracking-widest mb-8">Security Protocol</span>
-                  <h2 className="text-5xl md:text-6xl font-bold mb-10 text-white leading-tight">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
-                  
-                  <div className="space-y-8">
-                    <div className="flex gap-8">
-                      <div className="w-14 h-14 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] border border-[#4edea3]/20">
-                        <Lock size={24} />
-                      </div>
-                      <div>
-                        <h4 className="text-2xl font-bold mb-2 text-white">Supabase RLS</h4>
-                        <p className="text-[#cbc3d7] text-lg">Row Level Security para garantizar el aislamiento total de tus datos.</p>
-                      </div>
+                  <h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección de Nivel <br/><span className="text-[#4edea3]">Empresarial</span></h2>
+                  <div className="flex gap-8">
+                    <div className="w-14 h-14 rounded-2xl bg-[#4edea3]/10 flex items-center justify-center text-[#4edea3] border border-[#4edea3]/20">
+                      <Lock size={24} />
+                    </div>
+                    <div>
+                      <h4 className="text-2xl font-bold mb-2 text-white">Supabase RLS</h4>
+                      <p className="text-[#cbc3d7] text-lg">Row Level Security para aislamiento total de datos.</p>
                     </div>
                   </div>
                 </div>
-                
                 <div className="relative flex justify-center">
-                  <div className="absolute inset-0 bg-[#4edea3]/10 rounded-full blur-[100px]" />
-                  <div className="relative w-72 h-72 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border border-[#4edea3]/30 animate-ping" />
-                    <ShieldCheck size={140} className="text-[#4edea3] drop-shadow-[0_0_40px_rgba(78,222,163,0.5)]" />
-                  </div>
+                  <ShieldCheck size={140} className="text-[#4edea3] drop-shadow-[0_0_40px_rgba(78,222,163,0.5)]" />
                 </div>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* ── CTA FINAL ── */}
+        {/* ── FINAL CTA ── */}
         <section className="relative z-10 py-32 px-6 text-center">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="max-w-4xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-bold mb-8 text-white leading-tight">Listo para el futuro de la IA</h2>
-            <p className="text-xl text-[#cbc3d7] mb-12">Únete a cientos de usuarios y potencia tu productividad hoy mismo.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all">
-                Comenzar Ahora
-              </a>
-              <button className="px-12 py-6 rounded-2xl border border-white/10 text-white font-bold text-xl hover:bg-white/5 transition-all">
-                Agendar Demostración
-              </button>
-            </div>
-          </motion.div>
+          <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-5xl md:text-7xl font-bold mb-8 text-white">Listo para el futuro de la IA</motion.h2>
+          <a href="/chat" className="px-14 py-6 rounded-2xl bg-[#4cd7f6] text-[#003640] font-black text-2xl shadow-3xl shadow-[#4cd7f6]/30 hover:scale-105 transition-all inline-block">
+            Comenzar Ahora
+          </a>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 py-16 px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="flex flex-col items-center md:items-start gap-3">
-          <div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div>
-          <p className="text-white/40 text-sm italic">Creado por Bernal Castillo · 2026</p>
-        </div>
+      <footer className="relative z-10 py-16 px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8 bg-[#12121f]">
+        <div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div>
+        <p className="text-white/40 text-sm italic">© 2026 IA Castillo. Creado por Bernal Castillo.</p>
         <div className="flex gap-12 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest">
-           <a href="#" className="hover:text-white transition-colors">Privacy</a>
-           <a href="#" className="hover:text-white transition-colors">Terms</a>
+           <a href="#" className="hover:text-white transition-colors">Privacidad</a>
+           <a href="#" className="hover:text-white transition-colors">Términos</a>
            <a href="#" className="hover:text-white transition-colors">Docs</a>
         </div>
       </footer>
