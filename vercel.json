@@ -11,6 +11,7 @@
     }
   ],
   "routes": [
+    { "src": "/", "dest": "/api/index.py" },
     { "src": "/chat", "dest": "/api/index.py" },
     { "src": "/history", "dest": "/api/index.py" },
     { "src": "/google-login", "dest": "/api/index.py" },
