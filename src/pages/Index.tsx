@@ -239,8 +239,8 @@ const Index = () => {
         <section id="architecture" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto"><h2 className="text-4xl md:text-5xl font-bold mb-16 text-white text-left">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-              {[ { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia." }].map((item, i) => (
-                <div key={item.title} className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5"><div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-[#4cd7f6]">{item.icon}</div><h3 className="text-2xl font-bold mb-4 text-white uppercase tracking-tighter">{item.title}</h3><p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p></div>
+              {[ { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." }].map((item, i) => (
+                <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp} className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5"><div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-[#4cd7f6]">{item.icon}</div><h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3><p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p></motion.div>
               ))}
             </div>
           </div>
@@ -269,9 +269,9 @@ const Index = () => {
         {/* ── SECURITY ── */}
         <section id="security" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
-                <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br/><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6"><Lock className="text-[#4edea3]" /><div><h4 className="text-2xl font-bold text-white uppercase italic">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Seguridad de nivel bancario e integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30 shadow-2xl" />
-            </div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
+                <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br/><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
+            </motion.div>
           </div>
         </section>
 
@@ -281,14 +281,29 @@ const Index = () => {
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-[#343342]/40 backdrop-blur-xl rounded-[4rem] p-12 md:p-20 border border-white/5 relative overflow-hidden text-left shadow-2xl">
               <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none"><GraduationCap size={400} /></div>
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10 text-left">
-                <div className="lg:col-span-5 text-left italic">
-                  <h2 className="text-4xl md:text-5xl font-black mb-8 text-white underline decoration-[#4cd7f6] decoration-4 underline-offset-8">Bernal Castillo</h2>
-                  <p className="text-xl text-[#cbc3d7] italic mb-8 border-l-4 border-[#4cd7f6] pl-6 text-left">"Mi enfoque principal es la resolución de problemas mediante tecnología."</p>
-                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121f]/60 border border-white/5"><GraduationCap className="text-[#4cd7f6]" /><div><p className="text-white font-bold">Estudiante de Computación - LUZ</p></div></div>
+                <div className="lg:col-span-5 text-left">
+                  <span className="inline-block px-4 py-1.5 rounded-full bg-[#d0bcff]/10 text-[#d0bcff] text-xs font-bold uppercase tracking-widest mb-6 border border-[#d0bcff]/20">Desarrollador Full-Stack</span>
+                  <h2 className="text-4xl md:text-5xl font-black mb-6 text-white underline decoration-[#4cd7f6] decoration-4 underline-offset-8">Bernal Castillo</h2>
+                  <p className="text-lg text-[#cbc3d7] italic mb-8 border-l-4 border-[#4cd7f6] pl-6">"Mi enfoque principal es la resolución de problemas mediante la tecnología, buscando siempre optimizar procesos y mantenerme a la vanguardia."</p>
+                  <div className="flex items-center gap-4 p-4 rounded-2xl bg-[#12121f]/60 border border-white/5"><GraduationCap className="text-[#4cd7f6] shrink-0" size={28} /><div><p className="text-white font-bold">Estudiante de Computación</p><p className="text-[#cbc3d7]/60 text-sm">Universidad del Zulia (LUZ)</p></div></div>
                 </div>
-                <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 italic text-left">
-                  <div><h4 className="font-bold text-white mb-2 uppercase">Programación</h4><p className="text-[#cbc3d7] text-sm leading-relaxed text-left">Especializado en arquitecturas con Flask e integración con Supabase.</p></div>
-                  <div><h4 className="font-bold text-white mb-2 uppercase">Gestión y Despliegue</h4><p className="text-[#cbc3d7] text-sm leading-relaxed text-left">Manejo eficiente de datos y producción en Vercel con Gemini.</p></div>
+                <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3"><Terminal size={18} className="text-[#4cd7f6]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Programación y Desarrollo</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Disfruto trabajar directamente con el código, enfocándome en la lógica y arquitecturas funcionales. Experiencia con Flask e integración con Supabase.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3"><Database size={18} className="text-[#d0bcff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Gestión de Datos</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Capacidad para el manejo y análisis de datos, asegurando que el flujo de información sea eficiente y seguro.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3"><Zap size={18} className="text-[#4edea3]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">IA y Despliegue</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Implementación de APIs avanzadas de IA (como Gemini) y despliegue de entornos de producción a través de Vercel.</p>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3"><Microscope size={18} className="text-[#a078ff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Investigación</h4></div>
+                    <p className="text-[#cbc3d7] text-sm leading-relaxed">Interés constante en el aprendizaje de nuevas herramientas y metodologías ligadas a la innovación tecnológica.</p>
+                  </div>
                 </div>
               </div>
             </motion.div>
