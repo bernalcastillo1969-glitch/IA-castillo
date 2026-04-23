@@ -555,11 +555,6 @@
                             <div class="loader-dot dot1"></div><div class="loader-dot dot2"></div><div class="loader-dot"></div>
                         </div>
                     </button>
-
-                    <!-- Botón Modo Voz (Alexa) -->
-                    <button id="voice-mode-btn" class="text-blue-400 hover:text-blue-300 w-10 h-10 rounded-full flex items-center justify-center transition-all ml-1 mr-1 flex-shrink-0 hover:bg-blue-500/10" title="Modo Voz Alexa">
-                        <i class="fa-solid fa-headset text-[17px]"></i>
-                    </button>
                 </div>
             </div>
             
@@ -573,72 +568,6 @@
     <!-- Toast Notification -->
     <div id="toast-msg" class="toast-notification"><i class="fa-solid fa-check-circle text-green-400"></i><span id="toast-text">Copiado</span></div>
 
-    <!-- MODO LIVE (HUMANOIDE AVATAR) -->
-    <div id="voice-overlay" class="fixed inset-0 z-[200] flex flex-col items-center justify-between py-16 px-6 transition-all duration-700 opacity-0" style="display:none;">
-        
-        <!-- Header -->
-        <div class="w-full flex justify-between items-center z-10 px-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                    <i class="fa-solid fa-sparkles text-blue-400"></i>
-                </div>
-                <h2 id="voice-status-title" class="text-white/80 font-bold text-lg tracking-tight">Escuchando...</h2>
-            </div>
-            <button id="voice-close-top" class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
-                <i class="fa-solid fa-arrow-left text-xl"></i>
-            </button>
-        </div>
-
-        <!-- CENTER AVATAR -->
-        <div class="relative flex flex-col items-center justify-center">
-            <!-- Pulsing Rings -->
-            <div class="absolute w-[400px] h-[400px] border border-blue-500/5 rounded-full animate-pulse"></div>
-            
-            <!-- THE PERSONA -->
-            <div id="voice-orb" class="relative z-20 transition-transform active:scale-95 duration-300">
-                <div class="avatar-head flex flex-col items-center">
-                    <!-- Ojos -->
-                    <div class="flex gap-14 mb-16">
-                        <div class="avatar-eye"></div>
-                        <div class="avatar-eye"></div>
-                    </div>
-                    
-                    <!-- Boca (Soundbars Animadas) -->
-                    <div id="orb-pulse" class="hidden flex items-end gap-1.5 h-12">
-                        <div class="sound-bar animate-bounce-custom"></div>
-                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.1s;"></div>
-                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.2s;"></div>
-                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.15s;"></div>
-                        <div class="sound-bar animate-bounce-custom" style="animation-delay: 0.05s;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Glow de base -->
-            <div class="glow-base"></div>
-        </div>
-
-        <!-- Transcript & Controls -->
-        <div class="w-full max-w-md flex flex-col items-center gap-10 z-10 font-[Google Sans]">
-            <div id="voice-transcript" class="text-white/40 text-center text-xl font-medium tracking-tight px-6 min-h-[60px] line-clamp-3 italic">
-                Presiona el rostro para hablar...
-            </div>
-            
-            <div class="flex items-center gap-10">
-                <button class="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white transition-all">
-                    <i class="fa-solid fa-microphone-slash"></i>
-                </button>
-                <div class="w-24 h-24 rounded-full border-4 border-white/5 p-1">
-                    <button class="w-full h-full rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl shadow-xl shadow-blue-500/20 active:scale-90 transition-all">
-                        <i class="fa-solid fa-bolt"></i>
-                    </button>
-                </div>
-                <button class="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 hover:text-white transition-all">
-                    <i class="fa-solid fa-sliders"></i>
-                </button>
-            </div>
-        </div>
-    </div>
 
     <script>
         /* === CONFIGURACIÓN GLOBAL === */
@@ -737,81 +666,74 @@
             checkInputState();
         }
 
-        /* -- NOTAS DE VOZ REALES CON MEDIA RECORDER -- */
+        /* -- RECONOCIMIENTO DE VOZ (SPEECH TO TEXT) -- */
         const recordBtn = document.getElementById('record-audio-btn');
         const recordIcon = recordBtn.querySelector('i');
-        const audioWrapper = document.getElementById('audio-wrapper');
-        const removeAudioBtn = document.getElementById('remove-audio-btn');
+        const userInput = document.getElementById('user-input');
         
-        let mediaRecorder;
-        let audioChunks = [];
-        let isRecording = false;
+        let recognition;
+        let isListening = false;
 
-        recordBtn.addEventListener('click', async () => {
-            if (isRecording) {
-                // Parar de Grabar
-                mediaRecorder.stop();
-                return;
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = false; // Cambiado a false para que se detenga al dejar de hablar
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                isListening = true;
+                recordIcon.classList.remove('text-[17px]', 'fa-microphone');
+                recordIcon.classList.add('mic-recording', 'fa-microphone-lines');
+                userInput.placeholder = "Escuchando...";
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                if (finalTranscript) {
+                    userInput.value += (userInput.value ? ' ' : '') + finalTranscript;
+                    userInput.style.height = 'auto';
+                    userInput.style.height = userInput.scrollHeight + 'px';
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Error en reconocimiento:', event.error);
+                stopListening();
+            };
+
+            recognition.onend = () => {
+                stopListening();
+            };
+
+            function stopListening() {
+                isListening = false;
+                recordIcon.classList.remove('mic-recording', 'fa-microphone-lines');
+                recordIcon.classList.add('text-[17px]', 'fa-microphone');
+                userInput.placeholder = "Pregunta o adjunta un archivo...";
+                checkInputState();
             }
-            
-            // Empezar a Grabar
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
 
-                mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) audioChunks.push(e.data);
-                };
-
-                mediaRecorder.onstart = () => {
-                    isRecording = true;
-                    recordIcon.classList.remove('text-[17px]');
-                    recordIcon.classList.add('mic-recording');
-                    document.getElementById('user-input').placeholder = "Grabando nota de voz...";
-                };
-
-                mediaRecorder.onstop = () => {
-                    isRecording = false;
-                    recordIcon.classList.remove('mic-recording');
-                    recordIcon.classList.add('text-[17px]');
-                    document.getElementById('user-input').placeholder = "Escribe o envía tu nota...";
-
-                    // Detener todas las pistas para apagar la luz roja del mic
-                    stream.getTracks().forEach(track => track.stop());
-
-                    // Empaquetar Audio en WebM o MP4 dependiendo del navegador
-                    const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-                    
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        const dataUrl = event.target.result;
-                        const parts = dataUrl.split(',');
-                        currentAudioMimeType = parts[0].match(/:(.*?);/)[1];
-                        currentAudioBase64 = parts[1];
-                        
-                        // Mostrar Preview de Audio
-                        audioWrapper.style.display = 'flex';
-                        mediaPreviewContainer.style.display = 'flex';
-                        checkInputState();
-                    };
-                    reader.readAsDataURL(audioBlob);
-                };
-
-                mediaRecorder.start();
-
-            } catch (err) {
-                alert("Para enviar Notas de Voz, debes permitir el uso del Micrófono (Solo funciona en URLs seguras o Locales). " + err);
-            }
-        });
-
-        removeAudioBtn.addEventListener('click', limpiarAudio);
-        
-        function limpiarAudio() {
-            currentAudioBase64 = null; currentAudioMimeType = null;
-            audioWrapper.style.display = 'none';
-            if(!currentImageBase64) mediaPreviewContainer.style.display = 'none';
-            checkInputState();
+            recordBtn.addEventListener('click', () => {
+                if (isListening) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+        } else {
+            recordBtn.style.display = 'none'; // Si el navegador no lo soporta
+            console.warn("Este navegador no soporta el reconocimiento de voz.");
         }
 
 
