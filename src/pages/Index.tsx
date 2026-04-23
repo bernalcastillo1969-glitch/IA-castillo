@@ -1,15 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { 
-  Brain, 
-  Cpu, 
-  Zap, 
-  Database, 
-  Code2, 
-  Globe, 
-  ShieldCheck, 
-  CheckCircle2, 
+import {
+  Brain,
+  Cpu,
+  Zap,
+  Database,
+  Code2,
+  Globe,
+  ShieldCheck,
+  CheckCircle2,
   ArrowRight,
   Sparkles,
   Lock,
@@ -56,7 +55,7 @@ const techLogos = [
 const Index = () => {
   const [activeItem, setActiveItem] = useState('ecosistema');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -73,7 +72,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#12121f] text-[#e3e0f3] font-sans selection:bg-primary/30 overflow-x-hidden scroll-smooth">
-      
+
       {/* ── Background Atmosphere ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-[130px]" />
@@ -88,14 +87,13 @@ const Index = () => {
           <div className="flex items-center">
             <span className="font-bold text-lg md:text-xl tracking-tight text-[#d0bcff] whitespace-nowrap">IA Castillo</span>
           </div>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-1 relative">
             {navItems.map((item) => (
               <a key={item.id} href={item.href} onClick={() => setActiveItem(item.id)}
-                className={`px-4 py-2 text-sm font-semibold transition-colors relative z-10 ${
-                  activeItem === item.id ? 'text-[#4cd7f6]' : 'text-[#cbc3d7] hover:text-white'
-                }`}
+                className={`px-4 py-2 text-sm font-semibold transition-colors relative z-10 ${activeItem === item.id ? 'text-[#4cd7f6]' : 'text-[#cbc3d7] hover:text-white'
+                  }`}
               >
                 {item.label}
                 {activeItem === item.id && (
@@ -110,8 +108,8 @@ const Index = () => {
               Comenzar
             </a>
             {/* Toggle con mejor Hit Area */}
-            <button 
-              onClick={() => setMobileMenuOpen(true)} 
+            <button
+              onClick={() => setMobileMenuOpen(true)}
               className="md:hidden p-2 text-white hover:text-[#d0bcff] transition-all"
               aria-label="Abrir menú"
             >
@@ -124,20 +122,20 @@ const Index = () => {
       {/* ── Mobile Menu Overlay (FULL SCREEN RE-DISEÑADO) ── */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] md:hidden"
           >
             {/* Background Blur */}
             <div className="absolute inset-0 bg-[#12121f]/95 backdrop-blur-2xl" />
-            
+
             {/* Content Container */}
             <div className="absolute inset-0 flex flex-col p-10">
               <div className="flex items-center justify-between mb-20">
                 <span className="font-bold text-2xl text-[#d0bcff]">IA Castillo</span>
-                <button 
+                <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-3 bg-white/5 rounded-full text-white active:scale-90 transition-all border border-white/10"
                 >
@@ -157,9 +155,8 @@ const Index = () => {
                       setActiveItem(item.id);
                       setMobileMenuOpen(false);
                     }}
-                    className={`text-4xl font-black transition-all ${
-                      activeItem === item.id ? 'text-[#4cd7f6]' : 'text-white/60 hover:text-white'
-                    }`}
+                    className={`text-4xl font-black transition-all ${activeItem === item.id ? 'text-[#4cd7f6]' : 'text-white/60 hover:text-white'
+                      }`}
                   >
                     {item.label}
                   </motion.a>
@@ -167,7 +164,7 @@ const Index = () => {
               </div>
 
               <div className="mt-auto">
-                <a 
+                <a
                   href="/chat"
                   className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-black text-2xl text-center shadow-2xl block"
                 >
@@ -239,7 +236,7 @@ const Index = () => {
         <section id="architecture" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto"><h2 className="text-4xl md:text-5xl font-bold mb-16 text-white text-left">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-              {[ { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." }].map((item, i) => (
+              {[{ icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." }].map((item, i) => (
                 <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp} className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5"><div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-[#4cd7f6]">{item.icon}</div><h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3><p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p></motion.div>
               ))}
             </div>
@@ -270,7 +267,7 @@ const Index = () => {
         <section id="security" className="relative z-10 py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
-                <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br/><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
+              <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br /><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
             </motion.div>
           </div>
         </section>
@@ -289,19 +286,19 @@ const Index = () => {
                 </div>
                 <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Terminal size={18} className="text-[#4cd7f6]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Programación y Desarrollo</h4></div>
+                    <div className="flex items-center gap-3"><Terminal size={18} className="text-[#4cd7f6]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Programación y Desarrollo</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Disfruto trabajar directamente con el código, enfocándome en la lógica y arquitecturas funcionales. Experiencia con Flask e integración con Supabase.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Database size={18} className="text-[#d0bcff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Gestión de Datos</h4></div>
+                    <div className="flex items-center gap-3"><Database size={18} className="text-[#d0bcff]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Gestión de Datos</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Capacidad para el manejo y análisis de datos, asegurando que el flujo de información sea eficiente y seguro.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Zap size={18} className="text-[#4edea3]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">IA y Despliegue</h4></div>
+                    <div className="flex items-center gap-3"><Zap size={18} className="text-[#4edea3]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">IA y Despliegue</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Implementación de APIs avanzadas de IA (como Gemini) y despliegue de entornos de producción a través de Vercel.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Microscope size={18} className="text-[#a078ff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Investigación</h4></div>
+                    <div className="flex items-center gap-3"><Microscope size={18} className="text-[#a078ff]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Investigación</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Interés constante en el aprendizaje de nuevas herramientas y metodologías ligadas a la innovación tecnológica.</p>
                   </div>
                 </div>
