@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security
+.env
+.env.local
+.env.*.local
+
+# Scratch and Temp
+scratch/
+temp_orchids/
+api/temp_orchids_clone/
