@@ -278,7 +278,7 @@ const Index = () => {
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7 h-[400px] md:h-[600px] w-full relative rounded-[3rem] overflow-hidden border border-white/5 bg-[#1e1e2c]/20 backdrop-blur-sm">
               <SplineScene 
-                scene="https://prod.spline.design/kZS1ORuf5YbeTJpz/scene.splinecode"
+                scene="https://prod.spline.design/ATIn6vXf-KWh-7p6/scene.splinecode"
                 className="w-full h-full"
               />
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#12121f] via-transparent to-transparent opacity-60"></div>
