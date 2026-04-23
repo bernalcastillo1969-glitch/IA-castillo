@@ -1,14 +1,15 @@
 import React, { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import {
-  Brain,
-  Cpu,
-  Zap,
-  Database,
-  Code2,
-  Globe,
-  ShieldCheck,
-  CheckCircle2,
+import { 
+  Brain, 
+  Cpu, 
+  Zap, 
+  Database, 
+  Code2, 
+  Globe, 
+  ShieldCheck, 
+  CheckCircle2, 
   ArrowRight,
   Sparkles,
   Lock,
@@ -26,7 +27,6 @@ import {
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
 import ChatMockup from "@/components/ChatMockup";
-import SplineScene from "@/components/SplineScene";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -56,7 +56,7 @@ const techLogos = [
 const Index = () => {
   const [activeItem, setActiveItem] = useState('ecosistema');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -73,7 +73,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#12121f] text-[#e3e0f3] font-sans selection:bg-primary/30 overflow-x-hidden scroll-smooth">
-
+      
       {/* ── Background Atmosphere ── */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-primary/10 blur-[130px]" />
@@ -82,19 +82,19 @@ const Index = () => {
         <FloatingCube className="top-[60%] right-[15%]" size={120} color="#4cd7f6" speed={35} />
       </div>
 
-      {/* ── Navbar (CORREGIDA ALINEACIÓN Y DISEÑO) ── */}
+      {/* ── Navbar ── */}
       <nav className="fixed top-0 left-0 right-0 z-[100] px-4 py-4 md:px-6 md:py-6 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between bg-[#1e1e2c]/60 backdrop-blur-xl border border-white/10 px-4 md:px-6 py-3 rounded-2xl shadow-2xl">
           <div className="flex items-center">
             <span className="font-bold text-lg md:text-xl tracking-tight text-[#d0bcff] whitespace-nowrap">IA Castillo</span>
           </div>
-
-          {/* Desktop Menu */}
+          
           <div className="hidden md:flex items-center gap-1 relative">
             {navItems.map((item) => (
               <a key={item.id} href={item.href} onClick={() => setActiveItem(item.id)}
-                className={`px-4 py-2 text-sm font-semibold transition-colors relative z-10 ${activeItem === item.id ? 'text-[#4cd7f6]' : 'text-[#cbc3d7] hover:text-white'
-                  }`}
+                className={`px-4 py-2 text-sm font-semibold transition-colors relative z-10 ${
+                  activeItem === item.id ? 'text-[#4cd7f6]' : 'text-[#cbc3d7] hover:text-white'
+                }`}
               >
                 {item.label}
                 {activeItem === item.id && (
@@ -108,9 +108,8 @@ const Index = () => {
             <a href="/chat" className="hidden sm:inline-block px-6 py-2 rounded-xl text-sm font-bold bg-gradient-to-r from-[#d0bcff] to-[#a078ff] text-[#3c0091] shadow-lg hover:scale-105 active:scale-95 transition-all">
               Comenzar
             </a>
-            {/* Toggle con mejor Hit Area */}
-            <button
-              onClick={() => setMobileMenuOpen(true)}
+            <button 
+              onClick={() => setMobileMenuOpen(true)} 
               className="md:hidden p-2 text-white hover:text-[#d0bcff] transition-all"
               aria-label="Abrir menú"
             >
@@ -120,23 +119,20 @@ const Index = () => {
         </div>
       </nav>
 
-      {/* ── Mobile Menu Overlay (FULL SCREEN RE-DISEÑADO) ── */}
+      {/* ── Mobile Menu Overlay ── */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[200] md:hidden"
           >
-            {/* Background Blur */}
             <div className="absolute inset-0 bg-[#12121f]/95 backdrop-blur-2xl" />
-
-            {/* Content Container */}
             <div className="absolute inset-0 flex flex-col p-10">
               <div className="flex items-center justify-between mb-20">
                 <span className="font-bold text-2xl text-[#d0bcff]">IA Castillo</span>
-                <button
+                <button 
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-3 bg-white/5 rounded-full text-white active:scale-90 transition-all border border-white/10"
                 >
@@ -156,8 +152,9 @@ const Index = () => {
                       setActiveItem(item.id);
                       setMobileMenuOpen(false);
                     }}
-                    className={`text-4xl font-black transition-all ${activeItem === item.id ? 'text-[#4cd7f6]' : 'text-white/60 hover:text-white'
-                      }`}
+                    className={`text-2xl sm:text-3xl font-bold transition-all ${
+                      activeItem === item.id ? 'text-[#4cd7f6]' : 'text-white/60 hover:text-white'
+                    }`}
                   >
                     {item.label}
                   </motion.a>
@@ -165,9 +162,9 @@ const Index = () => {
               </div>
 
               <div className="mt-auto">
-                <a
+                <a 
                   href="/chat"
-                  className="w-full py-6 rounded-3xl bg-gradient-to-r from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-black text-2xl text-center shadow-2xl block"
+                  className="w-full py-4 rounded-3xl bg-gradient-to-r from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-bold text-lg text-center shadow-2xl block"
                 >
                   Iniciar Chat Pro
                 </a>
@@ -179,7 +176,7 @@ const Index = () => {
 
       <main>
         {/* HERO SECTION */}
-        <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20 overflow-hidden text-center">
+        <section ref={heroRef} className="relative min-h-screen flex flex-col items-center justify-center px-4 md:px-6 pt-32 pb-20 overflow-hidden text-center">
           <motion.div style={{ y: heroY, opacity: heroOpacity }} className="absolute inset-0 z-0 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#12121f]/50 to-[#12121f]" />
           </motion.div>
@@ -187,7 +184,7 @@ const Index = () => {
             <motion.div initial="hidden" animate="visible" variants={fadeUp} className="mb-8 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#292937] border border-white/5 text-[#cbc3d7] text-xs font-bold uppercase tracking-widest">
               <span className="w-2 h-2 rounded-full bg-[#4edea3] animate-pulse"></span> Sistemas Activos v2.4
             </motion.div>
-            <motion.h1 initial="hidden" animate="visible" variants={fadeUp} custom={1} className="text-4xl md:text-8xl font-black leading-[1.1] tracking-tighter mb-6 text-white px-2">
+            <motion.h1 initial="hidden" animate="visible" variants={fadeUp} custom={1} className="text-3xl sm:text-4xl md:text-7xl font-black leading-[1.1] tracking-tighter mb-6 text-white px-2">
               Bienvenidos al Mundo de la <br /> <span className="text-[#4cd7f6]">Inteligencia Artificial</span>
             </motion.h1>
             <p className="text-lg md:text-xl text-[#cbc3d7] max-w-2xl mx-auto mb-10 px-4">Arquitectura de última generación diseñada para potenciar la productividad empresarial con modelos híbridos de baja latencia.</p>
@@ -195,12 +192,12 @@ const Index = () => {
               <a href="/chat" className="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-br from-[#d0bcff] to-[#a078ff] text-[#3c0091] font-bold text-lg shadow-2xl shadow-[#d0bcff]/30 hover:scale-105 transition-all">Probar Gratis</a>
               <button className="w-full sm:w-auto px-8 py-4 rounded-xl border border-white/10 text-white font-semibold text-lg hover:bg-white/5 transition-colors">Ver Documentación</button>
             </div>
-            <div className="w-full max-w-2xl px-4 scale-75 md:scale-100"><Brain3D /></div>
+            <div className="w-full max-w-2xl px-4 scale-60 sm:scale-75 md:scale-100"><Brain3D /></div>
           </div>
         </section>
 
         {/* ── TODO EN UNO ── */}
-        <section className="relative z-10 py-32 px-6">
+        <section className="relative z-10 py-16 md:py-32 px-4 md:px-6">
           <div className="max-w-7xl mx-auto text-center mb-20">
             <h2 className="text-5xl font-bold mb-6 text-white text-center">Todo en <span className="text-[#d0bcff]">Uno</span></h2>
             <p className="text-[#cbc3d7] text-xl max-w-2xl mx-auto text-center font-medium leading-relaxed">Un ecosistema completo de herramientas diseñadas para integrarse sin fricciones.</p>
@@ -216,7 +213,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── INFRAESTRUCTURA (Marquee Colorido) ── */}
+        {/* ── INFRAESTRUCTURA (Marquee) ── */}
         <section className="relative z-10 py-32 overflow-hidden border-y border-white/5 bg-[#12121f]">
           <h2 className="text-3xl font-bold mb-16 text-white text-center">Infraestructura de Clase Mundial</h2>
           <div className="flex overflow-hidden relative group">
@@ -229,15 +226,13 @@ const Index = () => {
               ))}
             </motion.div>
           </div>
-          <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-[#12121f] to-transparent z-10 pointer-events-none" />
-          <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#12121f] to-transparent z-10 pointer-events-none" />
         </section>
 
         {/* ── ARCHITECTURE ── */}
-        <section id="architecture" className="relative z-10 py-32 px-6">
+        <section id="architecture" className="relative z-10 py-16 md:py-32 px-4 md:px-6">
           <div className="max-w-7xl mx-auto"><h2 className="text-4xl md:text-5xl font-bold mb-16 text-white text-left">Cerebro <span className="text-[#4cd7f6]">Híbrido</span></h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-              {[{ icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." }].map((item, i) => (
+              {[ { icon: <Cpu />, title: "Gemini Flash 1.5", desc: "Procesamiento masivo de contexto con ventana de 1M de tokens." }, { icon: <Zap />, title: "Groq LPU", desc: "Inferencia a velocidad ultra-rápida. Respuestas casi instantáneas." }, { icon: <CheckCircle2 />, title: "Ruteo Automático", desc: "Optimización de costos y latencia automática por consulta." }].map((item, i) => (
                 <motion.div key={item.title} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={i} variants={fadeUp} className="bg-[#343342]/40 backdrop-blur-md p-10 rounded-[2.5rem] border border-white/5"><div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mb-8 text-[#4cd7f6]">{item.icon}</div><h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3><p className="text-[#cbc3d7] leading-relaxed">{item.desc}</p></motion.div>
               ))}
             </div>
@@ -245,7 +240,7 @@ const Index = () => {
         </section>
 
         {/* ── FEATURES ── */}
-        <section id="features" className="relative z-10 py-32 px-6">
+        <section id="features" className="relative z-10 py-16 md:py-32 px-4 md:px-6">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-left">
               <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white">Interacción en <span className="text-[#4cd7f6]">Tiempo Real</span></h2>
@@ -265,50 +260,16 @@ const Index = () => {
         </section>
 
         {/* ── SECURITY ── */}
-        <section id="security" className="relative z-10 py-32 px-6">
+        <section id="security" className="relative z-10 py-16 md:py-32 px-4 md:px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
-              <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br /><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── NEURAL CORE (Spline 3D) ── */}
-        <section className="relative z-10 py-16 md:py-32 px-4 md:px-6 overflow-hidden">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 h-[400px] md:h-[600px] w-full relative rounded-[3rem] overflow-hidden border border-white/5 bg-[#1e1e2c]/20 backdrop-blur-sm">
-              <SplineScene 
-                scene="https://prod.spline.design/Nmx4Vyeze9wJ-9zm/scene.splinecode"
-                className="w-full h-full"
-              />
-              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#12121f] via-transparent to-transparent opacity-60"></div>
-            </div>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="lg:col-span-5 text-left space-y-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#4cd7f6]/10 border border-[#4cd7f6]/20 text-[#4cd7f6] text-[10px] font-black uppercase tracking-widest">
-                <Sparkles size={14} /> Tecnología Multimodal
-              </div>
-              <h2 className="text-4xl md:text-6xl font-black text-white leading-tight">
-                El Núcleo de la <span className="text-[#d0bcff]">Conciencia Digital</span>
-              </h2>
-              <p className="text-[#cbc3d7] text-lg leading-relaxed">
-                IA Castillo no es solo un chat; es un motor de razonamiento avanzado que procesa visión, audio y datos en tiempo real con una precisión del 99.9%.
-              </p>
-              <div className="grid grid-cols-2 gap-6">
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <h4 className="text-white font-bold mb-1">Visión 8K</h4>
-                  <p className="text-white/40 text-xs">Análisis visual profundo.</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
-                  <h4 className="text-white font-bold mb-1">Audio HD</h4>
-                  <p className="text-white/40 text-xs">Síntesis de voz natural.</p>
-                </div>
-              </div>
+                <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br/><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
             </motion.div>
           </div>
         </section>
 
         {/* ── SOBRE MI ── */}
-        <section id="sobre-mi" className="relative z-10 py-32 px-6 text-left">
+        <section id="sobre-mi" className="relative z-10 py-16 md:py-32 px-4 md:px-6 text-left">
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-[#343342]/40 backdrop-blur-xl rounded-[2rem] md:rounded-[4rem] p-6 md:p-20 border border-white/5 relative overflow-hidden text-left shadow-2xl">
               <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none hidden md:block"><GraduationCap size={400} /></div>
@@ -321,19 +282,19 @@ const Index = () => {
                 </div>
                 <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Terminal size={18} className="text-[#4cd7f6]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Programación y Desarrollo</h4></div>
+                    <div className="flex items-center gap-3"><Terminal size={18} className="text-[#4cd7f6]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Programación y Desarrollo</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Disfruto trabajar directamente con el código, enfocándome en la lógica y arquitecturas funcionales. Experiencia con Flask e integración con Supabase.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Database size={18} className="text-[#d0bcff]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Gestión de Datos</h4></div>
+                    <div className="flex items-center gap-3"><Database size={18} className="text-[#d0bcff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Gestión de Datos</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Capacidad para el manejo y análisis de datos, asegurando que el flujo de información sea eficiente y seguro.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Zap size={18} className="text-[#4edea3]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">IA y Despliegue</h4></div>
+                    <div className="flex items-center gap-3"><Zap size={18} className="text-[#4edea3]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">IA y Despliegue</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Implementación de APIs avanzadas de IA (como Gemini) y despliegue de entornos de producción a través de Vercel.</p>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3"><Microscope size={18} className="text-[#a078ff]" /><h4 className="font-bold text-white uppercase text-sm tracking-wider">Investigación</h4></div>
+                    <div className="flex items-center gap-3"><Microscope size={18} className="text-[#a078ff]"/><h4 className="font-bold text-white uppercase text-sm tracking-wider">Investigación</h4></div>
                     <p className="text-[#cbc3d7] text-sm leading-relaxed">Interés constante en el aprendizaje de nuevas herramientas y metodologías ligadas a la innovación tecnológica.</p>
                   </div>
                 </div>
@@ -342,7 +303,7 @@ const Index = () => {
           </div>
         </section>
 
-        <section className="relative z-10 py-32 text-center italic font-black"><a href="/chat" className="px-14 py-6 rounded-2xl bg-gradient-to-r from-[#4cd7f6] to-[#d0bcff] text-[#12121f] font-black text-2xl shadow-3xl inline-block hover:scale-105 transition-all outline-none border-none">Probar Ahora</a></section>
+        <section className="relative z-10 py-16 md:py-32 text-center italic font-black"><a href="/chat" className="px-14 py-6 rounded-2xl bg-gradient-to-r from-[#4cd7f6] to-[#d0bcff] text-[#12121f] font-black text-2xl shadow-3xl inline-block hover:scale-105 transition-all outline-none border-none">Probar Ahora</a></section>
       </main>
 
       <footer className="relative z-10 py-10 md:py-20 px-6 md:px-14 border-t border-white/5 flex flex-col md:flex-row justify-between items-center bg-[#12121f] text-white/40 italic text-center md:text-left gap-4"><div className="text-2xl font-bold text-[#d0bcff]">IA Castillo</div><p>© 2026 Bernal Castillo. Élite.</p></footer>
