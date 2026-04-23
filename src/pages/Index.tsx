@@ -26,6 +26,7 @@ import {
 import Brain3D from "@/components/Brain3D";
 import FloatingCube from "@/components/FloatingCube";
 import ChatMockup from "@/components/ChatMockup";
+import SplineScene from "@/components/SplineScene";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -268,6 +269,40 @@ const Index = () => {
           <div className="max-w-7xl mx-auto">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="bg-gradient-to-br from-[#1e1e2c] to-[#04040f] rounded-[3rem] p-12 md:p-24 border border-[#4edea3]/20 text-left relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
               <div className="flex-1"><h2 className="text-5xl md:text-6xl font-bold mb-10 text-white">Protección <br /><span className="text-[#4edea3]">Empresarial</span></h2><div className="flex gap-6 items-start"><Lock className="text-[#4edea3] shrink-0 mt-1" size={28} /><div><h4 className="text-2xl font-bold text-white mb-2">Supabase RLS</h4><p className="text-[#cbc3d7] font-medium leading-relaxed">Row Level Security para garantizar que cada usuario solo acceda a su información. Integridad de datos garantizada.</p></div></div></div><ShieldCheck size={180} className="text-[#4edea3] opacity-30" />
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── NEURAL CORE (Spline 3D) ── */}
+        <section className="relative z-10 py-16 md:py-32 px-4 md:px-6 overflow-hidden">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-7 h-[400px] md:h-[600px] w-full relative rounded-[3rem] overflow-hidden border border-white/5 bg-[#1e1e2c]/20 backdrop-blur-sm">
+              <SplineScene 
+                scene="https://prod.spline.design/kZS1ORuf5YbeTJpz/scene.splinecode"
+                className="w-full h-full"
+              />
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#12121f] via-transparent to-transparent opacity-60"></div>
+            </div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="lg:col-span-5 text-left space-y-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#4cd7f6]/10 border border-[#4cd7f6]/20 text-[#4cd7f6] text-[10px] font-black uppercase tracking-widest">
+                <Sparkles size={14} /> Tecnología Multimodal
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white leading-tight">
+                El Núcleo de la <span className="text-[#d0bcff]">Conciencia Digital</span>
+              </h2>
+              <p className="text-[#cbc3d7] text-lg leading-relaxed">
+                IA Castillo no es solo un chat; es un motor de razonamiento avanzado que procesa visión, audio y datos en tiempo real con una precisión del 99.9%.
+              </p>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                  <h4 className="text-white font-bold mb-1">Visión 8K</h4>
+                  <p className="text-white/40 text-xs">Análisis visual profundo.</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
+                  <h4 className="text-white font-bold mb-1">Audio HD</h4>
+                  <p className="text-white/40 text-xs">Síntesis de voz natural.</p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </section>
